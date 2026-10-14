@@ -56,12 +56,18 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--navy)}
 
   <div class="card">
     <h2 data-t="s1"></h2>
-    <label data-t="nombre"></label><input id="nombre" autocomplete="given-name" required>
+    <div class="g2"><div><label data-t="nombre"></label><input id="nombre" autocomplete="given-name" required></div>
+    <div><label data-t="nombre2"></label><input id="nombre2" autocomplete="additional-name"></div></div>
     <div class="g3"><div><label data-t="apellidos"></label><input id="apellidos" autocomplete="family-name"></div>
     <div><label data-t="sufijo"></label><select id="sufijo"><option value="">—</option><option>Sr.</option><option>Jr.</option><option>II</option><option>III</option></select></div></div>
     <label data-t="nac"></label><input id="nacimiento" type="date" autocomplete="bday">
     <label data-t="tel"></label><input id="telefono" type="tel" autocomplete="tel">
     <label data-t="correo"></label><input id="correo" type="email" autocomplete="email">
+    <label data-t="dir"></label><input id="dirCalle" autocomplete="address-line1">
+    <div class="g2"><div><label data-t="apto"></label><input id="dirApto" autocomplete="address-line2"></div>
+    <div><label data-t="ciudad"></label><input id="dirCiudad" autocomplete="address-level2"></div></div>
+    <div class="g2"><div><label data-t="estado"></label><input id="dirEstado" autocomplete="address-level1" maxlength="30"></div>
+    <div><label data-t="zip"></label><input id="dirZip" inputmode="numeric" autocomplete="postal-code" maxlength="10"></div></div>
   </div>
 
   <div class="card">
@@ -123,14 +129,14 @@ const FN_URL = 'https://kwebidsoeyfgwtyhoeni.supabase.co/functions/v1/intake';
 const ENCYRO_URL = 'https://www.encyro.com/americamexmultiservices';
 const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3ZWJpZHNvZXlmZ3d0eWhvZW5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyMTM3NTgsImV4cCI6MjEwNjc4OTc1OH0.vD1Mt8VosqFStyrxTCaprQ3Ekzvpi-ZwlFa5aTGLSUw';
 const T = {
- es:{hSub:'Formulario de datos del cliente',s1:'Tus datos',nombre:'Nombre(s) *',apellidos:'Apellidos',sufijo:'Sr./Jr.',nac:'Fecha de nacimiento',tel:'Teléfono / WhatsApp',correo:'Correo electrónico',
+ es:{hSub:'Formulario de datos del cliente',s1:'Tus datos',nombre:'Primer nombre *',nombre2:'Segundo nombre',dir:'Dirección postal (calle y número)',apto:'Apto / Suite',ciudad:'Ciudad',estado:'Estado',zip:'Código postal',apellidos:'Apellidos',sufijo:'Sr./Jr.',nac:'Fecha de nacimiento',tel:'Teléfono / WhatsApp',correo:'Correo electrónico',
   s2:'¿Qué necesitas?',impuestos:'Impuestos',migracion:'Migración',otro:'Otro',
   s3:'Seguro social (SSN) y estado civil',s3s:'Si solo tienes ITIN, escribe tu ITIN.',ssn:'SSN o ITIN',civil:'Estado civil',o_sol:'Soltero(a)',o_cas:'Casado(a)',o_viu:'Viudo(a)',o_jef:'Soltero(a) con dependientes',esp:'Nombre del esposo(a)',
   s4:'Dependientes (hijos u otros)',s4s:'Agrega a cada uno.',addDep:'+ Agregar dependiente',depN:'Nombre completo',parent:'Parentesco (hijo, hija…)',
   s5:'Depósito directo (opcional)',s5s:'Para depositarte tu reembolso. Puedes dejarlo vacío.',banco:'Banco',ruta:'Número de ruta (9 dígitos)',cuenta:'Número de cuenta',tipo:'Tipo de cuenta',
   coment:'Comentarios (opcional)',priv:'🔒 Tu información viaja cifrada. Tu SSN y datos de banco se borran automáticamente en 48 horas, después de que los capturemos. Solo guardamos los últimos 4 dígitos de tu SSN para identificarte.',
   s6:'Sube tus documentos',s6s:'De forma segura y cifrada, desde tu celular. Puedes tomar foto.',d1:'W-2 y/o 1099 (todos los que tengas)',d2:'Identificación (ID de California o pasaporte)',d3:'Acta de nacimiento de los niños',d4:'Documentos de la escuela de los niños',d5:'Gastos de guardería o cuidado de niños (si aplica)',d6:'Declaración del año pasado (si la tienes)',subir:'📎 Subir mis documentos',s6n:'Puedes hacerlo ahora o después; también puedes traerlos a la oficina.',enviar:'Enviar',gracias:'¡Listo, recibimos tus datos!',gracias2:'Te atendemos en breve. Gracias por confiar en AmericaMex Tax.',falta:'Escribe tu nombre.',errSsn:'El SSN/ITIN debe tener 9 dígitos.',errRuta:'El número de ruta debe tener 9 dígitos.',errNet:'No se pudo enviar. Revisa tu internet e intenta de nuevo.'},
- en:{hSub:'Client information form',s1:'Your information',nombre:'First name(s) *',apellidos:'Last name(s)',sufijo:'Sr./Jr.',nac:'Date of birth',tel:'Phone / WhatsApp',correo:'Email',
+ en:{hSub:'Client information form',s1:'Your information',nombre:'First name *',nombre2:'Middle name',dir:'Mailing address (street and number)',apto:'Apt / Suite',ciudad:'City',estado:'State',zip:'ZIP code',apellidos:'Last name(s)',sufijo:'Sr./Jr.',nac:'Date of birth',tel:'Phone / WhatsApp',correo:'Email',
   s2:'What do you need?',impuestos:'Taxes',migracion:'Immigration',otro:'Other',
   s3:'Social Security (SSN) and filing status',s3s:'If you only have an ITIN, enter your ITIN.',ssn:'SSN or ITIN',civil:'Marital status',o_sol:'Single',o_cas:'Married',o_viu:'Widowed',o_jef:'Single with dependents',esp:'Spouse full name',
   s4:'Dependents (children or others)',s4s:'Add each one.',addDep:'+ Add dependent',depN:'Full name',parent:'Relationship (son, daughter…)',
@@ -170,7 +176,7 @@ $('enviar').onclick = async () => {
   if (ruta && ruta.length !== 9) { error(T[L].errRuta); $('ruta').focus(); return; }
   const deps = [...document.querySelectorAll('.dep')].map(d => ({ nombre: d.querySelector('.dn').value, nacimiento: d.querySelector('.dd').value, ssn: d.querySelector('.ds').value, parentesco: d.querySelector('.dp').value })).filter(d => d.nombre.trim());
   const body = {
-    accion: 'enviar', idioma: L, web: $('web').value, nombre, apellidos: $('apellidos').value, sufijo: $('sufijo').value, nacimiento: $('nacimiento').value,
+    accion: 'enviar', idioma: L, web: $('web').value, nombre, nombre2: $('nombre2').value, dirCalle: $('dirCalle').value, dirApto: $('dirApto').value, dirCiudad: $('dirCiudad').value, dirEstado: $('dirEstado').value, dirZip: $('dirZip').value, apellidos: $('apellidos').value, sufijo: $('sufijo').value, nacimiento: $('nacimiento').value,
     telefono: $('telefono').value, correo: $('correo').value, servicio: document.querySelector('input[name=serv]:checked').value,
     ssn, estado_civil: $('civil').value, comentarios: $('coment').value,
     esposo: $('civil').value === 'casado' && $('espNombre').value.trim() ? { nombre: $('espNombre').value, nacimiento: $('espNac').value, ssn: $('espSsn').value } : null,
