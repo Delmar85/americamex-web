@@ -646,7 +646,7 @@ section{padding:96px 0}
 .js .rv.in{opacity:1;transform:none}
 
 /* Responsivo */
-@media (min-width:861px){.hb-cita{display:none}}
+@media (min-width:1061px){.hb-cita{display:none}}
 @media (max-width:1060px){.main-nav a.lk{padding:8px 8px;font-size:14.5px}}
 @media (max-width:980px){
   .hero-inner{grid-template-columns:1fr;gap:40px;padding:56px 24px 64px}
@@ -656,7 +656,7 @@ section{padding:96px 0}
   .reviews,.grid3{grid-template-columns:1fr}
   .fgrid{grid-template-columns:1fr 1fr}
 }
-@media (max-width:860px){
+@media (max-width:1060px){
   .nav-toggle{display:flex}
   .main-nav{position:fixed;left:0;right:0;top:68px;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 18px 30px -18px rgba(16,24,40,.35);padding:10px 16px 18px;display:none;max-height:calc(100vh - 68px);overflow:auto}
   .main-nav.open{display:block}
@@ -755,6 +755,49 @@ body{background:var(--bg)}
 .btn-line{border-color:#CBD5E1}
 .mbar{border-top-color:#C9D4E0}
 
+/* ═════════ v3c · Encabezado bold ═════════ */
+.topbar{background:#081627;color:#9FB6CE;font-size:13px}
+.topbar-in{display:flex;align-items:center;justify-content:space-between;gap:16px;height:38px}
+.topbar a{color:#fff;font-weight:600;text-decoration:none}
+.topbar a:hover{text-decoration:underline}
+.tb-st{display:inline-flex;align-items:center;gap:8px;color:#D7E3F0;font-weight:500}
+.tb-st .dot{width:8px;height:8px}
+.site-header{background:linear-gradient(90deg,#0D2137 0%,#143150 55%,#1A3A5C 100%);border-bottom:0;backdrop-filter:none;-webkit-backdrop-filter:none}
+.site-header::before{top:auto;bottom:0;height:3px}
+.site-header.scrolled{box-shadow:0 10px 30px -14px rgba(0,0,0,.55)}
+.header-inner{height:88px}
+.logo-plate{display:inline-flex;align-items:center;background:#F7F7F7;border-radius:14px;padding:8px 14px;box-shadow:0 0 0 1px rgba(255,255,255,.18),0 10px 24px -10px rgba(0,0,0,.55);transition:transform .2s var(--ease)}
+.logo-wrap:hover .logo-plate{transform:translateY(-1px)}
+.logo-img{height:52px}
+.main-nav a.lk{color:#C9D7E6;font-weight:600;position:relative}
+.main-nav a.lk:hover{color:#fff;background:rgba(255,255,255,.08)}
+.main-nav a.lk::after{content:"";position:absolute;left:11px;right:11px;bottom:3px;height:2px;border-radius:2px;background:var(--red);transform:scaleX(0);transition:transform .2s var(--ease)}
+.main-nav a.lk:hover::after{transform:scaleX(1)}
+.site-header .lang{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.18)}
+.site-header .lang a{color:#C9D7E6}
+.site-header .lang a[aria-current]{background:#fff;color:var(--navy-d)}
+.site-header .lang a:not([aria-current]):hover{background:rgba(255,255,255,.1);color:#fff}
+.nav-toggle{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.2)}
+.nav-toggle span{background:#fff}
+html{scroll-padding-top:100px}
+@media (max-width:980px){.tb-r{display:none}}
+@media (max-width:1060px){
+  .main-nav{top:88px;background:#0D2137;border-bottom:3px solid var(--red);max-height:calc(100vh - 88px)}
+  .main-nav a.lk::after{display:none}
+  .main-nav .acts .btn-ghost{border-color:rgba(255,255,255,.25)}
+}
+@media (max-width:640px){
+  .topbar{display:none}
+  .header-inner{height:74px}
+  .main-nav{top:74px;max-height:calc(100vh - 74px)}
+  .logo-plate{padding:6px 10px;border-radius:12px}
+  .logo-img{height:40px}
+  html{scroll-padding-top:84px}
+}
+.main-nav a.lk{white-space:nowrap}
+@media (min-width:1061px) and (max-width:1240px){.main-nav li.opt{display:none}}
+@media (min-width:641px){.hero .status{display:none}}
+
   </style>
 </head>
 <body>
@@ -768,23 +811,31 @@ body{background:var(--bg)}
 
   <a class="skip-link" href="#main">Saltar al contenido</a>
 
+  <div class="topbar">
+    <div class="container topbar-in">
+      <span>📍 516 E San Ysidro Blvd, San Ysidro, CA</span>
+      <span class="tb-st"><span class="dot" id="topDot"></span><span id="topStatus">Lunes a jueves, 10am a 5pm</span></span>
+      <span class="tb-r">Atendemos en todo EE.UU. y México · <a href="tel:+16198006128">(619) 800-6128</a></span>
+    </div>
+  </div>
+
   <header class="site-header" id="siteHeader">
     <div class="container header-inner">
-      <a href="#top" class="logo-wrap" aria-label="AmericaMex Multi-Services, ir al inicio">
+      <a href="#top" class="logo-wrap" aria-label="AmericaMex Multi-Services, ir al inicio"><span class="logo-plate">
         <picture>
           <source srcset="logo.webp" type="image/webp">
           <img src="logo.png" alt="AmericaMex Multi-Services" class="logo-img" width="600" height="157" fetchpriority="high">
-        </picture>
+        </picture></span>
       </a>
       <nav class="main-nav" id="mainNav" aria-label="Menú principal">
         <ul>
           <li><a class="lk" href="#servicios">Servicios</a></li>
-          <li><a class="lk" href="#como-funciona">Cómo funciona</a></li>
+          <li class="opt"><a class="lk" href="#como-funciona">Cómo funciona</a></li>
           <li><a class="lk" href="#nosotros">Nosotros</a></li>
           <li><a class="lk" href="#preguntas">Preguntas</a></li>
           <li><a class="lk" href="#ubicacion">Ubicación</a></li>
           <li class="acts">
-            <a href="https://cal.com/americamex-vv9s4r" target="_blank" rel="noopener" class="btn btn-line btn-sm"><svg class="ico" aria-hidden="true"><use href="#i-cal"/></svg>Agendar cita</a>
+            <a href="https://cal.com/americamex-vv9s4r" target="_blank" rel="noopener" class="btn btn-ghost btn-sm"><svg class="ico" aria-hidden="true"><use href="#i-cal"/></svg>Agendar cita</a>
             <a href="https://wa.me/16194964759?text=Hola%2C%20vengo%20de%20su%20p%C3%A1gina%20web%20y%20quiero%20informaci%C3%B3n." target="_blank" rel="noopener" class="btn btn-wa btn-sm"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>WhatsApp</a>
           </li>
         </ul>
@@ -1189,7 +1240,7 @@ body{background:var(--bg)}
     else if (dia >= 0 && dia <= 3) txt = TX.tomorrow;
     else txt = TX.monday;
     $('heroStatus').textContent = abierto ? txt : txt + TX.leave;
-    $('heroDot').classList.toggle('on', abierto); $('chatDot').classList.toggle('on', abierto);
+    $('heroDot').classList.toggle('on', abierto); $('topDot').classList.toggle('on', abierto); $('topStatus').textContent = txt; $('chatDot').classList.toggle('on', abierto);
     var ls = $('locStatus'); ls.classList.toggle('on', abierto); ls.querySelector('.dot').classList.toggle('on', abierto); ls.lastElementChild.textContent = txt;
     var fila = document.querySelector('#horas tr[data-d="' + (laboral ? dia : 5) + '"]'); if (fila) fila.className = 'today';
   } catch (e) { /* navegador viejo: se queda el horario fijo */ }
