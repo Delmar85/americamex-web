@@ -167,7 +167,12 @@ a.btn-primary{display:inline-flex;align-items:center;gap:6px}
 .tag-reemb{display:inline-block;background:#FDECEC;color:#b4232a;border-radius:6px;padding:1px 7px;font-size:11.5px;font-weight:700;margin-right:6px}
 .tag-edit{color:var(--muted);font-weight:500}
 #qChips .chip.on{--cc:var(--navy)}
+#overlayQ .dhead{flex-wrap:wrap;gap:10px}
+@media (max-width:560px){#qModo{width:100%}#qModo button{flex:1;padding-left:4px;padding-right:4px}}
 @media (max-width:560px){.f3{grid-template-columns:1fr 1fr}.f3 .f:last-child{grid-column:1/-1}.quickbar .btn small{display:none}}
+.money-wrap{position:relative;display:block}
+.money-wrap::before{content:'$';position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:700;pointer-events:none;font-size:14px}
+.money-wrap>input{padding-left:24px!important;width:100%}
 .xbtn{background:none;border:none;color:var(--muted);font-size:16px;padding:2px 8px;border-radius:6px}
 .xbtn:hover{color:var(--bad);background:var(--bad-bg)}
 .tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:20px;overflow-x:auto}
@@ -572,6 +577,7 @@ window.addEventListener('error', function (e) {
         <div class="welcome" id="welcomeMsg">Bienvenido de regreso 👋</div>
         <div class="quickbar">
           <button class="btn btn-quick" onclick="abrirRapido('cobro')">⚡ Cobro rápido <small>copias, impresiones, notarías…</small></button>
+          <button class="btn" onclick="abrirRapido('deposito')">💵 Depósito <small>anticipo de un trámite</small></button>
           <button class="btn" onclick="abrirRapido('consulta')">💬 Consulta <small>alguien pregunta algo</small></button>
         </div>
         <div class="stats">
@@ -624,6 +630,7 @@ window.addEventListener('error', function (e) {
           <input class="search" id="buscarT" type="search" placeholder="Buscar por cliente, trámite o número de caso" oninput="renderTramites()">
           <span class="spacer"></span>
           <button class="btn" onclick="abrirRapido('consulta')">💬 Consulta</button>
+          <button class="btn" onclick="abrirRapido('deposito')">💵 Depósito</button>
           <button class="btn btn-quick" onclick="abrirRapido('cobro')">⚡ Cobro rápido</button>
           <button class="btn-primary" onclick="abrirModalT()">+ Nuevo trámite</button>
         </div>
@@ -1156,7 +1163,7 @@ window.addEventListener('error', function (e) {
 <div class="overlay hidden" id="overlayQ" onclick="if(event.target===this)cerrarRapido()">
   <div class="modal" style="max-width:540px" role="dialog" aria-modal="true" aria-labelledby="modalQTitulo">
     <div class="dhead"><h3 id="modalQTitulo">⚡ Cobro rápido</h3>
-      <div class="seg" id="qModo"><button data-m="cobro" class="active">⚡ Cobro</button><button data-m="consulta">💬 Consulta</button></div></div>
+      <div class="seg" id="qModo"><button data-m="cobro" class="active">⚡ Cobro</button><button data-m="deposito">💵 Depósito</button><button data-m="consulta">💬 Consulta</button></div></div>
     <div class="dsub" id="qSub" style="margin-bottom:14px">Para cosas de mostrador: se cobra y queda documentado sin agendar cita.</div>
     <div class="f"><label for="qCliente">Cliente</label>
       <input id="qCliente" type="text" list="qClientesList" placeholder="Busca un cliente o escribe un nombre (opcional)" autocomplete="off">
@@ -1165,9 +1172,10 @@ window.addEventListener('error', function (e) {
     <div class="f"><label>¿Qué fue?</label><div class="chips" id="qChips"></div></div>
     <div class="f"><label for="qConcepto">Concepto *</label><input id="qConcepto" type="text" list="tiposList" placeholder="Ej. Copias"></div>
     <div class="f3" id="qPrecios">
-      <div class="f"><label for="qCant">Cantidad</label><input id="qCant" type="number" min="1" step="1" value="1"></div>
-      <div class="f"><label for="qPrecio">Precio c/u (USD)</label><input id="qPrecio" type="number" min="0" step="0.01" placeholder="0.00"></div>
-      <div class="f"><label>Total</label><div class="qtotal" id="qTotal">$0.00</div></div>
+      <div class="f" id="qCantBox"><label for="qCant">Cantidad</label><input id="qCant" type="number" min="1" step="1" value="1"></div>
+      <div class="f"><label for="qPrecio" id="qPrecioLbl">Precio c/u (USD)</label><input id="qPrecio" type="number" min="0" step="0.01" placeholder="0.00"></div>
+      <div class="f hidden" id="qDepBox"><label for="qDep">Depósito que deja *</label><input id="qDep" type="number" min="0.01" step="0.01" placeholder="0.00"></div>
+      <div class="f"><label id="qTotalLbl">Total</label><div class="qtotal" id="qTotal">$0.00</div></div>
     </div>
     <div class="f"><label for="qNotas" id="qNotasLbl">Notas</label><textarea id="qNotas" style="min-height:56px" placeholder="Opcional"></textarea></div>
     <div id="qPagoBox">
@@ -1215,7 +1223,8 @@ window.addEventListener('error', function (e) {
     <div class="f"><label for="trTitulo">¿Qué hay que hacer? *</label><input id="trTitulo" type="text" placeholder="Ej. Llamar a Brad para pedir el acta"></div>
     <div class="f"><label for="trDesc">Detalles</label><textarea id="trDesc" style="min-height:70px"></textarea></div>
     <div class="f2">
-      <div class="f"><label for="trAsignado">Asignada a</label><input id="trAsignado" type="text" list="equipoList" placeholder="Nombre"></div>
+      <div class="f"><label for="trAsigSel">Asignada a</label><select id="trAsigSel" onchange="trAsigCambio()"></select>
+        <input id="trAsignado" class="hidden" type="text" placeholder="Nombre de la persona" style="margin-top:6px"></div>
       <div class="f"><label for="trFecha">Fecha límite</label><input id="trFecha" type="date"></div>
     </div>
     <div class="f2">
@@ -1343,12 +1352,8 @@ window.addEventListener('error', function (e) {
 <div class="overlay hidden" id="overlayX" onclick="if(event.target===this)cerrarModalX()">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalXTitulo">
     <h3 id="modalXTitulo">Nuevo acceso</h3>
-    <div class="f"><label for="xPortal">Portal *</label><input id="xPortal" type="text" list="portalesList" placeholder="Ej. USCIS (myUSCIS)">
-      <datalist id="portalesList">
-        <option value="USCIS (myUSCIS)"></option><option value="IRS"></option><option value="Login.gov"></option>
-        <option value="SSA (my Social Security)"></option><option value="CEAC / DS-160"></option>
-        <option value="Trusted Traveler (SENTRI)"></option><option value="SAT México"></option><option value="SRE México"></option>
-      </datalist></div>
+    <div class="f"><label for="xPortalSel">Portal *</label><select id="xPortalSel" onchange="xPortalCambio()"></select>
+      <input id="xPortal" class="hidden" type="text" placeholder="Escribe el nombre (ej. DMV, Banco, Gmail)" style="margin-top:6px"></div>
     <div class="f"><label for="xTramite">Trámite relacionado</label><select id="xTramite"></select></div>
     <div class="f2">
       <div class="f"><label for="xUsuario">Usuario</label><input id="xUsuario" type="text" autocomplete="off"></div>
@@ -1429,6 +1434,51 @@ function clientePorId(id) {
 
 /* ---------- WHATSAPP: 10 dígitos → México si es lada de Baja California, si no EE. UU. ---------- */
 const LADAS_MX = ['664', '663', '665', '686', '616', '653'];
+function fmtTel(tel) {
+  const raw = String(tel == null ? '' : tel).trim();
+  if (!raw) return '';
+  let d = soloDigitos(raw);
+  if (d.length === 11 && d[0] === '1') d = d.slice(1);
+  if (d.length === 10) return '(' + d.slice(0, 3) + ') ' + d.slice(3, 6) + '-' + d.slice(6);
+  if (d.length === 12 && d.slice(0, 2) === '52') return '+52 (' + d.slice(2, 5) + ') ' + d.slice(5, 8) + '-' + d.slice(8);
+  if (d.length === 13 && d.slice(0, 3) === '521') return '+52 (' + d.slice(3, 6) + ') ' + d.slice(6, 9) + '-' + d.slice(9);
+  return raw;
+}
+
+/* ----- formato automático: teléfonos (000) 000-0000 y montos $0.00 ----- */
+const SEL_MONTO = 'input[type=number][step="0.01"]';
+const esCampoTel = el => el && el.tagName === 'INPUT' && (el.type === 'tel' || el.id === 'ngTelefono');
+function pulirMontos() {
+  document.querySelectorAll(SEL_MONTO).forEach(el => {
+    if (!el.dataset.m) {
+      el.dataset.m = '1';
+      if (!el.parentElement.classList.contains('money-wrap')) {
+        const w = document.createElement('span'); w.className = 'money-wrap';
+        el.parentNode.insertBefore(w, el); w.appendChild(el);
+      }
+      if (!el.placeholder) el.placeholder = '0.00';
+    }
+    if (el.dataset.typing !== '1' && el.value !== '' && !isNaN(Number(el.value))) {
+      const f = Number(el.value).toFixed(2);
+      if (el.value !== f) el.value = f;
+    }
+  });
+}
+let _pulirPend = false;
+function pedirPulir() { if (_pulirPend) return; _pulirPend = true; requestAnimationFrame(() => { _pulirPend = false; pulirMontos(); }); }
+document.addEventListener('input', e => { if (e.target.matches && e.target.matches(SEL_MONTO)) e.target.dataset.typing = '1'; }, true);
+document.addEventListener('focusout', e => {
+  const el = e.target;
+  if (el.dataset) delete el.dataset.typing;
+  if (esCampoTel(el)) { const f = fmtTel(el.value); if (f && f !== el.value) el.value = f; }
+  else if (el.matches && el.matches(SEL_MONTO) && el.value !== '' && !isNaN(Number(el.value))) el.value = Number(el.value).toFixed(2);
+}, true);
+document.addEventListener('DOMContentLoaded', () => {
+  pulirMontos();
+  new MutationObserver(pedirPulir).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+});
+if (document.readyState !== 'loading') { pulirMontos(); new MutationObserver(pedirPulir).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] }); }
+
 function waNumero(tel) {
   let n = soloDigitos(tel);
   if (!n) return '';
@@ -1855,7 +1905,7 @@ function renderClientes() {
   const lista = clientes.filter(c => coincide(q, [c.nombre, c.telefono, c.correo, c.direccion]));
   $('contador').textContent = lista.length + (lista.length === 1 ? ' cliente' : ' clientes');
   $('tbodyClientes').innerHTML = lista.map(c =>
-    '<tr data-id="' + esc(c.id) + '"><td><b>' + esc(c.nombre) + '</b></td><td>' + esc(c.telefono || '—') + '</td><td>' + esc(c.correo || '—') + '</td><td>' + esc(c.direccion || '—') + '</td></tr>'
+    '<tr data-id="' + esc(c.id) + '"><td><b>' + esc(c.nombre) + '</b></td><td>' + esc(fmtTel(c.telefono) || '—') + '</td><td>' + esc(c.correo || '—') + '</td><td>' + esc(c.direccion || '—') + '</td></tr>'
   ).join('');
   const vacio = $('clientesVacio');
   if (!lista.length) {
@@ -1895,7 +1945,7 @@ function renderPerfil() {
   $('clientePerfil').innerHTML =
     '<button class="back" id="btnVolver">← Volver a clientes</button>' +
     '<div class="phead"><div class="avatar">' + esc((c.nombre || '?').charAt(0).toUpperCase()) + '</div>' +
-    '<div style="flex:1;min-width:200px"><h2>' + esc(c.nombre) + '</h2><p>' + esc([c.telefono, c.correo].filter(Boolean).join('  ·  ') || 'Sin datos de contacto') + '</p></div>' +
+    '<div style="flex:1;min-width:200px"><h2>' + esc(c.nombre) + '</h2><p>' + esc([fmtTel(c.telefono), c.correo].filter(Boolean).join('  ·  ') || 'Sin datos de contacto') + '</p></div>' +
     (waNumero(c.telefono) ? '<a class="btn btn-wa" target="_blank" rel="noopener" href="https://wa.me/' + waNumero(c.telefono) + '?text=' + encodeURIComponent('Hola ' + (String(c.nombre || '').trim().split(/\s+/)[0] || '') + ', le escribe AmericaMex Tax.') + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20l1.2-5.2A8.4 8.4 0 1 1 21 11.5z"/></svg>WhatsApp</a>' +
       '<a class="btn" href="tel:+' + waNumero(c.telefono) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>Llamar</a>' : '') +
     '<button class="btn" id="btnEditar">Editar</button>' +
@@ -1930,7 +1980,7 @@ function renderTab(c) {
   if (perfilTab === 'datos') {
     const idioma = c.idioma === 'en' ? 'English' : (c.idioma ? 'Español' : '—');
     body.innerHTML = '<div class="fields">' +
-      '<div><label>Teléfono</label><p>' + esc(c.telefono || '—') + '</p></div>' +
+      '<div><label>Teléfono</label><p>' + esc(fmtTel(c.telefono) || '—') + '</p></div>' +
       '<div><label>Correo</label><p>' + esc(c.correo || '—') + '</p></div>' +
       '<div class="full"><label>Dirección</label><p>' + esc(c.direccion || '—') + '</p></div>' +
       '<div><label>Idioma</label><p>' + idioma + '</p></div>' +
@@ -2108,6 +2158,22 @@ async function copiarPassword(id) {
   setTimeout(() => { try { navigator.clipboard.writeText(' '); } catch (e) {} }, 30000);
 }
 
+const PORTALES = ['USCIS (myUSCIS)', 'IRS', 'Login.gov', 'SSA (my Social Security)', 'CEAC / DS-160', 'Trusted Traveler (SENTRI)', 'EDD', 'DMV', 'Covered California', 'Correo electrónico (Gmail, Outlook)', 'SAT México', 'SRE México', 'INM México'];
+function xLlenarPortales(actual) {
+  const v = String(actual || '').trim();
+  $('xPortalSel').innerHTML = '<option value="">Elige el portal…</option>' + PORTALES.map(n => '<option value="' + esc(n) + '">' + esc(n) + '</option>').join('') + '<option value="__otro">Otro (escribir el nombre)…</option>';
+  const hit = PORTALES.find(n => normTexto(n) === normTexto(v));
+  $('xPortalSel').value = !v ? '' : (hit || '__otro');
+  $('xPortal').value = hit || v;
+  $('xPortal').classList.toggle('hidden', !(v && !hit));
+}
+function xPortalCambio() {
+  const v = $('xPortalSel').value, otro = v === '__otro';
+  $('xPortal').classList.toggle('hidden', !otro);
+  $('xPortal').value = otro ? '' : v;
+  if (otro) $('xPortal').focus();
+}
+
 function abrirModalX(id, clienteId) {
   editandoX = id == null ? null : id;
   const a = id == null ? {} : (accesos.find(x => String(x.id) === String(id)) || {});
@@ -2115,7 +2181,7 @@ function abrirModalX(id, clienteId) {
   const ts = (tramites || []).filter(t => String(t.cliente_id) === String(clienteId));
   $('xTramite').innerHTML = '<option value="">Sin trámite específico</option>' + ts.map(t => '<option value="' + esc(t.id) + '">' + esc(t.tipo) + '</option>').join('');
   $('xTramite').value = a.tramite_id != null ? String(a.tramite_id) : '';
-  $('xPortal').value = a.portal || '';
+  xLlenarPortales(a.portal || '');
   $('xUsuario').value = a.usuario || '';
   $('xPassword').value = '';
   $('xPassword').placeholder = id == null ? 'Contraseña del portal' : (a.tiene_password ? 'Vacía = no cambiarla' : 'Contraseña del portal');
@@ -2125,7 +2191,7 @@ function abrirModalX(id, clienteId) {
   $('xQuitarWrap').classList.toggle('hidden', !(id != null && a.tiene_password));
   $('overlayX').dataset.cliente = clienteId;
   $('overlayX').classList.remove('hidden');
-  $('xPortal').focus();
+  $('xPortalSel').focus();
 }
 
 function cerrarModalX() {
@@ -2135,7 +2201,7 @@ function cerrarModalX() {
 
 async function guardarAcceso() {
   const portal = $('xPortal').value.trim();
-  if (!portal) { toast('Escribe el portal (USCIS, IRS, SAT…).', true); $('xPortal').focus(); return; }
+  if (!portal) { toast($('xPortalSel').value === '__otro' ? 'Escribe el nombre del portal.' : 'Elige el portal (USCIS, IRS, SAT… u Otro).', true); ($('xPortalSel').value === '__otro' ? $('xPortal') : $('xPortalSel')).focus(); return; }
   const pw = $('xPassword').value;
   let p_password = pw === '' ? null : pw;
   if (editandoX != null && $('xQuitar').checked) p_password = '';
@@ -2180,7 +2246,7 @@ function abrirModal(id) {
   const c = id == null ? {} : (clientePorId(id) || {});
   $('modalTitulo').textContent = id == null ? 'Nuevo cliente' : 'Editar cliente';
   $('fNombre').value = c.nombre || '';
-  $('fTelefono').value = c.telefono || '';
+  $('fTelefono').value = fmtTel(c.telefono);
   $('fCorreo').value = c.correo || '';
   $('fDireccion').value = c.direccion || '';
   $('fIdioma').value = c.idioma || 'es';
@@ -2595,6 +2661,7 @@ async function borrarPago(id, desdeModal) {
 /* ---------- COBRO RÁPIDO Y CONSULTA (sin cita) ---------- */
 const RAPIDO_CHIPS = {
   cobro: ['Copias', 'Impresiones', 'Escaneo', 'Fax', 'Notarización', 'Traducción', 'Llenado de formas', 'Envío de documentos'],
+  deposito: ['Impuestos', 'ITIN', 'Renovación de Green Card', 'Ciudadanía', 'SENTRI / Global Entry', 'Pasaporte', 'Apostilla', 'Traducción'],
   consulta: ['Consulta migratoria', 'Consulta de impuestos', 'Consulta general']
 };
 let qModo = 'cobro', qPagado = true, qMapaClientes = new Map();
@@ -2608,7 +2675,7 @@ function abrirRapido(modo) {
   (clientes || []).slice().sort((a, b) => String(a.nombre || '').localeCompare(String(b.nombre || ''))).forEach(c => {
     let k = String(c.nombre || '').trim();
     if (!k) return;
-    if (qMapaClientes.has(k) || c.telefono) k = k + (c.telefono ? ' · ' + c.telefono : ' · #' + c.id);
+    if (qMapaClientes.has(k) || c.telefono) k = k + (c.telefono ? ' · ' + fmtTel(c.telefono) : ' · #' + c.id);
     qMapaClientes.set(k, c.id);
     ops.push('<option value="' + esc(k) + '"></option>');
   });
@@ -2617,10 +2684,11 @@ function abrirRapido(modo) {
   $('qConcepto').value = '';
   $('qCant').value = 1;
   $('qPrecio').value = '';
+  $('qDep').value = '';
   $('qNotas').value = '';
   $('qMetodo').value = 'efectivo';
   qPagado = true;
-  qSetModo(modo === 'consulta' ? 'consulta' : 'cobro');
+  qSetModo(['consulta', 'deposito'].includes(modo) ? modo : 'cobro');
   qClienteAyuda();
   $('overlayQ').classList.remove('hidden');
   $('qCliente').focus();
@@ -2630,14 +2698,23 @@ function cerrarRapido() { $('overlayQ').classList.add('hidden'); }
 function qSetModo(m) {
   qModo = m;
   document.querySelectorAll('#qModo button').forEach(b => b.classList.toggle('active', b.dataset.m === m));
-  const cons = m === 'consulta';
-  $('modalQTitulo').textContent = cons ? '💬 Consulta' : '⚡ Cobro rápido';
-  $('qSub').textContent = cons ? 'Alguien vino a preguntar algo: anota qué consultó y en qué quedaron. Si se cobró, pon el precio.' : 'Para cosas de mostrador (copias, impresiones, notarías…): se cobra y queda documentado sin agendar cita.';
+  const cons = m === 'consulta', dep = m === 'deposito';
+  $('modalQTitulo').textContent = cons ? '💬 Consulta' : (dep ? '💵 Depósito' : '⚡ Cobro rápido');
+  $('qSub').textContent = cons ? 'Alguien vino a preguntar algo: anota qué consultó y en qué quedaron. Si se cobró, pon el precio.'
+    : (dep ? 'El cliente deja un depósito (anticipo) para un trámite que se va a hacer. Se abre el trámite con su saldo pendiente.'
+    : 'Para cosas de mostrador (copias, impresiones, notarías…): se cobra y queda documentado sin agendar cita.');
   $('qNotasLbl').textContent = cons ? '¿Qué consultó? ¿En qué quedaron?' : 'Notas';
-  $('qNotas').placeholder = cons ? 'Ej. Pregunta por la residencia de su esposo. Le expliqué requisitos, va a juntar actas y regresa la próxima semana.' : 'Opcional';
+  $('qNotas').placeholder = cons ? 'Ej. Pregunta por la residencia de su esposo. Le expliqué requisitos, va a juntar actas y regresa la próxima semana.' : (dep ? 'Ej. Falta que traiga actas de nacimiento' : 'Opcional');
+  $('qCantBox').classList.toggle('hidden', dep);
+  $('qDepBox').classList.toggle('hidden', !dep);
+  $('qPrecioLbl').textContent = dep ? 'Precio total del trámite' : 'Precio c/u (USD)';
+  $('qTotalLbl').textContent = dep ? 'Queda debiendo' : 'Total';
+  $('qCliente').placeholder = dep ? 'Busca un cliente o escribe su nombre *' : 'Busca un cliente o escribe un nombre (opcional)';
+  if (dep) qPagado = true;
   $('qChips').innerHTML = RAPIDO_CHIPS[m].map(c => '<button type="button" class="chip" data-c="' + esc(c) + '">' + esc(c) + '</button>').join('');
   if (cons && !$('qConcepto').value) $('qConcepto').value = 'Consulta general';
   if (!cons && /^consulta/i.test($('qConcepto').value)) $('qConcepto').value = '';
+  qClienteAyuda();
   qMarcarChip();
   qActualizar();
 }
@@ -2648,6 +2725,19 @@ function qMarcarChip() {
 function qTotal() { return r2((Math.max(1, Math.round(Number($('qCant').value) || 1))) * (Number($('qPrecio').value) || 0)); }
 function qActualizar() {
   const total = qTotal();
+  if (qModo === 'deposito') {
+    const dep = r2($('qDep').value), precio = r2($('qPrecio').value);
+    $('qTotal').textContent = precio > 0 ? money(Math.max(0, precio - dep)) : '—';
+    $('qPagoBox').classList.remove('hidden');
+    $('qPagado').parentElement.classList.add('hidden');
+    $('qMetodoBox').classList.remove('hidden');
+    $('btnQDoc').classList.remove('hidden');
+    $('btnQDoc').textContent = 'Guardar y dar recibo';
+    $('btnQSolo').textContent = 'Solo guardar';
+    $('btnQSolo').className = 'btn';
+    return;
+  }
+  $('qPagado').parentElement.classList.remove('hidden');
   $('qTotal').textContent = money(total);
   const cobra = total > 0;
   $('qPagoBox').classList.toggle('hidden', !cobra);
@@ -2668,7 +2758,7 @@ function qClienteId() {
 function qClienteAyuda() {
   const v = $('qCliente').value.trim(), id = qClienteId(), el = $('qClienteAyuda');
   el.classList.toggle('ok', id != null);
-  el.textContent = !v ? 'Si lo dejas vacío queda como «Cliente de mostrador».' : (id != null ? '✔ Cliente registrado: se guarda en su historial.' : 'No está registrado: se guarda solo con este nombre (no se crea cliente).');
+  el.textContent = !v ? (qModo === 'deposito' ? 'Para un depósito pon el nombre del cliente.' : 'Si lo dejas vacío queda como «Cliente de mostrador».') : (id != null ? '✔ Cliente registrado: se guarda en su historial.' : 'No está registrado: se guarda solo con este nombre (no se crea cliente).');
 }
 
 $('qModo').addEventListener('click', e => { const b = e.target.closest('button'); if (b) qSetModo(b.dataset.m); });
@@ -2679,13 +2769,14 @@ $('qChips').addEventListener('click', e => {
   const pr = qPrecioGuardado(b.dataset.c);
   if (pr != null && !$('qPrecio').value) $('qPrecio').value = pr;
   qMarcarChip(); qActualizar();
-  (pr != null ? $('qCant') : $('qPrecio')).focus();
+  (qModo === 'deposito' ? (pr != null ? $('qDep') : $('qPrecio')) : (pr != null ? $('qCant') : $('qPrecio'))).focus();
 });
 $('qConcepto').addEventListener('input', qMarcarChip);
 $('qCliente').addEventListener('input', qClienteAyuda);
-['qCant', 'qPrecio'].forEach(id => $(id).addEventListener('input', qActualizar));
+['qCant', 'qPrecio', 'qDep'].forEach(id => $(id).addEventListener('input', qActualizar));
 
 async function guardarRapido(conDoc) {
+  if (qModo === 'deposito') return guardarDepositoRapido(conDoc);
   const concepto = tipoCanonico($('qConcepto').value);
   if (!concepto) { toast('Escribe qué fue (ej. Copias).', true); $('qConcepto').focus(); return; }
   const cant = Math.max(1, Math.round(Number($('qCant').value) || 1));
@@ -2728,6 +2819,41 @@ async function guardarRapido(conDoc) {
     }
   } catch (e) {
     toast('Error al guardar: ' + e.message, true);
+  } finally {
+    $('btnQDoc').disabled = $('btnQSolo').disabled = false;
+  }
+}
+
+async function guardarDepositoRapido(conDoc) {
+  const concepto = tipoCanonico($('qConcepto').value);
+  if (!$('qCliente').value.trim()) { toast('Pon el nombre del cliente que deja el depósito.', true); $('qCliente').focus(); return; }
+  if (!concepto) { toast('Escribe para qué trámite es el depósito.', true); $('qConcepto').focus(); return; }
+  const precioTxt = String($('qPrecio').value).trim();
+  const precio = precioTxt === '' ? null : r2(precioTxt);
+  const dep = r2($('qDep').value);
+  if (!(dep > 0)) { toast('Escribe cuánto deja de depósito.', true); $('qDep').focus(); return; }
+  if (precio != null && dep > precio + 0.009 && !confirm('El depósito (' + money(dep) + ') es mayor que el precio (' + money(precio) + '). ¿Guardarlo así?')) return;
+  const cid = qClienteId();
+  const notasUser = $('qNotas').value.trim();
+  const payload = { cliente_id: cid, tipo: concepto, estado: 'pendiente', monto: precio,
+    notas: ['💵 Depósito de ' + money(dep) + (precio != null ? ' · precio ' + money(precio) : ' · falta poner precio'), notasUser].filter(Boolean).join('\n') };
+  if (tieneColT('cliente_nombre')) payload.cliente_nombre = cid == null ? $('qCliente').value.trim() : null;
+  $('btnQDoc').disabled = $('btnQSolo').disabled = true;
+  try {
+    const res = await supabaseClient.from('tramites').insert([payload]).select();
+    if (res.error) throw res.error;
+    if (!res.data || !res.data.length) throw new Error('No se guardó. Revisa tus permisos.');
+    const t = res.data[0];
+    const r = await supabaseClient.from('pagos').insert([{ tramite_id: t.id, monto: dep, metodo: $('qMetodo').value, fecha: hoyStr(), notas: 'Depósito / anticipo', registrado_nombre: nombrePerfil }]).select();
+    if (r.error || !r.data || !r.data.length) throw new Error('Se abrió el trámite, pero no se guardó el depósito: ' + (r.error ? r.error.message : 'revisa permisos') + '. Regístralo desde el trámite.');
+    cerrarRapido();
+    await cargarTramites();
+    await cargarPagos();
+    refrescarTodo();
+    if (conDoc) await emitirRecibo(r.data[0].id);
+    else toast('Depósito de ' + money(dep) + ' guardado' + (precio != null ? '. Queda debiendo ' + money(Math.max(0, precio - dep)) + '.' : '. Ponle precio al trámite.'));
+  } catch (e) {
+    toast('Error: ' + e.message, true);
   } finally {
     $('btnQDoc').disabled = $('btnQSolo').disabled = false;
   }
@@ -2843,7 +2969,7 @@ function llenarClienteT(q) {
   const orden = clientes.filter(c => coincide(q, [c.nombre, c.telefono])).sort((a, b) => String(a.nombre || '').localeCompare(String(b.nombre || ''), 'es'));
   $('tCliente').innerHTML = '<option value="">' + (q ? (orden.length ? 'Coinciden ' + orden.length + ' — elige…' : 'Ningún cliente coincide') : 'Elige un cliente…') + '</option>' +
     (tieneColT('cliente_nombre') ? '<option value="__otro">➕ Otro / Consulta (sin cliente)</option>' : '') +
-    orden.map(c => '<option value="' + esc(c.id) + '">' + esc(c.nombre) + (c.telefono ? ' · ' + esc(c.telefono) : '') + '</option>').join('');
+    orden.map(c => '<option value="' + esc(c.id) + '">' + esc(c.nombre) + (c.telefono ? ' · ' + esc(fmtTel(c.telefono)) : '') + '</option>').join('');
   return orden;
 }
 function filtrarClienteT() {
@@ -2992,9 +3118,10 @@ const depRetenidos = id => depDe(id).filter(d => d.estado === 'retenido');
 
 async function cargarEquipo() {
   try {
-    const { data, error } = await supabaseClient.rpc('lista_equipo');
-    if (error) throw error;
-    equipoNombres = (data || []).map(x => x.nombre).filter(Boolean);
+    let r = await supabaseClient.rpc('equipo_nombres');
+    if (r.error) r = await supabaseClient.rpc('lista_equipo');
+    if (r.error) throw r.error;
+    equipoNombres = (r.data || []).map(x => x.nombre).filter(Boolean);
   } catch (e) {
     equipoNombres = [nombrePerfil];
   }
@@ -3337,7 +3464,7 @@ function renderCita() {
       '<div><label>Cómo</label><p>' + esc(CANALES[c.canal] || c.canal) + '</p></div>' +
       '<div><label>Quién atiende</label><p>' + esc(c.asignado_a || 'Sin asignar') + '</p></div>' +
       '<div><label>Motivo</label><p>' + esc(c.tipo || '—') + '</p></div>' +
-      '<div><label>Teléfono</label><p>' + esc(tel || '—') + '</p></div>' +
+      '<div><label>Teléfono</label><p>' + esc(fmtTel(tel) || '—') + '</p></div>' +
       '<div class="full"><label>Correo</label><p>' + esc(mail || '—') + '</p></div>' +
       (c.notas ? '<div class="full"><label>Notas</label><p>' + esc(c.notas) + '</p></div>' : '') +
     '</div>';
@@ -3447,7 +3574,7 @@ function abrirCitaForm(fecha, hora, id) {
     orden.map(x => '<option value="' + esc(x.id) + '">' + esc(x.nombre) + '</option>').join('');
   $('cfCliente').value = c.cliente_id != null ? String(c.cliente_id) : (id != null ? '__otro' : '');
   $('cfNombre').value = c.nombre_contacto || '';
-  $('cfTel').value = c.telefono || '';
+  $('cfTel').value = fmtTel(c.telefono);
   $('cfCorreo').value = c.correo || '';
   $('cfTipo').value = c.tipo || '';
   const ini = c.inicio ? new Date(c.inicio) : null;
@@ -3809,6 +3936,25 @@ function trLlenarTramites(seleccionado) {
 }
 function trCambioCliente() { trLlenarTramites(null); }
 
+function trLlenarAsignados(actual) {
+  const v = String(actual || '').trim();
+  const nombres = nombresEquipo();
+  let h = '<option value="">Sin asignar</option>' + nombres.map(n => '<option value="' + esc(n) + '">' + esc(n) + (normTexto(n) === normTexto(nombrePerfil) ? ' (yo)' : '') + '</option>').join('') +
+    '<option value="__otro">Otra persona…</option>';
+  $('trAsigSel').innerHTML = h;
+  const hit = nombres.find(n => normTexto(n) === normTexto(v));
+  $('trAsigSel').value = !v ? '' : (hit || '__otro');
+  $('trAsignado').value = hit || v;
+  $('trAsignado').classList.toggle('hidden', !(v && !hit));
+}
+function trAsigCambio() {
+  const v = $('trAsigSel').value;
+  const otro = v === '__otro';
+  $('trAsignado').classList.toggle('hidden', !otro);
+  $('trAsignado').value = otro ? '' : v;
+  if (otro) $('trAsignado').focus();
+}
+
 function abrirTareaForm(id, pre) {
   if (tareas === null) { toast('Falta correr el SQL del paso 9 en Supabase.', true); return; }
   editandoTarea = id == null ? null : id;
@@ -3817,7 +3963,7 @@ function abrirTareaForm(id, pre) {
   $('modalTRTitulo').textContent = id == null ? 'Nueva tarea' : 'Editar tarea';
   $('trTitulo').value = t.titulo || p.titulo || '';
   $('trDesc').value = t.descripcion || '';
-  $('trAsignado').value = id == null ? (p.asignado_a !== undefined ? p.asignado_a : (nombrePerfil || '')) : (t.asignado_a || '');
+  trLlenarAsignados(id == null ? (p.asignado_a !== undefined ? p.asignado_a : (nombrePerfil || '')) : (t.asignado_a || ''));
   $('trFecha').value = t.fecha_limite ? String(t.fecha_limite).slice(0, 10) : (p.fecha || '');
   $('trPrio').value = t.prioridad || 'normal';
   $('trEstado').value = t.estado || 'pendiente';
@@ -4732,7 +4878,7 @@ function paperHTML(doc, idioma) {
   const L = DOC_T[idioma] || DOC_T.es, d = doc.datos || {}, n = d.negocio || {}, cli = d.cliente || {};
   const num = docNumero(doc);
   const met = m => L.metodos[m] || m;
-  const lineas = [n.direccion, n.telefono, n.correo, n.sitio_web].filter(Boolean).map(esc).join('<br>');
+  const lineas = [n.direccion, fmtTel(n.telefono), n.correo, n.sitio_web].filter(Boolean).map(esc).join('<br>');
   let h = '<div class="paper">';
   if (doc.anulado) h += '<div class="p-void">' + L.anulado + '</div>';
   h += '<div class="p-head"><div class="p-logo"><img src="logo-large.png" alt="" onerror="this.style.display=\'none\'"></div>' +
@@ -4741,7 +4887,7 @@ function paperHTML(doc, idioma) {
     '<div class="p-num"><span>' + L.no + ' ' + esc(num) + '</span><br><small>' + L.fecha + ': ' + esc(fechaLargaDoc(d.fecha, idioma)) + '</small>' +
     (doc.tipo === 'invoice' && d.vence ? '<br><small>' + L.vence + ': ' + esc(fechaLargaDoc(d.vence, idioma)) + '</small>' : '') + '</div></div>';
 
-  const contacto = [cli.telefono, cli.correo].filter(Boolean).map(esc).join(' · ');
+  const contacto = [fmtTel(cli.telefono), cli.correo].filter(Boolean).map(esc).join(' · ');
   const quien = '<div class="p-box"><small>' + (doc.tipo === 'invoice' ? L.facturarA : L.recibidoDe) + '</small><b>' + esc(cli.nombre || '—') + '</b>' + (contacto ? '<br>' + contacto : '') + '</div>';
 
   if (doc.tipo === 'recibo') {
@@ -5401,7 +5547,7 @@ function impBuscarCliente() {
   if (!q) { box.innerHTML = ''; return; }
   const dig = txt.replace(/\D/g, '');
   const hallados = clientes.filter(c => coincide(txt, [c.nombre, c.telefono])).slice(0, 8);
-  box.innerHTML = hallados.map(c => '<button type="button" data-cid="' + esc(c.id) + '">' + esc(c.nombre) + (c.telefono ? ' · ' + esc(c.telefono) : '') + '</button>').join('') +
+  box.innerHTML = hallados.map(c => '<button type="button" data-cid="' + esc(c.id) + '">' + esc(c.nombre) + (c.telefono ? ' · ' + esc(fmtTel(c.telefono)) : '') + '</button>').join('') +
     '<button type="button" class="nuevo" data-nuevo="1">➕ Crear «' + esc(txt) + '» como cliente nuevo</button>';
 }
 $('inResultados').addEventListener('click', e => {
@@ -5517,7 +5663,7 @@ function renderImpDetalle() {
     else if (f.k === 'sin_pago') { clsP = 'm-red'; txtP = money(f.pendiente); notaP = 'Todavía no paga'; }
     else if (f.k === 'sin_precio') notaP = 'Ponle precio';
   }
-  const tel = c.telefono ? esc(c.telefono) : 'sin teléfono';
+  const tel = c.telefono ? esc(fmtTel(c.telefono)) : 'sin teléfono';
   let h = '<div class="dhead"><div><h3>' + esc(c.nombre || '—') + '</h3></div><div><span class="badge ' + (nv.n === 2 ? 'b-bad' : nv.n === 1 ? 'b-wait' : 'b-gray') + '">' + esc(impNombreEstado(d.estado)) + (d.estado !== 'archivado' ? ' · ' + impTxtDias(nv.dias) : '') + '</span></div></div>' +
     '<div class="dsub">Impuestos ' + d.anio + '  ·  ' + tel + (c.correo ? '  ·  ' + esc(c.correo) : '') + '</div>' +
     '<div class="dacts">' +
@@ -5828,7 +5974,7 @@ function renderItinFicha() {
   const dias = itDiasEnviado(i);
 
   let h = '<div class="dhead"><div><h3>' + esc(i.titular_nombre) + '</h3></div><div><span class="badge ' + IT_ESTADOS[e].cls + '">' + IT_ESTADOS[e].t + '</span></div></div>' +
-    '<div class="dsub">ITIN ' + (i.tipo === 'renovacion' ? '(renovación)' : 'nuevo') + '  ·  ' + esc(IT_REL[i.relacion]) + (i.relacion !== 'cliente' ? ' de ' + esc(c.nombre || '—') : '') + '  ·  ' + (c.telefono ? esc(c.telefono) : 'sin teléfono') + '</div>' +
+    '<div class="dsub">ITIN ' + (i.tipo === 'renovacion' ? '(renovación)' : 'nuevo') + '  ·  ' + esc(IT_REL[i.relacion]) + (i.relacion !== 'cliente' ? ' de ' + esc(c.nombre || '—') : '') + '  ·  ' + (c.telefono ? esc(fmtTel(c.telefono)) : 'sin teléfono') + '</div>' +
     '<div class="dacts">' +
       (c.telefono ? '<button class="btn btn-sm" data-it="wa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20l1.2-5.2A8.4 8.4 0 1 1 21 11.5z"/></svg>WhatsApp</button>' : '') +
       '<button class="btn btn-sm" data-it="cliente">👤 Ver cliente</button>' +
@@ -6086,7 +6232,7 @@ function itnBuscarCliente() {
   if (!q) { box.innerHTML = ''; return; }
   const dig = txt.replace(/\D/g, '');
   const hallados = clientes.filter(c => coincide(txt, [c.nombre, c.telefono])).slice(0, 8);
-  box.innerHTML = hallados.map(c => '<button type="button" data-cid="' + esc(c.id) + '">' + esc(c.nombre) + (c.telefono ? ' · ' + esc(c.telefono) : '') + '</button>').join('') +
+  box.innerHTML = hallados.map(c => '<button type="button" data-cid="' + esc(c.id) + '">' + esc(c.nombre) + (c.telefono ? ' · ' + esc(fmtTel(c.telefono)) : '') + '</button>').join('') +
     '<button type="button" class="nuevo" data-nuevo="1">➕ Crear «' + esc(txt) + '» como cliente nuevo</button>';
 }
 $('itnResultados').addEventListener('click', e => {
@@ -6268,7 +6414,7 @@ function renderSolicitudes() {
     const h = solHoras(s), d = solDuplicados(s);
     const estado = s.estado === 'nuevo' ? '<span class="badge b-wait">Por capturar</span>' : (s.estado === 'capturado' ? '<span class="badge b-ok">Capturada</span>' : '<span class="badge b-gray">Descartada</span>');
     return '<tr data-id="' + esc(s.id) + '"><td><b>' + esc(solNombre(s)) + '</b>' + (s.ssn_ultimos4 ? '<br><small class="muted">SSN •••-••-' + esc(s.ssn_ultimos4) + '</small>' : '') + ((d.cl.length || d.prev.length) && s.estado === 'nuevo' ? ' <span class="badge b-wait" style="padding:2px 8px;font-size:10.5px">¿Ya existe?</span>' : '') + '</td>' +
-      '<td>' + esc(s.telefono || '—') + (s.correo ? '<br><small class="muted">' + esc(s.correo) + '</small>' : '') + '</td>' +
+      '<td>' + esc(fmtTel(s.telefono) || '—') + (s.correo ? '<br><small class="muted">' + esc(s.correo) + '</small>' : '') + '</td>' +
       '<td>' + esc(SOL_SERV[s.servicio] || '—') + (s.num_dependientes ? '<br><small class="muted">' + s.num_dependientes + ' dependiente(s)</small>' : '') + '</td>' +
       '<td>' + esc(fechaCorta(s.creado)) + '</td>' +
       '<td>' + (h ? '<span class="badge b-blue">🔒 ' + solTxtHoras(h) + '</span>' : (s.borrado_en ? '<span class="muted">Borrados</span>' : '<span class="muted">—</span>')) + '</td><td>' + estado + '</td></tr>';
@@ -6301,7 +6447,7 @@ function renderSol() {
     '<div class="dsub">' + esc(SOL_SERV[s.servicio] || '') + '  ·  llegó ' + esc(fechaCorta(s.creado)) + (s.idioma === 'en' ? '  ·  English' : '') + '</div>';
   if (s.estado === 'nuevo' && (d.cl.length || d.prev.length)) {
     html += '<div class="it-nota">⚠️ <b>Ojo, puede que ya exista.</b> ' +
-      (d.cl.length ? 'Clientes parecidos: ' + d.cl.map(c => '<a href="#" data-sol="vercl" data-cid="' + esc(c.id) + '"><b>' + esc(c.nombre) + '</b></a>' + (c.telefono ? ' (' + esc(c.telefono) + ')' : '')).join(', ') + '. ' : '') +
+      (d.cl.length ? 'Clientes parecidos: ' + d.cl.map(c => '<a href="#" data-sol="vercl" data-cid="' + esc(c.id) + '"><b>' + esc(c.nombre) + '</b></a>' + (c.telefono ? ' (' + esc(fmtTel(c.telefono)) + ')' : '')).join(', ') + '. ' : '') +
       (d.prev.length ? 'Ya mandó otra solicitud (' + d.prev.length + '). ' : '') +
       'Revisa fecha de nacimiento y últimos 4 del SSN: si son padre e hijo con el mismo nombre, uno es Sr. y otro Jr.</div>';
   }
@@ -6332,7 +6478,7 @@ function renderSol() {
   html += '</div>';
 
   if (s.estado === 'nuevo') {
-    const opts = clientes.slice().sort((a, b) => String(a.nombre || '').localeCompare(String(b.nombre || ''), 'es')).map(c => '<option value="' + esc(c.id) + '">' + esc(c.nombre) + (c.telefono ? ' · ' + esc(c.telefono) : '') + '</option>').join('');
+    const opts = clientes.slice().sort((a, b) => String(a.nombre || '').localeCompare(String(b.nombre || ''), 'es')).map(c => '<option value="' + esc(c.id) + '">' + esc(c.nombre) + (c.telefono ? ' · ' + esc(fmtTel(c.telefono)) : '') + '</option>').join('');
     html += '<div class="sec"><h4>Pasarlo a clientes</h4>' +
       '<div class="dacts"><button class="btn-primary btn-sm" data-sol="crearcli">➕ Crear cliente nuevo</button></div>' +
       '<div class="f2" style="align-items:end"><div class="f"><label for="solLigar">…o ligar a un cliente que ya existe</label><select id="solLigar"><option value="">Elige un cliente</option>' + opts + '</select></div><div class="f"><button class="btn" data-sol="ligar">Ligar</button></div></div>' +
@@ -6476,7 +6622,7 @@ function gBuscarRender() {
   const activos = id => (tramites || []).filter(t => String(t.cliente_id) === String(id) && esActivo(t)).length;
   box.innerHTML = (gLista.length ? gLista.map((c, i) => {
       const n = activos(c.id);
-      return '<button type="button" data-gi="' + i + '" class="' + (i === gSel ? 'sel' : '') + '"><b>' + esc(c.nombre) + '</b><small>' + esc(c.telefono || 'sin teléfono') + (n ? ' · ' + n + (n === 1 ? ' trámite activo' : ' trámites activos') : '') + '</small></button>';
+      return '<button type="button" data-gi="' + i + '" class="' + (i === gSel ? 'sel' : '') + '"><b>' + esc(c.nombre) + '</b><small>' + esc(fmtTel(c.telefono) || 'sin teléfono') + (n ? ' · ' + n + (n === 1 ? ' trámite activo' : ' trámites activos') : '') + '</small></button>';
     }).join('') : '<div class="gvacio">Ningún cliente coincide con «' + esc(q) + '»</div>') +
     '<button type="button" data-gnuevo="1" class="gnuevo">➕ Nuevo cliente</button>';
   box.classList.remove('hidden');
