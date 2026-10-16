@@ -505,6 +505,11 @@ select{-webkit-appearance:none;appearance:none;background-color:#fff;background-
 .card h2 .badge,.ag-day h3 .badge{margin-left:6px;vertical-align:middle;padding:1px 8px;font-size:11.5px}
 .nav .nbadge{margin-left:auto;background:rgba(255,255,255,.16);color:#fff;border-radius:999px;font-size:11.5px;font-weight:600;padding:0 8px;line-height:1.6}
 .nav .nbadge.alert{background:var(--red)}
+.cap-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:4px 0 12px}
+.cap-bar .btn-primary small{font-weight:500;opacity:.85;margin-left:6px;font-size:12px}
+.row.cap{padding:8px 0}.row.cap small{display:block;color:var(--muted);font-size:11.5px;font-weight:600}
+.row.cap b{font-size:16px}.row.cap b.vacio{color:#a3adbd;font-weight:600;font-size:13.5px}
+.cap-dep{background:#f6f8fb;border-radius:10px;padding:6px 12px 2px;margin:8px 0}.cap-dep-t{font-weight:800;color:var(--navy);font-size:12.5px;margin-top:4px}
 .taxg{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}.taxg .row{min-width:0}.taxg .row b{overflow-wrap:anywhere}@media(max-width:700px){.taxg{grid-template-columns:1fr}}
 </style>
 <script>
@@ -6439,6 +6444,110 @@ function solCopiable(label, val) {
 const solFechaUS = v => { const p = String(v || '').slice(0, 10).split('-'); return p.length === 3 && p[0] ? p[1] + '/' + p[2] + '/' + p[0] : ''; };
 const solDirTxt = s => [s.dir_calle, s.dir_apto, [s.dir_ciudad, [s.dir_estado, s.dir_zip].filter(Boolean).join(' ')].filter(Boolean).join(', ')].filter(Boolean).join(', ');
 const solFmtSsn = v => { const d = String(v || '').replace(/\D/g, ''); return d.length === 9 ? d.slice(0, 3) + '-' + d.slice(3, 5) + '-' + d.slice(5) : d; };
+/* ----- hoja de captura para TaxAct (en el orden en que lo pide TaxAct) ----- */
+const SOL_FILING = { soltero: 'Single', casado: 'Married filing jointly (o separately)', viudo: 'Qualifying surviving spouse (o Single)', jefe: 'Head of household' };
+const SOL_CIVIL = { soltero: 'Soltero(a)', casado: 'Casado(a)', viudo: 'Viudo(a)', jefe: 'Soltero(a) con dependientes' };
+function solX(s, k) {
+  const v = s[k];
+  if (v != null && String(v).trim() !== '') return String(v).trim();
+  const e = solSens && solSens.extra;
+  return e && e[k] ? String(e[k]).trim() : '';
+}
+function solPartirNombre(n) {
+  const p = String(n || '').trim().split(/\s+/).filter(Boolean);
+  if (p.length <= 1) return { nombre: p[0] || '', apellidos: '' };
+  return { nombre: p[0], apellidos: p.slice(1).join(' ') };
+}
+const solTel10 = v => String(v || '').replace(/\D/g, '').replace(/^1(?=\d{10}$)/, '');
+function solCampo(label, ver, copiar) {
+  const v = ver == null ? '' : String(ver);
+  const c = copiar === undefined ? v : (copiar == null ? '' : String(copiar));
+  return '<div class="row cap"><div><small>' + esc(label) + '</small>' + (v ? '<b>' + esc(v) + '</b>' : '<b class="vacio">— no lo llenó</b>') + '</div>' +
+    (v && c ? '<button class="btn btn-sm" data-sol="copiar" data-v="' + esc(c) + '" title="Copiar">📋</button>' : '') + '</div>';
+}
+function solCandado(label, txt) {
+  return '<div class="row cap"><div><small>' + esc(label) + '</small><b class="vacio">🔒 ' + esc(txt || 'Toca «Ver datos protegidos»') + '</b></div></div>';
+}
+function solHojaTaxAct(s, h) {
+  const x = solSens;
+  const abierto = !!x;
+  let o = '';
+  o += '<div class="cap-bar">';
+  if (!abierto && h) o += '<button class="btn-primary" data-sol="ver">🔓 Ver datos protegidos <small>SSN, cónyuge, dependientes y banco</small></button>';
+  else if (abierto) o += '<button class="btn" data-sol="ocultar">🙈 Ocultar</button>';
+  else o += '<span class="muted" style="font-weight:700">🔒 Los datos protegidos ya se borraron' + (s.borrado_en ? ' (' + esc(fechaCorta(s.borrado_en)) + ')' : '') + '.</span>';
+  o += '<button class="btn" data-sol="copiartodo">📋 Copiar todo</button></div>';
+  if (abierto) o += '<div class="muted" style="font-size:12px;font-weight:600;margin:-4px 0 8px">Se ocultan solos en 5 minutos. Cada vez que se abren queda registrado.' + (h ? ' (Todo ' + solTxtHoras(h) + '.)' : '') + '</div>';
+  if (!('segundo_nombre' in s) && !(x && x.extra)) o += '<div class="hint">Falta correr el <b>SQL del paso 19</b> en Supabase: por eso no salen el segundo nombre ni la dirección.</div>';
+
+  o += '<div class="sec"><h4>1 · Contribuyente (Taxpayer)</h4><div class="taxg">' +
+    solCampo('First name · Primer nombre', solX(s, 'nombre')) + solCampo('Middle name · Segundo nombre', solX(s, 'segundo_nombre')) +
+    solCampo('Last name · Apellido(s)', solX(s, 'apellidos')) + solCampo('Suffix · Sufijo', solX(s, 'sufijo')) +
+    (abierto ? solCampo('SSN / ITIN', solFmtSsn(x.ssn), String(x.ssn || '')) : solCandado('SSN / ITIN', s.ssn_ultimos4 ? '•••-••-' + s.ssn_ultimos4 + '  (toca «Ver datos protegidos»)' : '')) +
+    solCampo('Date of birth · Fecha de nacimiento', solFechaUS(solX(s, 'nacimiento'))) +
+    solCampo('Occupation · Ocupación', solX(s, 'ocupacion')) +
+    solCampo('Phone · Teléfono (10 dígitos)', fmtTel(solX(s, 'telefono')), solTel10(solX(s, 'telefono'))) +
+    solCampo('Email · Correo', solX(s, 'correo')) + '</div></div>';
+
+  o += '<div class="sec"><h4>2 · Dirección (Address)</h4><div class="taxg">' +
+    solCampo('Street · Calle y número', solX(s, 'dir_calle')) + solCampo('Apt · Apto / Suite', solX(s, 'dir_apto')) +
+    solCampo('City · Ciudad', solX(s, 'dir_ciudad')) + solCampo('State · Estado', solX(s, 'dir_estado')) + solCampo('ZIP · Código postal', solX(s, 'dir_zip')) + '</div></div>';
+
+  o += '<div class="sec"><h4>3 · Estado civil (Filing status)</h4><div class="taxg">' +
+    solCampo('Lo que puso el cliente', SOL_CIVIL[s.estado_civil] || s.estado_civil || '', null) +
+    solCampo('En TaxAct probablemente', SOL_FILING[s.estado_civil] || '', null) + '</div></div>';
+
+  if (s.estado_civil === 'casado' || (x && x.esposo)) {
+    o += '<div class="sec"><h4>4 · Cónyuge (Spouse)</h4>';
+    if (!abierto) o += solCandado('Nombre, fecha de nacimiento, SSN y ocupación');
+    else if (!x.esposo) o += '<div class="muted" style="font-weight:700;padding:8px 0">No llenó los datos del cónyuge.</div>';
+    else {
+      const e = x.esposo, pn = e.apellidos != null ? { nombre: e.nombre, apellidos: e.apellidos } : solPartirNombre(e.nombre);
+      o += '<div class="taxg">' + solCampo('First name · Primer nombre', pn.nombre) + solCampo('Middle name · Segundo nombre', e.nombre2 || '') +
+        solCampo('Last name · Apellido(s)', pn.apellidos) + solCampo('SSN / ITIN', solFmtSsn(e.ssn), String(e.ssn || '')) +
+        solCampo('Date of birth · Fecha de nacimiento', solFechaUS(e.nacimiento)) + solCampo('Occupation · Ocupación', e.ocupacion || '') + '</div>';
+      if (e.apellidos == null && e.nombre) o += '<div class="muted" style="font-size:12px;font-weight:600">El cliente escribió el nombre junto («' + esc(e.nombre) + '»): revisa que el apellido esté bien separado.</div>';
+    }
+    o += '</div>';
+  }
+
+  o += '<div class="sec"><h4>5 · Dependientes (' + (s.num_dependientes || 0) + ')</h4>';
+  if (!s.num_dependientes && !(x && x.dependientes && x.dependientes.length)) o += '<div class="muted" style="font-weight:700;padding:8px 0">No puso dependientes.</div>';
+  else if (!abierto) o += solCandado('Nombre, fecha de nacimiento, SSN y parentesco');
+  else (x.dependientes || []).forEach((d, i) => {
+    const pn = d.apellidos != null ? { nombre: d.nombre, apellidos: d.apellidos } : solPartirNombre(d.nombre);
+    o += '<div class="cap-dep"><div class="cap-dep-t">Dependiente ' + (i + 1) + '</div><div class="taxg">' +
+      solCampo('First name · Nombre', pn.nombre) + solCampo('Last name · Apellido(s)', pn.apellidos) +
+      solCampo('SSN / ITIN', solFmtSsn(d.ssn), String(d.ssn || '')) + solCampo('Date of birth · Fecha de nacimiento', solFechaUS(d.nacimiento)) +
+      solCampo('Relationship · Parentesco', d.parentesco || '') + solCampo('Months in home · Meses que vivió contigo', d.meses || '') + '</div></div>';
+  });
+  o += '</div>';
+
+  o += '<div class="sec"><h4>6 · Depósito directo (Direct deposit)</h4>';
+  if (!abierto) o += solCandado('Banco, ruta y cuenta');
+  else if (!x.banco) o += '<div class="muted" style="font-weight:700;padding:8px 0">No puso datos de banco.</div>';
+  else o += '<div class="taxg">' + solCampo('Bank · Banco', x.banco.banco || '') + solCampo('Account type · Tipo', x.banco.tipo ? (x.banco.tipo === 'savings' ? 'Savings' : 'Checking') : '') +
+    solCampo('Routing number · Ruta', x.banco.ruta || '') + solCampo('Account number · Cuenta', x.banco.cuenta || '') + '</div>';
+  o += '</div>';
+
+  if (s.comentarios) o += '<div class="sec"><h4>Comentarios del cliente</h4><div class="row"><div><b style="white-space:pre-wrap">' + esc(s.comentarios) + '</b></div></div></div>';
+  return o;
+}
+function solTextoTodo(s) {
+  const x = solSens, L = [];
+  const add = (k, v) => { if (v) L.push(k + ': ' + v); };
+  L.push('CONTRIBUYENTE');
+  add('Primer nombre', solX(s, 'nombre')); add('Segundo nombre', solX(s, 'segundo_nombre')); add('Apellido(s)', solX(s, 'apellidos')); add('Sufijo', solX(s, 'sufijo'));
+  add('SSN', x ? solFmtSsn(x.ssn) : (s.ssn_ultimos4 ? '•••-••-' + s.ssn_ultimos4 : '')); add('Fecha de nacimiento', solFechaUS(solX(s, 'nacimiento')));
+  add('Ocupación', solX(s, 'ocupacion')); add('Teléfono', fmtTel(solX(s, 'telefono'))); add('Correo', solX(s, 'correo'));
+  const d = [solX(s, 'dir_calle'), solX(s, 'dir_apto'), [solX(s, 'dir_ciudad'), [solX(s, 'dir_estado'), solX(s, 'dir_zip')].filter(Boolean).join(' ')].filter(Boolean).join(', ')].filter(Boolean).join(', ');
+  add('Dirección', d); add('Estado civil', SOL_CIVIL[s.estado_civil] || s.estado_civil);
+  if (x && x.esposo) { const e = x.esposo; L.push('', 'CÓNYUGE'); add('Nombre', [e.nombre, e.nombre2, e.apellidos].filter(Boolean).join(' ')); add('SSN', solFmtSsn(e.ssn)); add('Fecha de nacimiento', solFechaUS(e.nacimiento)); add('Ocupación', e.ocupacion); }
+  if (x && x.dependientes && x.dependientes.length) { L.push('', 'DEPENDIENTES'); x.dependientes.forEach((p, i) => L.push((i + 1) + '. ' + [p.nombre, p.apellidos].filter(Boolean).join(' ') + ' · ' + (solFechaUS(p.nacimiento) || 's/fecha') + ' · SSN ' + (solFmtSsn(p.ssn) || '—') + (p.parentesco ? ' · ' + p.parentesco : '') + (p.meses ? ' · ' + p.meses + ' meses' : ''))); }
+  if (x && x.banco) { L.push('', 'BANCO'); add('Banco', x.banco.banco); add('Tipo', x.banco.tipo); add('Ruta', x.banco.ruta); add('Cuenta', x.banco.cuenta); }
+  if (s.comentarios) L.push('', 'Comentarios: ' + s.comentarios);
+  return L.join('\n');
+}
 function renderSol() {
   const s = solDe(solId);
   if (!s) { cerrarSol(); return; }
@@ -6451,32 +6560,7 @@ function renderSol() {
       (d.prev.length ? 'Ya mandó otra solicitud (' + d.prev.length + '). ' : '') +
       'Revisa fecha de nacimiento y últimos 4 del SSN: si son padre e hijo con el mismo nombre, uno es Sr. y otro Jr.</div>';
   }
-  const tel10 = String(s.telefono || '').replace(/\D/g, '').replace(/^1(?=\d{10}$)/, '');
-  html += '<div class="sec"><h4>Para TaxAct <span class="muted" style="font-weight:600;text-transform:none;letter-spacing:0">· toca 📋 y pega</span></h4><div class="taxg">' +
-    solCopiable('Primer nombre', s.nombre) + solCopiable('Segundo nombre', s.segundo_nombre) + solCopiable('Apellido(s)', s.apellidos) + solCopiable('Sufijo', s.sufijo) +
-    solCopiable('Fecha de nacimiento (MM/DD/AAAA)', solFechaUS(s.nacimiento)) + solCopiable('Teléfono', tel10) + solCopiable('Correo', s.correo) +
-    solCopiable('Calle y número', s.dir_calle) + solCopiable('Apto / Suite', s.dir_apto) + solCopiable('Ciudad', s.dir_ciudad) + solCopiable('Estado', s.dir_estado) + solCopiable('Código postal', s.dir_zip) +
-    '</div>' + (solDirTxt(s) ? '<div class="taxg" style="grid-template-columns:1fr">' + solCopiable('Dirección completa', solDirTxt(s)) + '</div>' : '') + '</div>' +
-    '<div class="sec"><h4>Otros datos</h4>' +
-    '<div class="row"><div><small>Últimos 4 del SSN</small><b>' + esc(s.ssn_ultimos4 || '—') + '</b></div><div><small>Estado civil</small><b>' + esc(s.estado_civil || '—') + '</b></div><div><small>Dependientes</small><b>' + (s.num_dependientes || 0) + '</b></div></div>' +
-    (s.comentarios ? '<div class="row"><div><small>Comentarios</small><b>' + esc(s.comentarios) + '</b></div></div>' : '') + '</div>';
-
-  html += '<div class="sec"><h4>🔒 SSN, dependientes y banco</h4>';
-  if (solSens) {
-    const x = solSens;
-    html += solCopiable('SSN / ITIN', solFmtSsn(x.ssn));
-    if (x.esposo && (x.esposo.nombre || x.esposo.ssn)) html += solCopiable('Esposo(a): ' + (x.esposo.nombre || '') + (x.esposo.nacimiento ? ' · nació ' + fechaSolo(x.esposo.nacimiento) : ''), solFmtSsn(x.esposo.ssn));
-    (x.dependientes || []).forEach(dp => { html += solCopiable('Dependiente: ' + dp.nombre + (dp.parentesco ? ' (' + dp.parentesco + ')' : '') + (dp.nacimiento ? ' · nació ' + fechaSolo(dp.nacimiento) : ''), solFmtSsn(dp.ssn) || '(sin SSN)'); });
-    if (x.banco) html += solCopiable('Banco: ' + (x.banco.banco || '') + ' · ' + (x.banco.tipo || ''), '') + solCopiable('Ruta', x.banco.ruta) + solCopiable('Cuenta', x.banco.cuenta);
-    html += '<div class="muted" style="font-size:12px;font-weight:600;margin-top:6px">Se ocultan solos en 2 minutos. Cada vez que se abren queda registrado.</div>' +
-      '<div class="dacts"><button class="btn btn-sm" data-sol="ocultar">🙈 Ocultar</button></div>';
-  } else if (h) {
-    html += '<div class="muted" style="font-weight:700;margin-bottom:8px">Cifrado. ' + solTxtHoras(h) + '.</div><div class="dacts"><button class="btn-primary btn-sm" data-sol="ver">Ver SSN y datos de banco</button></div>';
-  } else {
-    html += '<div class="muted" style="font-weight:700">Ya se borraron' + (s.borrado_en ? ' el ' + esc(fechaCorta(s.borrado_en)) : '') + '.</div>';
-  }
-  html += '</div>';
-
+  html += solHojaTaxAct(s, h);
   if (s.estado === 'nuevo') {
     const opts = clientes.slice().sort((a, b) => String(a.nombre || '').localeCompare(String(b.nombre || ''), 'es')).map(c => '<option value="' + esc(c.id) + '">' + esc(c.nombre) + (c.telefono ? ' · ' + esc(fmtTel(c.telefono)) : '') + '</option>').join('');
     html += '<div class="sec"><h4>Pasarlo a clientes</h4>' +
@@ -6503,7 +6587,7 @@ async function solVer() {
     }
     if (data && data.error) throw new Error(data.error);
     solSens = data.datos;
-    clearTimeout(solTimer); solTimer = setTimeout(() => { solSens = null; if (solId != null && !$('overlaySOL').classList.contains('hidden')) renderSol(); }, 120000);
+    clearTimeout(solTimer); solTimer = setTimeout(() => { solSens = null; if (solId != null && !$('overlaySOL').classList.contains('hidden')) renderSol(); }, 300000);
     renderSol();
   } catch (e) { toast('No pude abrir los datos: ' + e.message, true); await cargarSolicitudes(); renderSolicitudes(); if (solId != null) renderSol(); }
 }
@@ -6526,6 +6610,7 @@ $('solBody').addEventListener('click', async e => {
   if (a === 'cerrar') cerrarSol();
   else if (a === 'ver') solVer();
   else if (a === 'ocultar') { solSens = null; clearTimeout(solTimer); renderSol(); }
+  else if (a === 'copiartodo') { try { await navigator.clipboard.writeText(solTextoTodo(s)); toast(solSens ? 'Copié todo (incluye SSN y banco: pégalo solo en TaxAct).' : 'Copié todo lo que no es protegido.'); } catch (x) { toast('No pude copiar.', true); } }
   else if (a === 'copiar') { try { await navigator.clipboard.writeText(b.dataset.v); toast('Copiado.'); } catch (x) { toast('No pude copiar.', true); } }
   else if (a === 'vercl') { cerrarSol(); irA('clientes'); abrirPerfil(b.dataset.cid); }
   else if (a === 'crearcli') {
