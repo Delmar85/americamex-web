@@ -889,6 +889,24 @@ body{font-size:17px}
 @media (min-width:1061px){.main-nav a.lk{padding:8px 9px}}
 @media (min-width:1061px) and (max-width:1320px){.main-nav a.lk{font-size:15px;padding:8px 7px}.site-header .btn{padding:11px 14px}}
 
+/* ===== v6 · Gancho "Hey, ¿ya hiciste tus impuestos?" ===== */
+.hero h1 .big{font-size:clamp(40px,6.6vw,84px);line-height:1.04}
+.hero h1 .big .l{white-space:nowrap}
+.hero h1 em.rot{display:block;min-height:1.08em;transition:opacity .3s ease,transform .3s ease}
+.hero h1 em.rot.out{opacity:0;transform:translateY(-.25em)}
+.hero h1 em.rot.in{animation:rotIn .42s cubic-bezier(.2,.8,.2,1)}
+@keyframes rotIn{from{opacity:0;transform:translateY(.3em)}to{opacity:1;transform:none}}
+.hero-after{margin:18px auto 0;max-width:760px;font:700 clamp(19px,2.2vw,26px)/1.35 var(--fd);color:#fff;letter-spacing:-.01em}
+.hero-motto{display:inline-flex;align-items:center;gap:8px;margin:18px auto 0;padding:7px 16px;border-radius:999px;background:rgba(255,45,45,.12);border:1px solid rgba(255,90,82,.4);font:600 14.5px/1.3 var(--fu);color:#FFD2CF}
+.hero-motto b{color:#FF6A5F;font-weight:800}
+.hero-sub{margin-top:18px}
+@media (max-width:640px){
+  .hero h1 .big{font-size:clamp(30px,9vw,42px)}
+  .hero h1 .big .l{white-space:normal}
+  .hero-after{font-size:18px}
+  .hero-motto{font-size:13px;padding:6px 12px;flex-wrap:wrap;justify-content:center}
+}
+
   </style>
 </head>
 <body>
@@ -950,8 +968,10 @@ body{font-size:17px}
           <span class="pill">📍 San Ysidro, CA · Frontera EE.UU. / México</span>
           <h1>
             <span class="kw">Impuestos, ITIN y trámites en San Ysidro, CA</span>
-            <span class="big"><span class="l">Te lo ganaste</span> <span class="l">con esfuerzo.</span> <em>Quédate con más.</em></span>
+            <span class="big"><span class="l">Hey, ¿ya hiciste</span> <em class="rot" id="heroRot" data-words="tus impuestos?|tu ITIN?|tu ciudadanía?|tu SENTRI?|tu apostilla?|tu traducción?">tus impuestos?</em></span>
           </h1>
+          <p class="hero-after">…o cualquier trámite que ocupes. Aquí te lo resolvemos.</p>
+          <p class="hero-motto"><span>Te lo ganaste con esfuerzo.</span> <b>Quédate con más.</b></p>
           <p class="hero-sub">Impuestos, ITIN, renovación de mica, ciudadanía, SENTRI, apostillas, traducciones y Notary Public. Ven a la oficina o hazlo desde tu celular, estés donde estés.</p>
           <div class="hero-btns">
             <a href="https://wa.me/16194964759?text=Hola%2C%20vengo%20de%20su%20p%C3%A1gina%20web%20y%20quiero%20informaci%C3%B3n." target="_blank" rel="noopener" class="btn btn-wa btn-lg"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>Escríbenos por WhatsApp</a>
@@ -1279,6 +1299,19 @@ body{font-size:17px}
   </nav>
 
 <script>
+/* Pregunta del hero que va cambiando: impuestos → ITIN → ciudadanía… */
+(function(){
+  var el=document.getElementById('heroRot'); if(!el) return;
+  var w=(el.getAttribute('data-words')||'').split('|').filter(Boolean); if(w.length<2) return;
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var i=0;
+  setInterval(function(){
+    if(document.hidden) return;
+    el.classList.add('out');
+    setTimeout(function(){ i=(i+1)%w.length; el.textContent=w[i]; el.classList.remove('out'); el.classList.add('in'); setTimeout(function(){el.classList.remove('in');},420); },320);
+  },2600);
+})();
+
 (function () {
   var TX = {"open": "Abierto ahora · cerramos a las 5pm", "today": "Cerrado · abrimos hoy a las 10am", "tomorrow": "Cerrado · abrimos mañana a las 10am", "monday": "Cerrado · abrimos el lunes a las 10am", "leave": " · déjanos tu WhatsApp y te contestamos", "sending": "Enviando…", "send": "Enviar mensaje", "ok": "✅ ¡Listo! Recibimos tus datos y te contactamos pronto.", "err": "❌ No se pudo enviar. Escríbenos por WhatsApp al (619) 496-4759.", "noname": "Escribe tu nombre.", "notel": "Escribe un teléfono de al menos 10 dígitos.", "emptymsg": "Hola, necesito ayuda con: "};
   var $ = function (id) { return document.getElementById(id); };
