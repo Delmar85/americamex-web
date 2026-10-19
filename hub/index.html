@@ -335,6 +335,31 @@ a.btn-primary{display:inline-flex;align-items:center;gap:6px}
 .p-tot div{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-bottom:1px solid #e3e9f2}
 .p-tot div.strong{font-weight:800;border-bottom:2px solid #0D2847;font-size:14px;color:#0D2847}
 .p-tot .pago{color:#256b32}
+.p-pay{border:2px solid #1a3a5c;border-radius:8px;padding:10px 12px;margin:12px 0;color:#14202f;break-inside:avoid}
+.p-pay-t{font-weight:800;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#1a3a5c;margin-bottom:8px}
+.p-pay-g{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.p-pay-o{display:flex;gap:10px;align-items:center;justify-content:space-between;background:#f3f6fa;border-radius:6px;padding:9px 10px;min-width:0}
+.p-pay-txt{min-width:0;font-size:12px;line-height:1.35}.p-pay-txt b{display:block;font-size:13px}.p-pay-txt small{display:block;color:#5b6878}
+.p-pay-txt a{display:block;color:#1a5fb4;font-weight:700;word-break:break-all;margin-top:2px;text-decoration:none}
+.p-zelle{display:block;font-weight:800;font-size:14px;margin-top:2px;word-break:break-all}
+.p-qr{width:78px;height:78px;flex:none;background:#fff;padding:4px;border-radius:4px}.p-qr svg{width:100%;height:100%;display:block}
+.p-pay-otras{font-size:12px;margin-top:8px;color:#2b3a52}
+@media (max-width:560px){.p-pay-g{grid-template-columns:1fr}}
+.btn-rech{color:#B42318;border-color:#F1B5AF;background:#FFF5F4;font-weight:700}.btn-rech:hover{background:#FDE4E1;border-color:#E8857B}
+.btn-wa-soft{background:#E7F8EE;border-color:#9FDDB6;color:#0F7A38;font-weight:700}.btn-wa-soft:hover{background:#D3F2E0;border-color:#6FCB92}
+.seg-card{margin-bottom:22px;border-left:4px solid #17B04F}
+.seg-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}.seg-head h2{margin:0}.seg-head .muted{font-weight:600;font-size:13px}.seg-head .btn{margin-left:auto}
+.seg-row{display:flex;gap:14px;align-items:center;justify-content:space-between;padding:12px 0;border-top:1px solid var(--line)}
+.seg-tarde{background:#FDECEA;color:#B42318;font-size:11px;font-weight:800;border-radius:6px;padding:1px 7px;margin-left:4px;vertical-align:middle}
+.seg-row.enviado{opacity:.75}
+.seg-info{min-width:0;flex:1}.seg-info b{display:block}.seg-info small{display:block;color:var(--muted);font-size:12.5px;margin-top:1px}
+.seg-msg{display:block;font-size:13px;color:#3b4858;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seg-acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;flex:none}
+.seg-prox{border-top:1px solid var(--line);padding-top:10px;margin-top:4px;font-size:12.5px;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.seg-prox span{background:var(--chip,#E8F0F7);border-radius:999px;padding:3px 10px;font-weight:600;color:#3b4858}
+#sgPlant .chip.on,#sgCuando .chip.on{--cc:#17B04F}
+@media (max-width:700px){.seg-row{flex-direction:column;align-items:stretch}.seg-acts{justify-content:flex-start}}
+.btn-wa-hub{background:#17B04F;border-color:#17B04F;color:#fff}.btn-wa-hub:hover{background:#119140;border-color:#119140;color:#fff}
 .p-nota{border:1px solid #d5dde9;border-radius:6px;padding:10px 12px;font-size:12px;margin:10px 0;color:#2b3a52}
 .p-firma{margin-top:34px;width:55%}
 .p-firma .linea{border-bottom:1.5px solid #111;height:28px}
@@ -584,7 +609,9 @@ window.addEventListener('error', function (e) {
           <button class="btn btn-quick" onclick="abrirRapido('cobro')">⚡ Cobro rápido <small>copias, impresiones, notarías…</small></button>
           <button class="btn" onclick="abrirRapido('deposito')">💵 Depósito <small>anticipo de un trámite</small></button>
           <button class="btn" onclick="abrirRapido('consulta')">💬 Consulta <small>alguien pregunta algo</small></button>
+          <button class="btn btn-wa-soft" onclick="abrirSeguimiento()">📲 Seguimiento <small>recordar escribirle</small></button>
         </div>
+        <div id="dashSeg"></div>
         <div class="stats">
           <div class="stat"><div class="ico">👥</div><div><b id="stClientes">–</b><span>Clientes totales</span></div></div>
           <div class="stat"><div class="ico">📋</div><div><b id="stActivos">–</b><span>Trámites activos</span></div></div>
@@ -1205,6 +1232,27 @@ window.addEventListener('error', function (e) {
   </div>
 </div>
 
+<!-- MODAL SEGUIMIENTO WHATSAPP -->
+<div class="overlay hidden" id="overlaySG" onclick="if(event.target===this)cerrarSeguimiento()">
+  <div class="modal" style="max-width:560px" role="dialog" aria-modal="true" aria-labelledby="modalSGTitulo">
+    <h3 id="modalSGTitulo">📲 Seguimiento por WhatsApp</h3>
+    <div class="dsub" style="margin-bottom:14px">Escoge al cliente y cuándo toca escribirle. Ese día te sale en el Dashboard con el mensaje listo para mandar.</div>
+    <div class="f"><label for="sgCliente">Cliente *</label><input id="sgCliente" type="text" list="sgClientesList" autocomplete="off" placeholder="Busca por nombre o teléfono"><datalist id="sgClientesList"></datalist>
+      <small class="qhelp" id="sgCliAyuda"></small></div>
+    <div class="f"><label for="sgTel">Teléfono / WhatsApp</label><input id="sgTel" type="tel" placeholder="(619) 000-0000"></div>
+    <div class="f"><label>¿Para qué le escribes?</label><div class="chips" id="sgPlant"></div></div>
+    <div class="f"><label for="sgMsg">Mensaje (lo puedes cambiar)</label><textarea id="sgMsg" style="min-height:110px"></textarea></div>
+    <div class="f"><label>¿Cuándo le toca?</label><div class="chips" id="sgCuando"></div></div>
+    <div class="f2"><div class="f"><label for="sgFecha">Fecha</label><input id="sgFecha" type="date"></div>
+      <div class="f"><label for="sgAsig">¿Quién le escribe?</label><select id="sgAsig"></select></div></div>
+    <div class="acts">
+      <button class="btn" onclick="cerrarSeguimiento()">Cancelar</button>
+      <button class="btn btn-wa-hub" onclick="segMandarAhora()">📲 Mandar ahora</button>
+      <button class="btn-primary" id="btnSgGuardar" onclick="guardarSeguimiento()">⏰ Recordármelo</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL ACTUALIZACIÓN -->
 <div class="overlay hidden" id="overlayA" onclick="if(event.target===this)cerrarModalA()">
   <div class="modal" style="max-width:480px" role="dialog" aria-modal="true" aria-labelledby="modalATitulo">
@@ -1321,6 +1369,8 @@ window.addEventListener('error', function (e) {
     </div>
     <div class="f"><label for="ivIdioma">Idioma del documento</label><select id="ivIdioma"><option value="es">Español</option><option value="en">English</option></select></div>
     <div class="f"><label for="ivNotas">Notas o condiciones (opcional)</label><textarea id="ivNotas" style="min-height:70px"></textarea></div>
+    <div class="f"><label for="ivSquare">Link de Square para este invoice (opcional)</label><input id="ivSquare" type="url" placeholder="Si lo dejas vacío, usa el link general de Datos del negocio">
+      <small class="qhelp">Tip: en Square crea un link con el monto exacto de este invoice y pégalo aquí.</small></div>
     <div class="hint" style="background:#eef3fa;color:#3d5573">Se guarda con su número consecutivo (I-0001, I-0002…) y con el estado de cuenta de hoy. Si después se registran más pagos, emites otro invoice o el recibo de cada pago.</div>
     <div class="acts">
       <button class="btn" onclick="cerrarInvoiceForm()">Cancelar</button>
@@ -1342,7 +1392,15 @@ window.addEventListener('error', function (e) {
       <div class="f"><label for="ngCorreo">Correo</label><input id="ngCorreo" type="text"></div>
     </div>
     <div class="f"><label for="ngWeb">Página web</label><input id="ngWeb" type="text"></div>
-    <div class="f"><label for="ngPago">Cómo te pagan (sale en los invoices con saldo)</label><textarea id="ngPago" style="min-height:64px" placeholder="Ej. Zelle: tu número o correo&#10;Efectivo o tarjeta en la oficina"></textarea></div>
+    <div class="sec" style="margin-top:6px"><h4>💳 Cómo te pagan (sale en los invoices con saldo)</h4>
+      <div class="f2">
+        <div class="f"><label for="ngZelleNombre">Zelle a nombre de</label><input id="ngZelleNombre" type="text" placeholder="Ej. AmericaMex Tax LLC"></div>
+        <div class="f"><label for="ngZelleDato">Zelle: teléfono o correo</label><input id="ngZelleDato" type="text" placeholder="Ej. pagos@americamextax.com"></div>
+      </div>
+      <div class="f"><label for="ngSquare">Link de pago de Square (tarjeta)</label><input id="ngSquare" type="url" placeholder="https://square.link/u/…">
+        <small class="qhelp">En Square: Pagos en línea → Links de pago → crea uno y pega aquí el link. En el invoice sale como botón y con código QR.</small></div>
+      <div class="f"><label for="ngPago">Otras formas de pago (texto libre)</label><textarea id="ngPago" style="min-height:56px" placeholder="Ej. Efectivo o tarjeta en la oficina"></textarea></div>
+    </div>
     <div class="f"><label for="ngNotaInvoice">Nota que va por defecto en los invoices</label><textarea id="ngNotaInvoice" style="min-height:56px"></textarea></div>
     <div class="f"><label for="ngPoliticaDep">Texto del recibo de depósito</label><textarea id="ngPoliticaDep" style="min-height:56px"></textarea></div>
     <div class="f"><label for="ngPie">Aviso al pie de todos los documentos (opcional)</label><textarea id="ngPie" style="min-height:56px" placeholder="Si necesitas un aviso legal o de servicios, escríbelo aquí"></textarea></div>
@@ -1831,6 +1889,7 @@ function refrescarTodo() {
 /* ---------- DASHBOARD ---------- */
 function renderDashboard() {
   $('stClientes').textContent = clientes.length;
+  renderDashSeg();
   renderDashCitas();
   const lista = tramites || [];
   if (tramites === null) {
@@ -1953,6 +2012,7 @@ function renderPerfil() {
     '<div style="flex:1;min-width:200px"><h2>' + esc(c.nombre) + '</h2><p>' + esc([fmtTel(c.telefono), c.correo].filter(Boolean).join('  ·  ') || 'Sin datos de contacto') + '</p></div>' +
     (waNumero(c.telefono) ? '<a class="btn btn-wa" target="_blank" rel="noopener" href="https://wa.me/' + waNumero(c.telefono) + '?text=' + encodeURIComponent('Hola ' + (String(c.nombre || '').trim().split(/\s+/)[0] || '') + ', le escribe AmericaMex Tax.') + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20l1.2-5.2A8.4 8.4 0 1 1 21 11.5z"/></svg>WhatsApp</a>' +
       '<a class="btn" href="tel:+' + waNumero(c.telefono) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>Llamar</a>' : '') +
+    '<button class="btn btn-wa-soft" id="btnSegCli">📲 Seguimiento</button>' +
     '<button class="btn" id="btnEditar">Editar</button>' +
     (rol === 'dueno' ? '<button class="btn btn-danger" id="btnBorrar">Eliminar</button>' : '') + '</div>' +
     '<div class="tabs" id="tabs">' + tabs.map(t => '<button data-tab="' + t[0] + '" class="' + (t[0] === perfilTab ? 'active' : '') + '">' + t[1] + '</button>').join('') + '</div>' +
@@ -1960,6 +2020,7 @@ function renderPerfil() {
 
   $('btnVolver').onclick = cerrarPerfil;
   $('btnEditar').onclick = () => abrirModal(c.id);
+  $('btnSegCli').onclick = () => abrirSeguimiento({ clienteId: c.id });
   if ($('btnBorrar')) $('btnBorrar').onclick = () => borrarCliente(c.id);
   $('tabs').addEventListener('click', e => {
     const b = e.target.closest('button');
@@ -2265,7 +2326,7 @@ function cerrarModal() { $('overlay').classList.add('hidden'); }
 
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
-  const orden = [['overlayR', cerrarReembolso], ['overlayQ', cerrarRapido], ['overlayNEG', cerrarNegocio], ['overlayIV', cerrarInvoiceForm], ['overlayDOC', cerrarDocumento], ['overlayGFF', cerrarFijoForm], ['overlayGA', cerrarGastoForm], ['overlayGF', cerrarFijos], ['overlayTR', cerrarTareaForm], ['overlayX', cerrarModalX], ['overlayA', cerrarModalA], ['overlayP', cerrarModalP], ['overlayT', cerrarModalT], ['overlayAP', cerrarAplicar], ['overlayDP', cerrarDepForm], ['overlayCF', cerrarCitaForm], ['overlayC', cerrarCita], ['overlayD', cerrarDetalle], ['overlay', cerrarModal], ['overlayIVS', cerrarVisita], ['overlayIMV', cerrarImpMove], ['overlayIMN', cerrarImpNueva], ['overlayIMP', cerrarImpDetalle], ['overlayITC', cerrarCarta], ['overlayITN', cerrarItinNuevo], ['overlayITF', cerrarItinFicha], ['overlaySQR', cerrarSolLink], ['overlaySOL', cerrarSol]];
+  const orden = [['overlaySG', cerrarSeguimiento], ['overlayR', cerrarReembolso], ['overlayQ', cerrarRapido], ['overlayNEG', cerrarNegocio], ['overlayIV', cerrarInvoiceForm], ['overlayDOC', cerrarDocumento], ['overlayGFF', cerrarFijoForm], ['overlayGA', cerrarGastoForm], ['overlayGF', cerrarFijos], ['overlayTR', cerrarTareaForm], ['overlayX', cerrarModalX], ['overlayA', cerrarModalA], ['overlayP', cerrarModalP], ['overlayT', cerrarModalT], ['overlayAP', cerrarAplicar], ['overlayDP', cerrarDepForm], ['overlayCF', cerrarCitaForm], ['overlayC', cerrarCita], ['overlayD', cerrarDetalle], ['overlay', cerrarModal], ['overlayIVS', cerrarVisita], ['overlayIMV', cerrarImpMove], ['overlayIMN', cerrarImpNueva], ['overlayIMP', cerrarImpDetalle], ['overlayITC', cerrarCarta], ['overlayITN', cerrarItinNuevo], ['overlayITF', cerrarItinFicha], ['overlaySQR', cerrarSolLink], ['overlaySOL', cerrarSol]];
   for (const [id, fn] of orden) {
     if (!$(id).classList.contains('hidden')) { fn(); break; }
   }
@@ -2421,6 +2482,7 @@ function renderDetalle() {
       '<button class="btn-primary" data-act="pago"' + (pagos === null ? ' disabled' : '') + '>+ Registrar pago</button>' +
       '<button class="btn" data-act="nuevaAct"' + (actualizaciones === null ? ' disabled' : '') + '>+ Nueva actualización</button>' +
       '<button class="btn" data-act="nuevaTarea"' + (tareas === null ? ' disabled' : '') + '>✅ Nueva tarea</button>' +
+      '<button class="btn btn-wa-soft" data-act="seguimiento"' + (tareas === null ? ' disabled' : '') + '>📲 Seguimiento</button>' +
       '<button class="btn" data-act="invoice"' + (documentos === null ? ' disabled' : '') + '>Emitir invoice</button>' +
       (rol === 'dueno' && f.pagado > 0 ? '<button class="btn btn-danger" data-act="reembolso">↩ Reembolso</button>' : '') +
       '<button class="btn" data-act="editar">Editar trámite</button>' +
@@ -2482,6 +2544,7 @@ $('detalleBody').addEventListener('click', e => {
   else if (act === 'borrarPago') borrarPago(id);
   else if (act === 'editarPago') abrirModalP(id);
   else if (act === 'reembolso') abrirReembolso();
+  else if (act === 'seguimiento') { const t = tramiteActual(); if (t) abrirSeguimiento({ clienteId: t.cliente_id, tramiteId: t.id, plantilla: (finanzas(t).k === 'parcial' || finanzas(t).k === 'sin_pago') ? 'pago' : 'docs' }); }
   else if (act === 'borrarAct') borrarActualizacion(id);
   else if (act === 'aplicarDep') aplicarDepositoDirecto(id);
   else if (act === 'nuevaTarea') { const t = tramiteActual(); if (t) abrirTareaForm(null, { cliente_id: t.cliente_id, tramite_id: t.id }); }
@@ -2869,10 +2932,196 @@ async function emitirInvoiceRapido(t0, items) {
   const t = (tramites || []).find(x => String(x.id) === String(t0.id)) || t0;
   const subtotal = r2(items.reduce((s, i) => s + i.cantidad * i.precio, 0));
   const datos = { negocio: negocioSnap(), fecha: hoyStr(), vence: null, cliente: clienteSnap(t), concepto: t.tipo || 'Servicio', caso: '',
-    items, pagos: [], subtotal, pagado: 0, saldo: subtotal, notas: (negocio && negocio.nota_invoice) || '' };
+    items, pagos: [], subtotal, pagado: 0, saldo: subtotal, notas: (negocio && negocio.nota_invoice) || '', pago_link: '' };
   const doc = await emitirDocumento({ p_tipo: 'invoice', p_tramite_id: Number(t.id), p_pago_id: null, p_deposito_id: null, p_cliente_id: t.cliente_id != null ? Number(t.cliente_id) : null, p_idioma: 'es', p_total: subtotal, p_datos: datos });
   if (doc) { docIdioma = 'es'; refrescarTodo(); abrirDocumento(doc.id); toast('Invoice ' + docNumero(doc) + ' emitido.'); }
 }
+
+/* =====================================================================
+   📲 SEGUIMIENTOS DE WHATSAPP
+   Cada seguimiento es una tarea (tabla tareas) cuyo título empieza con 📲.
+   El mensaje va en la descripción; si el número no es el del cliente, la
+   primera línea es «📞 número».
+   ===================================================================== */
+const SEG_PLANT = [
+  ['docs', '📄 Documentos'], ['pago', '💵 Pago pendiente'], ['cuestionario', '📝 Cuestionario'],
+  ['cita', '📅 Cita'], ['saludo', '👋 Seguimiento'], ['otro', '✏️ Otro']
+];
+const SEG_CUANDO = [['0', 'Hoy'], ['1', 'Mañana'], ['2', 'En 2 días'], ['3', 'En 3 días'], ['7', 'En 1 semana']];
+let segPlant = 'docs', segCtx = {}, segMapa = new Map(), segEnviados = new Set();
+const esSeg = t => String(t.titulo || '').startsWith('📲');
+function segFechaMas(dias) { const d = new Date(); d.setDate(d.getDate() + Number(dias || 0)); return claveDia(d); }
+function segPrimerNombre(n) { return String(n || '').trim().split(/\s+/)[0] || ''; }
+function segClienteId() {
+  const v = $('sgCliente').value.trim();
+  if (!v) return null;
+  if (segMapa.has(v)) return segMapa.get(v);
+  const igual = (clientes || []).filter(c => normTexto(c.nombre) === normTexto(v));
+  return igual.length === 1 ? igual[0].id : null;
+}
+function segMensaje() {
+  const cid = segClienteId(), c = cid != null ? clientePorId(cid) : null;
+  const nombre = segPrimerNombre(c ? c.nombre : $('sgCliente').value.split('·')[0]);
+  const neg = (negocio && negocio.nombre) || 'AmericaMex Tax';
+  const t = segCtx.tramiteId != null ? (tramites || []).find(x => String(x.id) === String(segCtx.tramiteId)) : null;
+  const hola = 'Hola' + (nombre ? ' ' + nombre : '') + ' 👋, te saluda ' + neg + '.';
+  if (segPlant === 'docs') return hola + ' Seguimos pendientes con tu trámite' + (t && t.tipo ? ' de ' + t.tipo : '') + '. Cuando puedas, mándanos por aquí los documentos que faltan para avanzar. ¡Gracias!';
+  if (segPlant === 'pago') {
+    let saldo = 0;
+    if (t) { const f = finanzas(t); saldo = f.pendiente > 0 ? f.pendiente : 0; } else if (c) saldo = resumenCliente(c).pendiente;
+    const n = negocioSnap(), L = [hola + ' Te recordamos tu saldo pendiente' + (saldo > 0 ? ' de ' + money(saldo) : '') + (t && t.tipo ? ' por ' + t.tipo : '') + '.'];
+    if (n.square_link || n.zelle_dato) L.push('', 'Puedes pagar así:');
+    if (n.square_link) L.push('💳 Con tarjeta: ' + n.square_link);
+    if (n.zelle_dato) L.push('🏦 Zelle: ' + n.zelle_dato + (n.zelle_nombre ? ' (a nombre de ' + n.zelle_nombre + ')' : ''));
+    L.push('', 'Si ya pagaste, ignora este mensaje. ¡Gracias!');
+    return L.join('\n');
+  }
+  if (segPlant === 'cuestionario') return hola + ' Para avanzar con tu trámite, llena este cuestionario desde tu celular (son 5 minutos): ' + solUrlBase();
+  if (segPlant === 'cita') return hola + ' ¿Qué día te queda bien para venir a la oficina? Estamos de lunes a jueves de 10am a 5pm en 516 E San Ysidro Blvd.';
+  if (segPlant === 'saludo') return hola + ' Te escribo para dar seguimiento a lo que platicamos. ¿Cómo vas? Aquí estamos para ayudarte.';
+  return hola + ' ';
+}
+function segPintarMensaje() { $('sgMsg').value = segMensaje(); }
+function segPintarChips() {
+  $('sgPlant').innerHTML = SEG_PLANT.map(p => '<button type="button" class="chip' + (p[0] === segPlant ? ' on' : '') + '" data-p="' + p[0] + '">' + p[1] + '</button>').join('');
+}
+function segPintarCuando(sel) {
+  $('sgCuando').innerHTML = SEG_CUANDO.map(x => '<button type="button" class="chip' + (x[0] === sel ? ' on' : '') + '" data-d="' + x[0] + '">' + x[1] + '</button>').join('');
+}
+function segTelAyuda() {
+  const cid = segClienteId(), c = cid != null ? clientePorId(cid) : null;
+  if (c && !$('sgTel').dataset.editado) $('sgTel').value = fmtTel(c.telefono);
+  $('sgCliAyuda').classList.toggle('ok', cid != null);
+  $('sgCliAyuda').textContent = cid != null ? '✔ Cliente registrado' + (c.telefono ? '' : ' (no tiene teléfono: escríbelo abajo)') : ($('sgCliente').value.trim() ? 'No está registrado: escribe su teléfono abajo.' : 'Busca al cliente por nombre o teléfono.');
+}
+
+function abrirSeguimiento(ctx) {
+  if (tareas === null) { toast('Falta correr el SQL del paso 9 en Supabase (tareas).', true); return; }
+  segCtx = ctx || {};
+  segMapa = new Map();
+  const ops = [];
+  (clientes || []).slice().sort((a, b) => String(a.nombre || '').localeCompare(String(b.nombre || ''), 'es')).forEach(c => {
+    let k = String(c.nombre || '').trim(); if (!k) return;
+    k = k + (c.telefono ? ' · ' + fmtTel(c.telefono) : ' · #' + c.id);
+    segMapa.set(k, c.id); ops.push('<option value="' + esc(k) + '"></option>');
+  });
+  $('sgClientesList').innerHTML = ops.join('');
+  const c = segCtx.clienteId != null ? clientePorId(segCtx.clienteId) : null;
+  $('sgCliente').value = c ? [...segMapa.entries()].find(e => String(e[1]) === String(c.id))[0] : '';
+  delete $('sgTel').dataset.editado;
+  $('sgTel').value = c ? fmtTel(c.telefono) : '';
+  segPlant = segCtx.plantilla || 'docs';
+  segPintarChips(); segPintarCuando('2');
+  $('sgFecha').value = segFechaMas(2);
+  const nombres = nombresEquipo();
+  $('sgAsig').innerHTML = nombres.map(n => '<option value="' + esc(n) + '">' + esc(n) + (normTexto(n) === normTexto(nombrePerfil) ? ' (yo)' : '') + '</option>').join('');
+  $('sgAsig').value = nombres.find(n => normTexto(n) === normTexto(nombrePerfil)) || nombres[0] || '';
+  segTelAyuda(); segPintarMensaje();
+  $('overlaySG').classList.remove('hidden');
+  (c ? $('sgMsg') : $('sgCliente')).focus();
+}
+function cerrarSeguimiento() { $('overlaySG').classList.add('hidden'); }
+
+$('sgPlant').addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; segPlant = b.dataset.p; segPintarChips(); segPintarMensaje(); });
+$('sgCuando').addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; segPintarCuando(b.dataset.d); $('sgFecha').value = segFechaMas(b.dataset.d); });
+$('sgFecha').addEventListener('input', () => segPintarCuando(''));
+$('sgCliente').addEventListener('input', () => { segTelAyuda(); segPintarMensaje(); });
+$('sgTel').addEventListener('input', () => { $('sgTel').dataset.editado = '1'; });
+
+function segDatos() {
+  const cid = segClienteId(), c = cid != null ? clientePorId(cid) : null;
+  const nombre = c ? c.nombre : $('sgCliente').value.split('·')[0].trim();
+  const tel = $('sgTel').value.trim(), msg = $('sgMsg').value.trim();
+  return { cid, c, nombre, tel, msg };
+}
+function segAbrirWhats(tel, msg) {
+  const n = waNumero(tel);
+  window.open('https://wa.me/' + (n || '') + '?text=' + encodeURIComponent(msg), '_blank', 'noopener');
+  if (!n) toast('Sin teléfono: elige el contacto en WhatsApp.');
+}
+function segMandarAhora() {
+  const d = segDatos();
+  if (!d.msg) { toast('Escribe el mensaje.', true); $('sgMsg').focus(); return; }
+  segAbrirWhats(d.tel || (d.c && d.c.telefono), d.msg);
+}
+async function guardarSeguimiento() {
+  const d = segDatos();
+  if (!d.nombre) { toast('Elige o escribe el cliente.', true); $('sgCliente').focus(); return; }
+  if (!d.msg) { toast('Escribe el mensaje.', true); $('sgMsg').focus(); return; }
+  if (!d.tel && !(d.c && d.c.telefono)) { toast('Escribe el teléfono para poder mandarle WhatsApp.', true); $('sgTel').focus(); return; }
+  const fecha = $('sgFecha').value || hoyStr();
+  const telCli = d.c ? soloDigitos(d.c.telefono) : '';
+  const usarTel = d.tel && soloDigitos(d.tel) !== telCli;
+  const plant = (SEG_PLANT.find(p => p[0] === segPlant) || ['', 'Seguimiento'])[1].replace(/^\S+\s/, '');
+  const payload = {
+    titulo: '📲 ' + d.nombre + ' · ' + plant, descripcion: (usarTel ? '📞 ' + fmtTel(d.tel) + '\n' : '') + d.msg,
+    asignado_a: $('sgAsig').value || nombrePerfil || null, fecha_limite: fecha, prioridad: 'normal', estado: 'pendiente',
+    cliente_id: d.cid, tramite_id: segCtx.tramiteId != null ? Number(segCtx.tramiteId) : null, creado_nombre: nombrePerfil
+  };
+  $('btnSgGuardar').disabled = true;
+  try {
+    const r = await supabaseClient.from('tareas').insert([payload]).select();
+    if (r.error) throw r.error;
+    if (!r.data || !r.data.length) throw new Error('No se guardó. Revisa tus permisos.');
+    cerrarSeguimiento();
+    await cargarTareas();
+    refrescarTodo();
+    toast('Listo: te lo recuerdo ' + (fecha === hoyStr() ? 'hoy' : 'el ' + fechaSolo(fecha)) + ' en el Dashboard.');
+  } catch (e) { toast('Error al guardar: ' + e.message, true); }
+  finally { $('btnSgGuardar').disabled = false; }
+}
+
+/* ----- datos de una tarea-seguimiento ----- */
+function segPartes(t) {
+  let desc = String(t.descripcion || ''), tel = '';
+  const m = desc.match(/^📞 ([^\n]*)\n/);
+  if (m) { tel = m[1]; desc = desc.slice(m[0].length); }
+  if (!tel && t.cliente_id != null) { const c = clientePorId(t.cliente_id); if (c) tel = c.telefono || ''; }
+  const nombre = String(t.titulo || '').replace(/^📲\s*/, '').split(' · ')[0];
+  const tipo = String(t.titulo || '').split(' · ')[1] || '';
+  return { tel, msg: desc, nombre, tipo };
+}
+
+/* ----- tarjeta del Dashboard ----- */
+function renderDashSeg() {
+  const box = $('dashSeg'); if (!box) return;
+  if (tareas === null) { box.innerHTML = ''; return; }
+  const hoy = hoyStr();
+  const pend = (tareas || []).filter(t => esSeg(t) && t.estado !== 'hecha');
+  const toca = pend.filter(t => !t.fecha_limite || String(t.fecha_limite).slice(0, 10) <= hoy)
+    .sort((a, b) => String(a.fecha_limite || '').localeCompare(String(b.fecha_limite || '')));
+  const prox = pend.filter(t => t.fecha_limite && String(t.fecha_limite).slice(0, 10) > hoy).sort((a, b) => String(a.fecha_limite).localeCompare(String(b.fecha_limite)));
+  let h = '<div class="card seg-card"><div class="seg-head"><h2>📲 Seguimientos de WhatsApp</h2><span class="muted">' +
+    (toca.length ? toca.length + (toca.length === 1 ? ' toca hoy' : ' tocan hoy') : 'Nada pendiente para hoy 🎉') + (prox.length ? ' · ' + prox.length + ' próximos' : '') +
+    '</span><button class="btn btn-sm" data-seg="nuevo">+ Seguimiento</button></div>';
+  if (toca.length) h += toca.map(t => {
+    const p = segPartes(t), f = String(t.fecha_limite || '').slice(0, 10);
+    const dias = f ? Math.round((inicioDia(new Date()) - parseDia(f)) / 86400000) : 0;
+    const cuando = dias <= 0 ? 'hoy' : (dias === 1 ? 'desde ayer' : 'hace ' + dias + ' días');
+    const env = segEnviados.has(String(t.id));
+    return '<div class="seg-row' + (dias > 0 ? ' tarde' : '') + (env ? ' enviado' : '') + '"><div class="seg-info"><b>' + esc(p.nombre) + (dias > 0 ? ' <span class="seg-tarde">atrasado</span>' : '') + '</b><small>' + esc(p.tipo) + ' · ' + cuando + (t.asignado_a ? ' · ' + esc(t.asignado_a) : '') + (p.tel ? ' · ' + esc(fmtTel(p.tel)) : ' · ⚠️ sin teléfono') + '</small>' +
+      '<span class="seg-msg">' + esc(p.msg.replace(/\s+/g, ' ').slice(0, 140)) + (p.msg.length > 140 ? '…' : '') + '</span></div>' +
+      '<div class="seg-acts"><button class="btn btn-sm btn-wa-hub" data-seg="mandar" data-id="' + esc(t.id) + '">📲 ' + (env ? 'Abrir otra vez' : 'Mandar') + '</button>' +
+      '<button class="btn btn-sm' + (env ? ' btn-primary' : '') + '" data-seg="listo" data-id="' + esc(t.id) + '" title="Ya lo mandé">✔ Listo</button>' +
+      '<button class="btn btn-sm" data-seg="pos" data-id="' + esc(t.id) + '" title="Recordar en 2 días">⏰ +2 días</button></div></div>';
+  }).join('');
+  if (prox.length) h += '<div class="seg-prox">Próximos: ' + prox.slice(0, 6).map(t => '<span>' + esc(segPartes(t).nombre) + ' · ' + esc(fechaSolo(t.fecha_limite)) + '</span>').join('') + (prox.length > 6 ? '<span>+' + (prox.length - 6) + '</span>' : '') + '</div>';
+  box.innerHTML = h + '</div>';
+}
+async function segActualizar(id, patch, msg) {
+  const r = await supabaseClient.from('tareas').update(Object.assign({ updated_at: new Date().toISOString() }, patch)).eq('id', id).select();
+  if (r.error || !r.data || !r.data.length) { toast('No se pudo actualizar: ' + (r.error ? r.error.message : 'revisa permisos'), true); return; }
+  await cargarTareas(); refrescarTodo(); if (msg) toast(msg);
+}
+$('dashSeg').addEventListener('click', e => {
+  const b = e.target.closest('[data-seg]'); if (!b) return;
+  const a = b.dataset.seg, t = (tareas || []).find(x => String(x.id) === String(b.dataset.id));
+  if (a === 'nuevo') { abrirSeguimiento(); return; }
+  if (!t) return;
+  if (a === 'mandar') { const p = segPartes(t); segAbrirWhats(p.tel, p.msg); segEnviados.add(String(t.id)); renderDashSeg(); }
+  else if (a === 'listo') { segEnviados.delete(String(t.id)); segActualizar(t.id, { estado: 'hecha', fecha_hecha: new Date().toISOString(), hecha_por: nombrePerfil }, 'Seguimiento hecho ✔'); }
+  else if (a === 'pos') segActualizar(t.id, { fecha_limite: segFechaMas(2) }, 'Te lo recuerdo en 2 días.');
+});
 
 /* ---------- ACTUALIZACIONES ---------- */
 function abrirModalA() {
@@ -4729,13 +4978,14 @@ const DOC_T = {
     concepto: 'Concepto', metodo: 'Método de pago', monto: 'Monto', montoRecibido: 'Monto recibido', precio: 'Precio del servicio',
     pagadoFecha: 'Pagado a la fecha', saldo: 'Saldo restante', pagadoTotal: 'Pagado en su totalidad', descripcion: 'Descripción',
     cant: 'Cant.', precioU: 'Precio', importe: 'Importe', subtotal: 'Subtotal', pagosRecibidos: 'Pagos recibidos', saldoPagar: 'Saldo a pagar',
-    comoPagar: 'Cómo pagar', notas: 'Notas', recibidoPor: 'Recibido por', gracias: 'Gracias por su preferencia.', anulado: 'ANULADO',
+    comoPagar: 'Cómo pagar', notas: 'Notas', pagaTarjeta: 'Pagar con tarjeta', pagaTarjetaS: 'Toca el enlace o escanea el código', aNombre: 'a nombre de', otrasFormas: 'Otras formas de pago', recibidoPor: 'Recibido por', gracias: 'Gracias por su preferencia.', anulado: 'ANULADO',
     pagado: 'PAGADO', cita: 'Cita', depDe: 'Depósito para reservar la cita', depConcepto: 'Depósito de cita', prospecto: 'Cliente',
     metodos: { efectivo: 'Efectivo', tarjeta: 'Tarjeta', zelle: 'Zelle', transferencia: 'Transferencia', cheque: 'Cheque', otro: 'Otro' }
   },
   en: {
     recibo: 'PAYMENT RECEIPT', deposito: 'DEPOSIT RECEIPT', invoice: 'INVOICE', invoiceSub: 'Statement of account',
     no: 'No.', fecha: 'Date', vence: 'Due date', recibidoDe: 'Received from', facturarA: 'Bill to', servicio: 'Service', caso: 'Case',
+    pagaTarjeta: 'Pay by card', pagaTarjetaS: 'Tap the link or scan the code', aNombre: 'name', otrasFormas: 'Other payment options',
     concepto: 'Description', metodo: 'Payment method', monto: 'Amount', montoRecibido: 'Amount received', precio: 'Service price',
     pagadoFecha: 'Paid to date', saldo: 'Remaining balance', pagadoTotal: 'Paid in full', descripcion: 'Description',
     cant: 'Qty', precioU: 'Price', importe: 'Amount', subtotal: 'Subtotal', pagosRecibidos: 'Payments received', saldoPagar: 'Balance due',
@@ -4774,7 +5024,8 @@ function negocioSnap() {
   return {
     nombre: n.nombre || 'AmericaMex Tax and Multi-Services', eslogan: n.eslogan || '', direccion: n.direccion || '', telefono: n.telefono || '',
     correo: n.correo || '', sitio_web: n.sitio_web || '', datos_pago: n.datos_pago || '', nota_invoice: n.nota_invoice || '',
-    politica_deposito: n.politica_deposito || '', aviso_pie: n.aviso_pie || ''
+    politica_deposito: n.politica_deposito || '', aviso_pie: n.aviso_pie || '',
+    zelle_nombre: n.zelle_nombre || '', zelle_dato: n.zelle_dato || '', square_link: n.square_link || ''
   };
 }
 
@@ -4844,6 +5095,7 @@ function abrirInvoiceForm(tramiteId) {
   $('ivVence').value = '';
   $('ivIdioma').value = 'es';
   $('ivNotas').value = (negocio && negocio.nota_invoice) || '';
+  $('ivSquare').value = '';
   $('overlayIV').classList.remove('hidden');
   $('ivVence').focus();
 }
@@ -4861,7 +5113,7 @@ async function emitirInvoice() {
     negocio: negocioSnap(), fecha: $('ivFecha').value || hoyStr(), vence: $('ivVence').value || null, cliente: clienteSnap(t), concepto: t.tipo || 'Trámite', caso: t.numero_caso || '',
     items: [{ descripcion: (t.tipo || 'Trámite') + (t.numero_caso ? ' · ' + t.numero_caso : ''), cantidad: 1, precio }],
     pagos: lista.map(x => ({ fecha: String(x.fecha).slice(0, 10), metodo: x.metodo, monto: Number(x.monto) })),
-    subtotal: precio, pagado, saldo: r2(precio - pagado), notas: $('ivNotas').value.trim()
+    subtotal: precio, pagado, saldo: r2(precio - pagado), notas: $('ivNotas').value.trim(), pago_link: $('ivSquare').value.trim()
   };
   $('btnEmitirIV').disabled = true;
   const doc = await emitirDocumento({ p_tipo: 'invoice', p_tramite_id: Number(t.id), p_pago_id: null, p_deposito_id: null, p_cliente_id: t.cliente_id != null ? Number(t.cliente_id) : null, p_idioma: $('ivIdioma').value, p_total: precio, p_datos: datos });
@@ -4924,15 +5176,89 @@ function paperHTML(doc, idioma) {
       pagosL.map(x => '<div class="pago"><span>' + L.pagosRecibidos + ' · ' + esc(fechaLargaDoc(x.fecha, idioma)) + ' · ' + esc(met(x.metodo)) + '</span><b>−' + esc(money(x.monto)) + '</b></div>').join('') +
       '<div class="strong"><span>' + (d.saldo > 0 ? L.saldoPagar : L.pagadoTotal) + '</span><b>' + (d.saldo > 0 ? esc(money(d.saldo)) : esc(money(0))) + '</b></div></div>';
     if (d.saldo <= 0 && !doc.anulado) h += '<div class="p-sello">' + L.pagado + '</div>';
-    if (d.saldo > 0 && n.datos_pago) h += '<div class="p-nota"><b>' + L.comoPagar + '</b><br>' + nl2br(n.datos_pago) + '</div>';
+    if (d.saldo > 0 && !doc.anulado) h += bloquePago(n, d, L);
     if (d.notas) h += '<div class="p-nota"><b>' + L.notas + '</b><br>' + nl2br(d.notas) + '</div>';
   }
   h += '<div class="p-pie">' + (n.aviso_pie ? '<div>' + nl2br(n.aviso_pie) + '</div>' : '') + '<div>' + L.gracias + '</div></div></div>';
   return h;
 }
 
+/* ----- cómo pagar: Zelle + Square (con QR) ----- */
+function linkPago(n, d) { return String((d && d.pago_link) || (n && n.square_link) || '').trim(); }
+function bloquePago(n, d, L) {
+  const link = linkPago(n, d), zd = String(n.zelle_dato || '').trim(), zn = String(n.zelle_nombre || '').trim(), otras = String(n.datos_pago || '').trim();
+  if (!link && !zd && !otras) return '';
+  let h = '<div class="p-pay"><div class="p-pay-t">' + L.comoPagar + '</div><div class="p-pay-g">';
+  if (link) {
+    const qr = qrSvg(link);
+    h += '<div class="p-pay-o"><div class="p-pay-txt"><b>💳 ' + L.pagaTarjeta + '</b><small>Square · ' + L.pagaTarjetaS + '</small><a href="' + esc(link) + '" target="_blank" rel="noopener">' + esc(link.replace(/^https?:\/\//, '')) + '</a></div>' +
+      (qr ? '<div class="p-qr">' + qr + '</div>' : '') + '</div>';
+  }
+  if (zd) h += '<div class="p-pay-o"><div class="p-pay-txt"><b>🏦 Zelle</b><span class="p-zelle">' + esc(zd) + '</span>' + (zn ? '<small>' + L.aNombre + ': ' + esc(zn) + '</small>' : '') + '</div></div>';
+  h += '</div>';
+  if (otras) h += '<div class="p-pay-otras"><b>' + (link || zd ? L.otrasFormas : L.comoPagar) + ':</b> ' + nl2br(otras) + '</div>';
+  return h + '</div>';
+}
+function qrSvg(texto) {
+  if (typeof qrcode === 'undefined') { cargarLibQR(() => { if (docActual && !$('overlayDOC').classList.contains('hidden')) renderDocumento(); }); return ''; }
+  try { const q = qrcode(0, 'M'); q.addData(texto); q.make(); return q.createSvgTag({ cellSize: 3, margin: 0, scalable: true }); } catch (e) { return ''; }
+}
+function cargarLibQR(cb) {
+  if (typeof qrcode !== 'undefined') { cb && cb(); return; }
+  window.__qrCbs = window.__qrCbs || []; if (cb) window.__qrCbs.push(cb);
+  if (window.__qrCargando) return;
+  window.__qrCargando = true;
+  const sc = document.createElement('script');
+  sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';
+  sc.onload = () => { window.__qrCargando = false; const l = window.__qrCbs || []; window.__qrCbs = []; l.forEach(f => { try { f(); } catch (e) {} }); };
+  sc.onerror = () => { window.__qrCargando = false; };
+  document.head.appendChild(sc);
+}
+
+/* ----- mandar el documento por WhatsApp ----- */
+function textoWhatsDoc(doc) {
+  const d = doc.datos || {}, n = d.negocio || negocioSnap(), cli = d.cliente || {};
+  const nom = String(cli.nombre || '').trim().split(/\s+/)[0] || '';
+  const L = [];
+  if (doc.tipo === 'invoice') {
+    L.push('Hola' + (nom ? ' ' + nom : '') + ' 👋, te compartimos tu invoice ' + docNumero(doc) + ' de ' + (n.nombre || 'AmericaMex') + '.');
+    L.push('Servicio: ' + (d.concepto || 'Servicio'));
+    L.push(d.saldo > 0 ? 'Saldo a pagar: ' + money(d.saldo) : 'Total: ' + money(d.subtotal) + ' (pagado ✔)');
+    if (d.saldo > 0) {
+      const link = linkPago(n, d);
+      L.push('', 'Puedes pagar así:');
+      if (link) L.push('💳 Con tarjeta (Square): ' + link);
+      if (n.zelle_dato) L.push('🏦 Zelle: ' + n.zelle_dato + (n.zelle_nombre ? ' (a nombre de ' + n.zelle_nombre + ')' : ''));
+      if (!link && !n.zelle_dato && n.datos_pago) L.push(n.datos_pago);
+      if (d.vence) L.push('', 'Fecha límite: ' + fechaSolo(d.vence));
+    }
+  } else if (doc.tipo === 'recibo') {
+    const pg = d.pago || {};
+    L.push('Hola' + (nom ? ' ' + nom : '') + ' 👋, gracias por tu pago de ' + money(pg.monto) + ' (recibo ' + docNumero(doc) + ').');
+    L.push('Servicio: ' + (d.concepto || 'Servicio'));
+    if (d.saldo != null) L.push(d.saldo > 0 ? 'Saldo pendiente: ' + money(d.saldo) : 'Tu servicio quedó pagado completo ✔');
+  } else {
+    const dp = d.deposito || {};
+    L.push('Hola' + (nom ? ' ' + nom : '') + ' 👋, recibimos tu depósito de ' + money(dp.monto) + ' (recibo ' + docNumero(doc) + '). ¡Te esperamos en tu cita!');
+  }
+  L.push('', '¡Gracias por tu confianza! — ' + (n.nombre || 'AmericaMex'));
+  return L.join('\n');
+}
+function telDeDoc(doc) {
+  const d = doc.datos || {};
+  if (doc.cliente_id != null) { const c = clientePorId(doc.cliente_id); if (c && c.telefono) return c.telefono; }
+  return (d.cliente && d.cliente.telefono) || '';
+}
+function whatsDoc() {
+  if (!docActual) return;
+  const n = waNumero(telDeDoc(docActual));
+  window.open('https://wa.me/' + (n || '') + '?text=' + encodeURIComponent(textoWhatsDoc(docActual)), '_blank', 'noopener');
+  if (!n) toast('Este cliente no tiene teléfono: elige el contacto en WhatsApp.');
+}
+
 /* ----- visor ----- */
 function abrirDocumento(id) {
+  cargarLibQR();
   const doc = (documentos || []).find(x => String(x.id) === String(id));
   if (!doc) return;
   docActual = doc;
@@ -4953,6 +5279,7 @@ function renderDocumento() {
     '<div class="dsub">Emitido por ' + esc(doc.creado_por || '—') + (doc.anulado ? ' · Anulado por ' + esc(doc.anulado_por || '—') + (doc.anulado_motivo ? ': ' + esc(doc.anulado_motivo) : '') : '') + '</div>' +
     '<div class="dacts"><div class="seg" id="docIdiomas"><button data-i="es" class="' + (docIdioma === 'es' ? 'active' : '') + '">Español</button><button data-i="en" class="' + (docIdioma === 'en' ? 'active' : '') + '">English</button></div>' +
     '<button class="btn-primary" data-act="imprimir">🖨 Imprimir / guardar PDF</button>' +
+    (!doc.anulado ? '<button class="btn btn-wa-hub" data-act="whats">📲 Mandar por WhatsApp</button>' : '') +
     (rol === 'dueno' && !doc.anulado ? '<button class="btn btn-danger" data-act="anular">Anular</button>' : '') +
     '<span class="spacer"></span><button class="btn" data-act="cerrar">Cerrar</button></div>';
   if (incompleto) h += '<div class="hint">Todavía no capturas la dirección ni el teléfono del negocio, por eso no salen en el documento. ' + (rol === 'dueno' ? 'Captúralos en <b>⚙ Datos del negocio</b> (arriba a la derecha) y emite documentos nuevos.' : 'Pídele a un administrador que los capture.') + '</div>';
@@ -4967,6 +5294,7 @@ $('docBody').addEventListener('click', e => {
   if (!b) return;
   if (b.dataset.act === 'cerrar') cerrarDocumento();
   else if (b.dataset.act === 'imprimir') imprimirDocumento();
+  else if (b.dataset.act === 'whats') whatsDoc();
   else if (b.dataset.act === 'anular') anularDocumento();
 });
 
@@ -5009,7 +5337,7 @@ function abrirNegocio() {
   const n = negocio;
   $('ngNombre').value = n.nombre || ''; $('ngEslogan').value = n.eslogan || ''; $('ngDireccion').value = n.direccion || '';
   $('ngTelefono').value = n.telefono || ''; $('ngCorreo').value = n.correo || ''; $('ngWeb').value = n.sitio_web || '';
-  $('ngPago').value = n.datos_pago || ''; $('ngNotaInvoice').value = n.nota_invoice || ''; $('ngPoliticaDep').value = n.politica_deposito || ''; $('ngPie').value = n.aviso_pie || '';
+  $('ngPago').value = n.datos_pago || ''; $('ngZelleNombre').value = n.zelle_nombre || ''; $('ngZelleDato').value = n.zelle_dato || ''; $('ngSquare').value = n.square_link || ''; $('ngNotaInvoice').value = n.nota_invoice || ''; $('ngPoliticaDep').value = n.politica_deposito || ''; $('ngPie').value = n.aviso_pie || '';
   $('overlayNEG').classList.remove('hidden');
   $('ngDireccion').focus();
 }
@@ -5025,7 +5353,13 @@ async function guardarNegocio() {
   };
   $('btnGuardarNeg').disabled = true;
   try {
-    const { data, error } = await supabaseClient.from('negocio').update(payload).eq('id', 1).select();
+    const pagosNuevos = { zelle_nombre: v('ngZelleNombre') || null, zelle_dato: v('ngZelleDato') || null, square_link: v('ngSquare') || null };
+    let r = await supabaseClient.from('negocio').update(Object.assign({}, payload, pagosNuevos)).eq('id', 1).select();
+    if (r.error && /zelle_|square_/.test(r.error.message || '')) {
+      r = await supabaseClient.from('negocio').update(payload).eq('id', 1).select();
+      if (!r.error) toast('Se guardó, pero falta correr el SQL del paso 20 para guardar Zelle y Square.', true);
+    }
+    const { data, error } = r;
     if (error) throw error;
     if (!data || !data.length) throw new Error('No se guardó. Revisa tus permisos.');
     await cargarNegocio();
@@ -5251,7 +5585,8 @@ function impCardHtml(d) {
   const sig = impSig(d);
   const wa = c.telefono ? '<button class="btn btn-sm" data-imp-wa="' + d.id + '" title="Mandar WhatsApp" aria-label="Mandar WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20l1.2-5.2A8.4 8.4 0 1 1 21 11.5z"/></svg></button>' : '';
   const vis = impTienePaso13() && !impEsDigital(d) ? '<button class="btn btn-sm" data-imp-vis="' + d.id + '" title="Registrar visita">🚶＋</button>' : '';
-  const nxt = sig ? '<button class="btn btn-sm" data-imp-sig="' + d.id + '">' + (d.estado === 'rechazado' ? '↩ Corregido: a e-file' : IMP_SIG_TXT[sig]) + '</button>' : '';
+  const nxt = (sig ? '<button class="btn btn-sm" data-imp-sig="' + d.id + '">' + (d.estado === 'rechazado' ? '↩ Corregido: a e-file' : IMP_SIG_TXT[sig]) + '</button>' : '') +
+    (['enviado', 'aceptado'].includes(d.estado) ? '<button class="btn btn-sm btn-rech" data-imp-rech="' + d.id + '" title="El IRS o el estado lo rechazó">⛔ Rechazado</button>' : '');
   return '<div class="imp-card' + (nv.n === 2 ? ' late' : nv.n === 1 ? ' warn' : '') + '" draggable="true" data-imp="' + d.id + '">' +
     '<b>' + esc(c.nombre || '—') + '</b><small>' + esc([d.anio, d.preparador ? 'Preparó ' + d.preparador : ''].filter(Boolean).join(' · ')) + '</small>' +
     extra + '<div class="tags">' + tags.join('') + '</div>' +
@@ -5266,6 +5601,8 @@ function impCardHtml(d) {
     if (mas) { impVerArchivo = mas.dataset.impMas === '1'; renderImpuestos(); return; }
     const sig = e.target.closest('[data-imp-sig]');
     if (sig) { const d = impDe(sig.dataset.impSig); if (d && impSig(d)) moverDecl(d.id, impSig(d)); return; }
+    const rb = e.target.closest('[data-imp-rech]');
+    if (rb) { moverDecl(Number(rb.dataset.impRech), 'rechazado'); return; }
     const vb = e.target.closest('[data-imp-vis]');
     if (vb) { abrirVisita(vb.dataset.impVis); return; }
     const wa = e.target.closest('[data-imp-wa]');
@@ -5676,6 +6013,7 @@ function renderImpDetalle() {
       '<button class="btn btn-sm" data-ip="cliente">👤 Ver cliente</button>' +
       (t ? '<button class="btn btn-sm" data-ip="tramite">📋 Ver trámite</button>' : '') +
       '<button class="btn btn-sm" data-ip="tarea">✅ Nueva tarea</button>' +
+      (['listo_efile', 'enviado', 'aceptado'].includes(d.estado) ? '<button class="btn btn-sm btn-rech" data-ip="rech">⛔ Lo rechazaron</button>' : '') +
     '</div>' +
     '<div class="sec"><h4>Seguimiento</h4>' +
     '<div class="f2"><div class="f"><label for="ipEstado">Cuadro</label><select id="ipEstado">' + opts + '</select></div>' +
@@ -5733,6 +6071,7 @@ $('impBody').addEventListener('click', async e => {
   else if (a === 'cliente') { cerrarImpDetalle(); irA('clientes'); abrirPerfil(d.cliente_id); }
   else if (a === 'tramite') { if (t) abrirDetalle(t.id); }
   else if (a === 'tarea') abrirTareaForm(null, { cliente_id: d.cliente_id, tramite_id: d.tramite_id });
+  else if (a === 'rech') moverDecl(d.id, 'rechazado');
   else if (a === 'pago') { if (t) { detalleId = t.id; abrirModalP(); } }
   else if (a === 'precio') guardarImpPrecio();
   else if (a === 'visita') abrirVisita(d.id);
