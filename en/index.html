@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Taxes, ITIN & Document Services in San Ysidro, CA | AmericaMex</title>
-  <meta name="description" content="Tax preparation and ITIN with an IRS Certified Acceptance Agent, Green Card renewal forms, citizenship, SENTRI, apostilles and Notary Public in San Ysidro, CA. Bilingual, in office or by WhatsApp.">
+  <meta name="description" content="Tax preparation and ITIN with an IRS Certifying Acceptance Agent, Green Card renewal forms, citizenship, SENTRI, apostilles and Notary Public in San Ysidro, CA. Bilingual, in office or by WhatsApp.">
   <link rel="canonical" href="https://delmar85.github.io/americamex-web/en/">
   <link rel="alternate" hreflang="es" href="https://delmar85.github.io/americamex-web/">
   <link rel="alternate" hreflang="en" href="https://delmar85.github.io/americamex-web/en/">
@@ -62,7 +62,7 @@
    "url": "https://delmar85.github.io/americamex-web/",
    "logo": "https://delmar85.github.io/americamex-web/logo.png",
    "image": "https://delmar85.github.io/americamex-web/og-image.jpg",
-   "description": "Tax preparation and ITIN with an IRS Certified Acceptance Agent, Green Card renewal forms, citizenship, SENTRI, apostilles and Notary Public in San Ysidro, CA. Bilingual, in office or by WhatsApp.",
+   "description": "Tax preparation and ITIN with an IRS Certifying Acceptance Agent, Green Card renewal forms, citizenship, SENTRI, apostilles and Notary Public in San Ysidro, CA. Bilingual, in office or by WhatsApp.",
    "foundingDate": "2018",
    "telephone": "+1-619-800-6128",
    "email": "americamex01@gmail.com",
@@ -314,7 +314,7 @@
      "name": "Do I have to mail my original passport to the IRS for an ITIN?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "In most cases, no. As a Certified Acceptance Agent we review your documents here and return them the same day."
+      "text": "In most cases, no. As a Certifying Acceptance Agent we review your documents here and return them the same day."
      }
     },
     {
@@ -798,6 +798,115 @@ html{scroll-padding-top:100px}
 @media (min-width:1061px) and (max-width:1240px){.main-nav li.opt{display:none}}
 @media (min-width:641px){.hero .status{display:none}}
 
+/* ===== v4 · Hero azul con marca de agua (estilo clásico AmericaMex) ===== */
+.hero{background-color:#1A3A5C;background-image:radial-gradient(900px 520px at 50% -12%,rgba(255,255,255,.07),transparent 70%),radial-gradient(700px 420px at 50% 115%,rgba(13,33,55,.55),transparent 70%);text-align:center}
+.hero::before{background-image:radial-gradient(circle,rgba(255,255,255,.07) 1px,transparent 1px);background-size:30px 30px;mask-image:none;-webkit-mask-image:none}
+.hero-wm{position:absolute;top:56%;left:50%;transform:translate(-50%,-50%);font:900 clamp(60px,14.2vw,250px)/1 var(--fd);letter-spacing:-.04em;color:rgba(255,255,255,.04);white-space:nowrap;pointer-events:none;user-select:none;z-index:0}
+.hero-inner{grid-template-columns:1fr;max-width:980px;justify-items:center;padding:92px 24px 88px}
+.hero-inner>div{display:flex;flex-direction:column;align-items:center}
+.hero .pill{margin:0 auto}
+.hero h1 .kw{color:#A9C1DB}
+.hero h1 .big{font-size:clamp(40px,6.6vw,78px);font-weight:900;letter-spacing:-.035em;line-height:1.02}
+.hero h1 .big .l,.hero h1 .big em{display:block}
+.hero-sub{margin:22px auto 0;max-width:680px;color:#CFDCEA;font-size:19px}
+.hero-btns{justify-content:center;margin-top:34px}
+.hero-stats{justify-content:center;gap:48px;border-top-color:rgba(255,255,255,.14)}
+.hero-stats>div{text-align:center}
+.hero .status{justify-content:center}
+.hero-ask{margin-top:26px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.ask-lbl{font-size:14px;font-weight:600;color:#A9C1DB}
+.ask-row{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:760px}
+.ask-chip{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#fff;font-weight:600;font-size:14px;text-decoration:none;transition:background .15s,border-color .15s,transform .15s}
+.ask-chip:hover,.ask-chip:focus-visible{background:var(--wa);border-color:var(--wa);transform:translateY(-1px)}
+@media (max-width:640px){
+  .hero-inner{padding:52px 16px 56px}
+  .hero-wm{font-size:15vw;top:44%}
+  .hero h1 .big{font-size:clamp(32px,9.6vw,44px)}
+  .hero-sub{font-size:17px}
+  .hero-stats{gap:24px}
+  .ask-chip{font-size:13px;padding:7px 12px}
+}
+
+/* ===== v5 · Más poder: rojo brillante, verde vivo, letras grandes, líneas marcadas ===== */
+:root{--red:#FF2D2D; --red-d:#E41C1C; --coral:#FF5A52; --wa:#17B04F; --wa-d:#119140; --ok:#13843C; --line:#C8D3E0}
+body{font-size:17px}
+/* botones */
+.btn{font-weight:700;font-size:16px;border-width:2px}
+.btn-lg{padding:18px 28px;font-size:18px;border-radius:13px}
+.btn-wa{background:linear-gradient(180deg,#25C85E 0%,#14A24A 100%);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.22);box-shadow:0 12px 28px -12px rgba(23,176,79,.9),inset 0 1px 0 rgba(255,255,255,.25)}
+.btn-wa:hover{background:linear-gradient(180deg,#22BA57 0%,#108A3E 100%)}
+.btn-ghost{border-color:rgba(255,255,255,.38)!important}
+.btn-ghost:hover{border-color:#fff!important}
+/* hero */
+.hero h1 .big{font-size:clamp(42px,7.2vw,88px)}
+.hero h1 em{background:linear-gradient(90deg,#FF6A5F 0%,#FF2D2D 55%,#FF3B30 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 18px rgba(255,45,45,.35))}
+.hero h1 .kw{font-size:17px;font-weight:700;color:#B9CDE2}
+.hero-sub{font-size:20.5px;color:#DCE6F1}
+.hero .pill{font-size:14.5px;font-weight:700;border-width:2px}
+.hero-stats b{font-size:36px}
+.hero-stats span{font-size:14.5px;color:#B9CDE2}
+.hero-stats{border-top-width:2px}
+.ask-lbl{font-size:15.5px;color:#C9D9EA}
+.ask-chip{font-size:15px;font-weight:700;border-width:2px;padding:9px 16px}
+.ask-chip:hover,.ask-chip:focus-visible{background:var(--wa);border-color:var(--wa)}
+.hero-wm{color:rgba(255,255,255,.05)}
+/* encabezado */
+.site-header::before{height:4px;background:linear-gradient(90deg,#FF2D2D,#FF5A52 35%,#2E6DB0 70%,#1A3A5C)}
+.main-nav a.lk{font-size:16px;font-weight:700;color:#DCE6F1}
+.main-nav a.lk::after{height:3px}
+/* barra de credenciales */
+.trust li{font-size:15.5px;font-weight:700}
+.trust .ck{background:rgba(37,200,94,.2);color:#3BE07A}
+/* secciones */
+.eyebrow{font-size:13.5px;font-weight:800;color:var(--red)}
+.eyebrow::before,.sec-h.center .eyebrow::after{width:26px;height:3px}
+.eyebrow.light{color:#FF6A5F}
+.sec-h h2{font-size:clamp(34px,4.6vw,54px);font-weight:900;letter-spacing:-.03em}
+.sec-h p{font-size:19px}
+.card{border-width:1.5px}
+.pcard{border-top-width:4px}
+.pcard h3{font-size:22px}
+.scard h3{font-size:19px}
+.step h3{font-size:19px}
+.sprice{font-size:30px;color:var(--navy-d)}
+.sask{font-size:15px;color:var(--wa-d);border-top-width:1.5px}
+.scard:hover{border-color:var(--red)}
+.chip{font-weight:700;border-width:2px}
+.faq-list summary{font-size:18px;font-weight:700}
+.form{border-top-width:4px}
+.irow b,.irow strong{font-size:17px}
+@media (max-width:640px){
+  body{font-size:16.5px}
+  .hero h1 .big{font-size:clamp(34px,10vw,46px)}
+  .hero-sub{font-size:17.5px}
+  .btn-lg{padding:16px 20px;font-size:17px}
+  .hero-stats b{font-size:28px}
+  .sec-h h2{font-size:clamp(30px,8.6vw,38px)}
+  .sec-h p{font-size:17px}
+}
+.logo-wrap,.logo-plate{flex-shrink:0}
+.logo-img{max-width:none}
+@media (min-width:1061px){.main-nav a.lk{padding:8px 9px}}
+@media (min-width:1061px) and (max-width:1320px){.main-nav a.lk{font-size:15px;padding:8px 7px}.site-header .btn{padding:11px 14px}}
+
+/* ===== v6 · Gancho "Hey, ¿ya hiciste tus impuestos?" ===== */
+.hero h1 .big{font-size:clamp(40px,6.6vw,84px);line-height:1.04}
+.hero h1 .big .l{white-space:nowrap}
+.hero h1 em.rot{display:block;min-height:1.08em;transition:opacity .3s ease,transform .3s ease}
+.hero h1 em.rot.out{opacity:0;transform:translateY(-.25em)}
+.hero h1 em.rot.in{animation:rotIn .42s cubic-bezier(.2,.8,.2,1)}
+@keyframes rotIn{from{opacity:0;transform:translateY(.3em)}to{opacity:1;transform:none}}
+.hero-after{margin:18px auto 0;max-width:760px;font:700 clamp(19px,2.2vw,26px)/1.35 var(--fd);color:#fff;letter-spacing:-.01em}
+.hero-motto{display:inline-flex;align-items:center;gap:8px;margin:18px auto 0;padding:7px 16px;border-radius:999px;background:rgba(255,45,45,.12);border:1px solid rgba(255,90,82,.4);font:600 14.5px/1.3 var(--fu);color:#FFD2CF}
+.hero-motto b{color:#FF6A5F;font-weight:800}
+.hero-sub{margin-top:18px}
+@media (max-width:640px){
+  .hero h1 .big{font-size:clamp(30px,9vw,42px)}
+  .hero h1 .big .l{white-space:normal}
+  .hero-after{font-size:18px}
+  .hero-motto{font-size:13px;padding:6px 12px;flex-wrap:wrap;justify-content:center}
+}
+
   </style>
 </head>
 <body>
@@ -841,8 +950,8 @@ html{scroll-padding-top:100px}
         </ul>
       </nav>
       <div class="lang" role="group" aria-label="Language">
-        <a href="../" hreflang="es" lang="es">ES</a>
-        <a href="./" hreflang="en" lang="en" aria-current="true">EN</a>
+        <a href="https://delmar85.github.io/americamex-web/" hreflang="es" lang="es">ES</a>
+        <a href="https://delmar85.github.io/americamex-web/en/" hreflang="en" lang="en" aria-current="true">EN</a>
       </div>
       <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="mainNav" aria-label="Open menu">
         <span></span><span></span><span></span>
@@ -853,18 +962,31 @@ html{scroll-padding-top:100px}
   <main id="main">
 
     <section class="hero" id="top">
+      <div class="hero-wm" aria-hidden="true">AMERICAMEX</div>
       <div class="container hero-inner">
         <div>
           <span class="pill">📍 San Ysidro, CA · U.S. / Mexico border</span>
           <h1>
             <span class="kw">Taxes, ITIN & document services in San Ysidro, CA</span>
-            <span class="big">You earned it with hard work. <em>Keep more of it.</em></span>
+            <span class="big"><span class="l">Hey, have you done</span> <em class="rot" id="heroRot" data-words="your taxes yet?|your ITIN yet?|your citizenship yet?|your SENTRI yet?|your apostille yet?">your taxes yet?</em></span>
           </h1>
+          <p class="hero-after">…or any paperwork you need. We get it done for you.</p>
+          <p class="hero-motto"><span>You earned it with hard work.</span> <b>Keep more of it.</b></p>
           <p class="hero-sub">Taxes, ITIN, Green Card renewal, citizenship, SENTRI, apostilles, translations and Notary Public. Visit our office or do it all from your phone, wherever you are.</p>
           <div class="hero-btns">
             <a href="https://wa.me/16194964759?text=Hi%2C%20I%20found%20you%20on%20your%20website%20and%20would%20like%20information." target="_blank" rel="noopener" class="btn btn-wa btn-lg"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>Message us on WhatsApp</a>
             <a href="tel:+16198006128" class="btn btn-ghost btn-lg"><svg class="ico" aria-hidden="true"><use href="#i-tel"/></svg>(619) 800-6128</a>
             <a href="https://cal.com/americamex-vv9s4r" target="_blank" rel="noopener" class="btn btn-ghost btn-lg hb-cita"><svg class="ico" aria-hidden="true"><use href="#i-cal"/></svg>Book appointment</a>
+          </div>
+          <div class="hero-ask"><span class="ask-lbl">Quick question? Tap your service and message us:</span>
+            <div class="ask-row">
+            <a class="ask-chip" target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20want%20to%20file%20my%20taxes."><span aria-hidden="true">📋</span>Taxes</a>
+            <a class="ask-chip" target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20need%20to%20get%20or%20renew%20my%20ITIN."><span aria-hidden="true">🪪</span>ITIN</a>
+            <a class="ask-chip" target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20have%20a%20question%20about%20my%20Green%20Card%20or%20citizenship."><span aria-hidden="true">💳</span>Green Card &amp; citizenship</a>
+            <a class="ask-chip" target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20am%20interested%20in%20SENTRI%20%2F%20Global%20Entry."><span aria-hidden="true">🌐</span>SENTRI / Global Entry</a>
+            <a class="ask-chip" target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20need%20an%20apostille%20or%20translation."><span aria-hidden="true">📜</span>Apostilles &amp; translations</a>
+            <a class="ask-chip" target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20have%20a%20question%3A%20"><span aria-hidden="true">💬</span>Something else</a>
+            </div>
           </div>
           <div class="status" aria-live="polite"><span class="dot" id="heroDot"></span><span id="heroStatus">Monday to Thursday, 10am to 5pm</span></div>
           <div class="hero-stats">
@@ -874,33 +996,13 @@ html{scroll-padding-top:100px}
           </div>
         </div>
 
-        <aside class="chatcard" aria-labelledby="qTitle">
-          <div class="chat-top">
-            <span class="chat-av"><img src="../apple-touch-icon.png" alt="" width="44" height="44" loading="lazy"></span>
-            <div><b>AmericaMex Tax</b><small><span class="dot" id="chatDot"></span><span>We reply in Spanish or English</span></small></div>
-            <span class="wa-badge" aria-hidden="true"><svg><use href="#i-wa"/></svg></span>
-          </div>
-          <div class="chat-body">
-            <h2 id="qTitle">How can we help?</h2>
-            <p>Tap to ask us directly on WhatsApp</p>
-          </div>
-          <ul>
-            <li><a target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20want%20to%20file%20my%20taxes."><span class="qi" aria-hidden="true">📋</span><span class="qn">Taxes<small>Personal, 1099 and with dependents</small></span><span class="qgo" aria-hidden="true"><svg><use href="#i-wa"/></svg></span></a></li>
-            <li><a target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20need%20to%20get%20or%20renew%20my%20ITIN."><span class="qi" aria-hidden="true">🪪</span><span class="qn">ITIN<small>Your originals never leave the office</small></span><span class="qgo" aria-hidden="true"><svg><use href="#i-wa"/></svg></span></a></li>
-            <li><a target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20have%20a%20question%20about%20my%20Green%20Card%20or%20citizenship."><span class="qi" aria-hidden="true">💳</span><span class="qn">Green Card &amp; citizenship<small>I-90 renewal and N-400</small></span><span class="qgo" aria-hidden="true"><svg><use href="#i-wa"/></svg></span></a></li>
-            <li><a target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20am%20interested%20in%20SENTRI%20%2F%20Global%20Entry."><span class="qi" aria-hidden="true">🌐</span><span class="qn">SENTRI / Global Entry<small>Application, interview and activation</small></span><span class="qgo" aria-hidden="true"><svg><use href="#i-wa"/></svg></span></a></li>
-            <li><a target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20need%20an%20apostille%20or%20translation."><span class="qi" aria-hidden="true">📜</span><span class="qn">Apostilles &amp; translations<small>For the U.S. or Mexico</small></span><span class="qgo" aria-hidden="true"><svg><use href="#i-wa"/></svg></span></a></li>
-            <li><a target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20have%20a%20question%3A%20"><span class="qi" aria-hidden="true">💬</span><span class="qn">Something else<small>Tell us and we will point you the right way</small></span><span class="qgo" aria-hidden="true"><svg><use href="#i-wa"/></svg></span></a></li>
-          </ul>
-          <div class="chat-foot"><a href="#servicios">See services and prices →</a><span>ES · EN</span></div>
-        </aside>
       </div>
     </section>
 
     <div class="trust">
       <div class="container">
         <ul aria-label="Credentials">
-          <li><span class="ck" aria-hidden="true">✓</span>IRS Certified Acceptance Agent</li>
+          <li><span class="ck" aria-hidden="true">✓</span>IRS Certifying Acceptance Agent</li>
           <li><span class="ck" aria-hidden="true">✓</span>IRS Authorized e-file Provider (ERO)</li>
           <li><span class="ck" aria-hidden="true">✓</span>California Notary Public</li>
           <li><span class="ck" aria-hidden="true">✓</span>CTEC Registered</li>
@@ -917,7 +1019,7 @@ html{scroll-padding-top:100px}
         </div>
         <div class="grid3">
           <article class="card pcard rv"><span class="pnum" aria-hidden="true">01</span><h3>You get a smaller refund than you deserve</h3><p>Many families do not claim every credit and deduction they qualify for, like the EIC and the Child Tax Credit, and end up losing money or overpaying. Are you getting all of yours?</p></article>
-          <article class="card pcard rv"><span class="pnum" aria-hidden="true">02</span><h3>You need an ITIN and don't know how to get it</h3><p>We are an IRS Certified Acceptance Agent (CAA): we review your documents here, and your originals never leave our office or the country.</p></article>
+          <article class="card pcard rv"><span class="pnum" aria-hidden="true">02</span><h3>You need an ITIN and don't know how to get it</h3><p>We are an IRS Certifying Acceptance Agent (CAA): we review your documents here, and your originals never leave our office or the country.</p></article>
           <article class="card pcard rv"><span class="pnum" aria-hidden="true">03</span><h3>Your paperwork is important and you won't trust just anyone</h3><p>Green Card renewal, citizenship, SENTRI / Global Entry, Mexican dual nationality and more. Serving you since 2018 at the busiest border in the world.</p></article>
         </div>
       </div>
@@ -947,7 +1049,7 @@ html{scroll-padding-top:100px}
           <a class="card scard" data-c="impuestos" data-k="taxes 1040 w2 w-2 declaracion impuestos federal estatal return" target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20am%20interested%20in%3A%201040%20tax%20return%20with%20W-2"><div class="stop"><span class="sico" aria-hidden="true">📋</span><span class="tag dig">Online ✓</span></div><h3>Personal tax return 1040 with W-2</h3><p>Federal and state · up to 3 W-2s</p><div class="sprice"><small>from</small>$120</div><span class="sask"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>Ask on WhatsApp</span></a>
           <a class="card scard" data-c="impuestos" data-k="taxes dependientes hijos eic ctc child tax credit earned income credito dependents kids" target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20am%20interested%20in%3A%20tax%20return%20with%20dependents%20%28EIC%20%2F%20CTC%29"><div class="stop"><span class="sico" aria-hidden="true">👨‍👩‍👧</span><span class="tag dig">Online ✓</span></div><h3>With dependents: EIC / CTC credits</h3><p>Child Tax Credit and Earned Income Credit</p><div class="sprice"><small>from</small>$145</div><span class="sask"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>Ask on WhatsApp</span></a>
           <a class="card scard" data-c="impuestos" data-k="taxes 1099 self employed uber doordash lyft schedule c por mi cuenta negocio gig business" target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20am%20interested%20in%3A%201099%20%2F%20self-employed%20tax%20return"><div class="stop"><span class="sico" aria-hidden="true">🚗</span><span class="tag dig">Online ✓</span></div><h3>1099 · Self-employed and gig apps</h3><p>Schedule C with deductions (Uber, DoorDash, etc.)</p><div class="sprice"><small>from</small>$175</div><span class="sask"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>Ask on WhatsApp</span></a>
-          <a class="card scard feat" data-c="impuestos" data-k="itin w7 w-7 taxes sin seguro social caa agente certificado no ssn acceptance agent" target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20am%20interested%20in%3A%20ITIN%20%2B%20tax%20return"><div class="stop"><span class="sico" aria-hidden="true">🪪</span><span class="tag star">IRS Certified Acceptance Agent</span></div><h3>ITIN + Tax return</h3><p>Without mailing your original documents to the IRS</p><div class="sprice"><small>from</small>$225</div><span class="sask"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>Ask on WhatsApp</span></a>
+          <a class="card scard feat" data-c="impuestos" data-k="itin w7 w-7 taxes sin seguro social caa agente certificador no ssn acceptance agent" target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20am%20interested%20in%3A%20ITIN%20%2B%20tax%20return"><div class="stop"><span class="sico" aria-hidden="true">🪪</span><span class="tag star">IRS Certifying Acceptance Agent</span></div><h3>ITIN + Tax return</h3><p>Without mailing your original documents to the IRS</p><div class="sprice"><small>from</small>$225</div><span class="sask"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>Ask on WhatsApp</span></a>
           <a class="card scard" data-c="migracion" data-k="mica green card residencia i90 i-90 renovacion uscis renewal permanent resident" target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20am%20interested%20in%3A%20Green%20Card%20renewal%20I-90.%20What%20is%20the%20total%20cost%3F"><div class="stop"><span class="sico" aria-hidden="true">💳</span><span class="tag dig">Online ✓</span></div><h3>Green Card renewal (I-90)</h3><p>The USCIS fee is separate and changes; we give you the current total.</p><div class="sprice ask"><span>Price depends on your case</span><small>Ask us for the total</small></div><span class="sask"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>Ask on WhatsApp</span></a>
           <a class="card scard" data-c="migracion" data-k="ciudadania n400 n-400 naturalizacion uscis citizenship naturalization" target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20am%20interested%20in%3A%20Citizenship%20N-400.%20What%20is%20the%20total%20cost%3F"><div class="stop"><span class="sico" aria-hidden="true">🗽</span><span class="tag">By appointment</span></div><h3>Citizenship application N-400</h3><p>The USCIS fee is separate and changes; we give you the current total.</p><div class="sprice ask"><span>Price depends on your case</span><small>Ask us for the total</small></div><span class="sask"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>Ask on WhatsApp</span></a>
           <a class="card scard" data-c="migracion" data-k="sentri global entry garita cbp linea border trusted traveler" target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20am%20interested%20in%3A%20SENTRI%20%2F%20Global%20Entry.%20What%20is%20the%20total%20cost%3F"><div class="stop"><span class="sico" aria-hidden="true">🌐</span><span class="tag dig">Online ✓</span></div><h3>SENTRI / Global Entry</h3><p>Application, interview and card activation. CBP fee is separate.</p><div class="sprice ask"><span>Price depends on your case</span><small>Ask us for the total</small></div><span class="sask"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>Ask on WhatsApp</span></a>
@@ -990,7 +1092,7 @@ html{scroll-padding-top:100px}
           <h2>We are AmericaMex.</h2>
           <p class="about-desc">Serving the border since 2018, solving what others make complicated. No jargon, just results. In Spanish and English.</p>
           <ul class="creds" aria-label="Credentials">
-            <li><span class="ck" aria-hidden="true">✓</span>IRS Certified Acceptance Agent</li>
+            <li><span class="ck" aria-hidden="true">✓</span>IRS Certifying Acceptance Agent</li>
             <li><span class="ck" aria-hidden="true">✓</span>IRS Authorized e-file Provider (ERO)</li>
             <li><span class="ck" aria-hidden="true">✓</span>California Notary Public</li>
             <li><span class="ck" aria-hidden="true">✓</span>CTEC Registered</li>
@@ -1033,7 +1135,7 @@ html{scroll-padding-top:100px}
         </div>
         <div class="faq-list">
           <details><summary>Can I file my taxes without a Social Security number?</summary><p>Yes. If you do not qualify for an SSN, you file with an ITIN. We process it together with your tax return.</p></details>
-          <details><summary>Do I have to mail my original passport to the IRS for an ITIN?</summary><p>In most cases, no. As a Certified Acceptance Agent we review your documents here and return them the same day.</p></details>
+          <details><summary>Do I have to mail my original passport to the IRS for an ITIN?</summary><p>In most cases, no. As a Certifying Acceptance Agent we review your documents here and return them the same day.</p></details>
           <details><summary>How long does the ITIN take?</summary><p>Usually 7 to 11 weeks after it is sent, depending on the season. We follow up with you the whole way.</p></details>
           <details><summary>Does an ITIN give me work authorization or immigration status?</summary><p>No. The ITIN is only for meeting your tax obligations. It does help you keep your tax returns in order.</p></details>
           <details><summary>Can you help me if I do not live in San Diego?</summary><p>Yes. We work 100% online anywhere in the U.S. and Mexico: by WhatsApp, with e-signature and payment by Zelle or card.</p></details>
@@ -1179,8 +1281,8 @@ html{scroll-padding-top:100px}
       <div class="fbot">
         <span>© <span id="year">2026</span> AmericaMex Tax and Multi-Services · San Ysidro, CA · Taxes · ITIN · Forms · Notary Public</span>
         <div class="lang" role="group" aria-label="Language">
-          <a href="../" hreflang="es" lang="es">Español</a>
-          <a href="./" hreflang="en" lang="en" aria-current="true">English</a>
+          <a href="https://delmar85.github.io/americamex-web/" hreflang="es" lang="es">Español</a>
+          <a href="https://delmar85.github.io/americamex-web/en/" hreflang="en" lang="en" aria-current="true">English</a>
         </div>
       </div>
     </div>
@@ -1197,6 +1299,19 @@ html{scroll-padding-top:100px}
   </nav>
 
 <script>
+/* Pregunta del hero que va cambiando: impuestos → ITIN → ciudadanía… */
+(function(){
+  var el=document.getElementById('heroRot'); if(!el) return;
+  var w=(el.getAttribute('data-words')||'').split('|').filter(Boolean); if(w.length<2) return;
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var i=0;
+  setInterval(function(){
+    if(document.hidden) return;
+    el.classList.add('out');
+    setTimeout(function(){ i=(i+1)%w.length; el.textContent=w[i]; el.classList.remove('out'); el.classList.add('in'); setTimeout(function(){el.classList.remove('in');},420); },320);
+  },2600);
+})();
+
 (function () {
   var TX = {"open": "Open now · we close at 5pm", "today": "Closed · we open today at 10am", "tomorrow": "Closed · we open tomorrow at 10am", "monday": "Closed · we open Monday at 10am", "leave": " · leave us a WhatsApp and we will reply", "sending": "Sending…", "send": "Send message", "ok": "✅ Done! We got your details and will contact you soon.", "err": "❌ Could not send. Message us on WhatsApp at (619) 496-4759.", "noname": "Please enter your name.", "notel": "Please enter a phone number with at least 10 digits.", "emptymsg": "Hi, I need help with: "};
   var $ = function (id) { return document.getElementById(id); };
