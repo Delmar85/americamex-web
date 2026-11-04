@@ -345,6 +345,21 @@ a.btn-primary{display:inline-flex;align-items:center;gap:6px}
 .p-qr{width:78px;height:78px;flex:none;background:#fff;padding:4px;border-radius:4px}.p-qr svg{width:100%;height:100%;display:block}
 .p-pay-otras{font-size:12px;margin-top:8px;color:#2b3a52}
 @media (max-width:560px){.p-pay-g{grid-template-columns:1fr}}
+.modal .checkline,.modal label.checkline{display:flex!important;flex-direction:row;align-items:center;gap:10px;margin:8px 0;font-size:14px;font-weight:600;color:var(--ink);text-transform:none;letter-spacing:0}
+.modal .checkline input[type=checkbox]{width:18px!important;height:18px;flex:none;margin:0;padding:0}
+#pbfPlan .chip.on,#pbrPlan .chip.on{--cc:var(--navy)}
+.pb-num{font:800 16px var(--font-d,inherit);color:var(--navy)}
+.pb-row.pb-vencida td:first-child{box-shadow:inset 4px 0 0 #E53935}.pb-row.pb-porvencer td:first-child{box-shadow:inset 4px 0 0 #F0B429}.pb-row.pb-corriente td:first-child{box-shadow:inset 4px 0 0 #1f9d55}
+.pb-clic{cursor:pointer}.pb-clic:hover{filter:brightness(.97)}
+.pb-docs{display:flex;flex-wrap:wrap;gap:8px}
+.pb-doc{border:1.5px solid var(--line2,#d5dde9);background:#fff;border-radius:10px;padding:8px 12px;font-weight:600;font-size:13px;color:var(--muted);cursor:pointer}
+.pb-doc.ok{background:#E6F4EC;border-color:#9FDDB6;color:#13703A}
+.btn.pb-ok{background:#E6F4EC;border-color:#9FDDB6;color:#13703A}
+.pb-files{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.pb-file{border:1px solid var(--line);background:#F7F9FB;border-radius:8px;padding:6px 10px;font-size:12.5px;font-weight:600;cursor:pointer;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pb-file:hover{background:#EEF3FA}
+.pb-subir{cursor:pointer}
+.pb-card{margin-bottom:22px;border-left:4px solid #F0B429}
 .btn-rech{color:#B42318;border-color:#F1B5AF;background:#FFF5F4;font-weight:700}.btn-rech:hover{background:#FDE4E1;border-color:#E8857B}
 .btn-wa-soft{background:#E7F8EE;border-color:#9FDDB6;color:#0F7A38;font-weight:700}.btn-wa-soft:hover{background:#D3F2E0;border-color:#6FCB92}
 .seg-card{margin-bottom:22px;border-left:4px solid #17B04F}
@@ -577,6 +592,7 @@ window.addEventListener('error', function (e) {
       <div class="navgrp">Servicios</div>
       <button data-page="impuestos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 22h18M6 18v-7M10 18v-7M14 18v-7M18 18v-7M12 2 3 7h18z"/></svg>Impuestos</button>
       <button data-page="itin"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8.5" cy="11" r="2"/><path d="M5.5 16c.6-1.6 1.8-2.5 3-2.5s2.4.9 3 2.5M14 10h5M14 14h4"/></svg>ITIN</button>
+      <button data-page="pobox"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10a4 4 0 0 1 8 0v10H4z"/><path d="M8 6h9a4 4 0 0 1 4 4v10h-9"/><path d="M15 13v-3h3"/></svg>P.O. Boxes<span class="nbadge hidden" id="pbBadgeNav"></span></button>
       <button data-page="solicitudes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>Solicitudes <span class="badge b-bad hidden" id="solBadge" style="padding:0 8px;font-size:11.5px"></span></button>
       <div class="navgrp hidden" id="navgrpNeg">Negocio</div>
       <button data-page="finanzas" id="navFinanzas" class="hidden"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 16v-5M12 16V7M17 16v-3"/></svg>Reportes</button>
@@ -612,6 +628,7 @@ window.addEventListener('error', function (e) {
           <button class="btn btn-wa-soft" onclick="abrirSeguimiento()">📲 Seguimiento <small>recordar escribirle</small></button>
         </div>
         <div id="dashSeg"></div>
+        <div id="dashPb"></div>
         <div class="stats">
           <div class="stat"><div class="ico">👥</div><div><b id="stClientes">–</b><span>Clientes totales</span></div></div>
           <div class="stat"><div class="ico">📋</div><div><b id="stActivos">–</b><span>Trámites activos</span></div></div>
@@ -716,6 +733,32 @@ window.addEventListener('error', function (e) {
       </div>
 
       <!-- ITIN (REGISTRO) -->
+      <div class="page" id="page-pobox">
+        <div class="toolbar">
+          <input class="search" id="pbBuscar" type="search" placeholder="Buscar número de caja, nombre, teléfono o persona autorizada" oninput="renderPobox()">
+          <select class="filtro" id="pbFiltro" onchange="renderPobox()">
+            <option value="activas">Activas</option>
+            <option value="vencidas">🔴 Vencidas</option>
+            <option value="porvencer">🟡 Por vencer</option>
+            <option value="corriente">🟢 Al corriente</option>
+            <option value="cerradas">Cerradas</option>
+            <option value="todas">Todas</option>
+          </select>
+          <span class="count" id="pbContador"></span>
+          <span class="spacer"></span>
+          <button class="btn" onclick="exportarPobox()">⬇️ Lista para Excel</button>
+          <button class="btn-primary" onclick="abrirPbForm()">+ Nueva caja</button>
+        </div>
+        <div class="imp-sum" id="pbResumen"></div>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Caja</th><th>Titular</th><th>Teléfono</th><th>Vence</th><th>Estado</th><th>Documentos</th><th>Cobro</th></tr></thead>
+            <tbody id="pbTbody"></tbody>
+          </table>
+        </div>
+        <div class="empty hidden" id="pbVacio"></div>
+      </div>
+
       <div class="page" id="page-itin">
         <div class="toolbar">
           <input class="search" id="itBuscar0" type="search" placeholder="Buscar titular, cliente, teléfono, últimos 4 o fecha de nacimiento" oninput="renderItin()">
@@ -1232,6 +1275,94 @@ window.addEventListener('error', function (e) {
   </div>
 </div>
 
+<!-- P.O. BOX · FICHA -->
+<div class="overlay hidden" id="overlayPB" onclick="if(event.target===this)cerrarPb()">
+  <div class="modal" style="max-width:720px" role="dialog" aria-modal="true" aria-label="P.O. Box">
+    <div id="pbBody"></div>
+  </div>
+</div>
+
+<!-- P.O. BOX · NUEVA / EDITAR -->
+<div class="overlay hidden" id="overlayPBF" onclick="if(event.target===this)cerrarPbForm()">
+  <div class="modal" style="max-width:620px" role="dialog" aria-modal="true" aria-labelledby="pbfTitulo">
+    <h3 id="pbfTitulo">📬 Nueva caja</h3>
+    <div class="f2">
+      <div class="f"><label for="pbfNumero">Número de caja *</label><input id="pbfNumero" type="text" inputmode="numeric" placeholder="Ej. 101"></div>
+      <div class="f"><label for="pbfTitular">Titular (a nombre de quién) *</label><input id="pbfTitular" type="text" list="pbfClientes" autocomplete="off" placeholder="Busca un cliente o escribe el nombre"><datalist id="pbfClientes"></datalist>
+        <small class="qhelp" id="pbfCliAyuda"></small></div>
+    </div>
+    <div class="f2">
+      <div class="f"><label for="pbfTel">Teléfono / WhatsApp</label><input id="pbfTel" type="tel"></div>
+      <div class="f"><label for="pbfCorreo">Correo electrónico</label><input id="pbfCorreo" type="email"></div>
+    </div>
+    <div class="f"><label for="pbfDir">Dirección física (donde vive)</label><input id="pbfDir" type="text" placeholder="Calle, número, ciudad, estado y código postal"></div>
+
+    <div class="sec"><h4>Personas autorizadas a recibir correo (hasta 2)</h4>
+      <div class="f2"><div class="f"><label for="pbfA1">Persona 1</label><input id="pbfA1" type="text" placeholder="Nombre completo"></div>
+        <div class="f"><label for="pbfA1Tel">Teléfono</label><input id="pbfA1Tel" type="tel"></div></div>
+      <div class="f2"><div class="f"><label for="pbfA2">Persona 2</label><input id="pbfA2" type="text" placeholder="Nombre completo"></div>
+        <div class="f"><label for="pbfA2Tel">Teléfono</label><input id="pbfA2Tel" type="tel"></div></div>
+    </div>
+
+    <div class="sec"><h4>Documentos que ya tenemos</h4>
+      <label class="checkline"><input type="checkbox" id="pbfD1583"> <span>Forma USPS 1583 firmada y notarizada</span></label>
+      <label class="checkline"><input type="checkbox" id="pbfDId"> <span>Identificación con foto</span></label>
+      <label class="checkline"><input type="checkbox" id="pbfDDom"> <span>Comprobante de domicilio</span></label>
+    </div>
+
+    <div class="sec" id="pbfPagoSec"><h4>Renta</h4>
+      <div class="f"><div class="seg" id="pbfModo"><button type="button" data-m="nueva" class="active">💵 Nueva renta (cobrar ahora)</button><button type="button" data-m="existente">📁 Ya la tenía (solo poner vencimiento)</button></div></div>
+      <div id="pbfNueva">
+        <div class="f"><label>Plan</label><div class="chips" id="pbfPlan"></div></div>
+        <div class="f3">
+          <div class="f"><label for="pbfDesde">Desde</label><input id="pbfDesde" type="date"></div>
+          <div class="f"><label>Vence</label><div class="qtotal" id="pbfHasta" style="font-size:18px">—</div></div>
+          <div class="f"><label for="pbfPrecio">Precio</label><input id="pbfPrecio" type="number" min="0" step="0.01"></div>
+        </div>
+        <div class="f2">
+          <div class="f"><label>¿Ya pagó?</label><div class="seg" id="pbfPagado"><button type="button" data-p="si" class="active">Sí, ya pagó</button><button type="button" data-p="no">Pagará después</button></div></div>
+          <div class="f" id="pbfMetodoBox"><label for="pbfMetodo">¿Cómo pagó?</label><select id="pbfMetodo"><option value="efectivo">Efectivo</option><option value="tarjeta">Tarjeta</option><option value="zelle">Zelle</option><option value="transferencia">Transferencia</option><option value="cheque">Cheque</option><option value="otro">Otro</option></select></div>
+        </div>
+      </div>
+      <div id="pbfExistente" class="hidden">
+        <div class="f"><label for="pbfVenceEx">¿Cuándo le vence?</label><input id="pbfVenceEx" type="date"></div>
+        <div class="hint" style="background:#eef3fa;color:#3d5573">Para cajas que ya rentaban antes del Hub: solo se guarda la fecha de vencimiento, no se registra cobro (ese dinero ya entró antes).</div>
+      </div>
+    </div>
+    <div class="f hidden" id="pbfVenceEdit"><label for="pbfVence">Vence (para corregir)</label><input id="pbfVence" type="date"></div>
+    <div class="f"><label for="pbfNotas">Notas</label><textarea id="pbfNotas" style="min-height:60px" placeholder="Ej. Recibe paquetes de Amazon, avisar por WhatsApp"></textarea></div>
+    <div class="acts">
+      <button class="btn" onclick="cerrarPbForm()">Cancelar</button>
+      <button class="btn" id="btnPbfSolo" onclick="guardarPbForm(false)">Guardar</button>
+      <button class="btn-primary" id="btnPbfRecibo" onclick="guardarPbForm(true)">Guardar y dar recibo</button>
+    </div>
+  </div>
+</div>
+
+<!-- P.O. BOX · RENOVAR -->
+<div class="overlay hidden" id="overlayPBR" onclick="if(event.target===this)cerrarPbRenovar()">
+  <div class="modal" style="max-width:520px" role="dialog" aria-modal="true" aria-labelledby="pbrTitulo">
+    <h3 id="pbrTitulo">💵 Renovar caja</h3>
+    <div class="dsub" id="pbrInfo" style="margin-bottom:12px"></div>
+    <div class="f"><label>Plan</label><div class="chips" id="pbrPlan"></div></div>
+    <div class="f3">
+      <div class="f"><label for="pbrDesde">Desde</label><input id="pbrDesde" type="date"></div>
+      <div class="f"><label>Nuevo vencimiento</label><div class="qtotal" id="pbrHasta" style="font-size:18px">—</div></div>
+      <div class="f"><label for="pbrPrecio">Precio</label><input id="pbrPrecio" type="number" min="0" step="0.01"></div>
+    </div>
+    <div class="hint" id="pbrHint" style="background:#eef3fa;color:#3d5573">La renovación cuenta desde que vence (no desde hoy), para que no se pierdan días. Puedes cambiar la fecha.</div>
+    <div class="f2">
+      <div class="f"><label>¿Ya pagó?</label><div class="seg" id="pbrPagado"><button type="button" data-p="si" class="active">Sí, ya pagó</button><button type="button" data-p="no">Pagará después</button></div></div>
+      <div class="f" id="pbrMetodoBox"><label for="pbrMetodo">¿Cómo pagó?</label><select id="pbrMetodo"><option value="efectivo">Efectivo</option><option value="tarjeta">Tarjeta</option><option value="zelle">Zelle</option><option value="transferencia">Transferencia</option><option value="cheque">Cheque</option><option value="otro">Otro</option></select></div>
+    </div>
+    <div class="acts">
+      <button class="btn" onclick="cerrarPbRenovar()">Cancelar</button>
+      <button class="btn" id="btnPbrSolo" onclick="guardarPbRenovar(false)">Guardar</button>
+      <button class="btn-primary" id="btnPbrRecibo" onclick="guardarPbRenovar(true)">Guardar y dar recibo</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL SEGUIMIENTO WHATSAPP -->
 <div class="overlay hidden" id="overlaySG" onclick="if(event.target===this)cerrarSeguimiento()">
   <div class="modal" style="max-width:560px" role="dialog" aria-modal="true" aria-labelledby="modalSGTitulo">
@@ -1742,7 +1873,7 @@ async function cargarTodo() {
       cargarClientes(), cargarTramites(), cargarPagos(), cargarActs(), cargarAccesos(),
       cargarCitas(), cargarDepositos(), cargarTareas(), cargarEquipo(),
       rol === 'dueno' ? cargarGastos() : null, rol === 'dueno' ? cargarGastosFijos() : null,
-      cargarDocumentos(), cargarNegocio(), cargarDeclaraciones(), cargarItins(), cargarSolicitudes()
+      cargarDocumentos(), cargarNegocio(), cargarDeclaraciones(), cargarItins(), cargarPobox(), cargarSolicitudes()
     ]);
     indexar();
     ultimaCarga = Date.now();
@@ -1784,7 +1915,7 @@ function ponerFecha() {
 }
 
 /* ---------- NAVEGACIÓN ---------- */
-const titulos = { dashboard:'Dashboard', clientes:'Clientes', tramites:'Trámites', citas:'Calendario', tareas:'Tareas', impuestos:'Impuestos', itin:'ITIN', solicitudes:'Solicitudes', finanzas:'Reportes' };
+const titulos = { dashboard:'Dashboard', clientes:'Clientes', tramites:'Trámites', citas:'Calendario', tareas:'Tareas', impuestos:'Impuestos', itin:'ITIN', pobox:'P.O. Boxes', solicitudes:'Solicitudes', finanzas:'Reportes' };
 
 function irA(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('show'));
@@ -1799,6 +1930,7 @@ function irA(page) {
   if (page === 'tareas') renderTareas();
   if (page === 'impuestos') renderImpuestos();
   if (page === 'itin') renderItin();
+  if (page === 'pobox') renderPobox();
   if (page === 'solicitudes') renderSolicitudes();
   if (page === 'finanzas') renderReportes();
 }
@@ -1878,7 +2010,9 @@ function refrescarTodo() {
   renderTareas();
   renderImpuestos();
   renderItin();
+  renderPobox();
   renderSolicitudes();
+  if (pbId != null && !$('overlayPB').classList.contains('hidden')) renderPb();
   llenarTiposList();
   if ($('page-finanzas').classList.contains('show')) renderReportes();
   if (!$('overlayGF').classList.contains('hidden')) renderFijos();
@@ -1890,6 +2024,9 @@ function refrescarTodo() {
 function renderDashboard() {
   $('stClientes').textContent = clientes.length;
   renderDashSeg();
+  renderDashPb();
+  const pbAlerta = (poboxes || []).filter(p => pbEstado(p) === 'vencida').length;
+  if ($('pbBadgeNav')) { $('pbBadgeNav').textContent = pbAlerta || ''; $('pbBadgeNav').classList.toggle('hidden', !pbAlerta); }
   renderDashCitas();
   const lista = tramites || [];
   if (tramites === null) {
@@ -2326,7 +2463,7 @@ function cerrarModal() { $('overlay').classList.add('hidden'); }
 
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
-  const orden = [['overlaySG', cerrarSeguimiento], ['overlayR', cerrarReembolso], ['overlayQ', cerrarRapido], ['overlayNEG', cerrarNegocio], ['overlayIV', cerrarInvoiceForm], ['overlayDOC', cerrarDocumento], ['overlayGFF', cerrarFijoForm], ['overlayGA', cerrarGastoForm], ['overlayGF', cerrarFijos], ['overlayTR', cerrarTareaForm], ['overlayX', cerrarModalX], ['overlayA', cerrarModalA], ['overlayP', cerrarModalP], ['overlayT', cerrarModalT], ['overlayAP', cerrarAplicar], ['overlayDP', cerrarDepForm], ['overlayCF', cerrarCitaForm], ['overlayC', cerrarCita], ['overlayD', cerrarDetalle], ['overlay', cerrarModal], ['overlayIVS', cerrarVisita], ['overlayIMV', cerrarImpMove], ['overlayIMN', cerrarImpNueva], ['overlayIMP', cerrarImpDetalle], ['overlayITC', cerrarCarta], ['overlayITN', cerrarItinNuevo], ['overlayITF', cerrarItinFicha], ['overlaySQR', cerrarSolLink], ['overlaySOL', cerrarSol]];
+  const orden = [['overlayPBR', cerrarPbRenovar], ['overlayPBF', cerrarPbForm], ['overlayPB', cerrarPb], ['overlaySG', cerrarSeguimiento], ['overlayR', cerrarReembolso], ['overlayQ', cerrarRapido], ['overlayNEG', cerrarNegocio], ['overlayIV', cerrarInvoiceForm], ['overlayDOC', cerrarDocumento], ['overlayGFF', cerrarFijoForm], ['overlayGA', cerrarGastoForm], ['overlayGF', cerrarFijos], ['overlayTR', cerrarTareaForm], ['overlayX', cerrarModalX], ['overlayA', cerrarModalA], ['overlayP', cerrarModalP], ['overlayT', cerrarModalT], ['overlayAP', cerrarAplicar], ['overlayDP', cerrarDepForm], ['overlayCF', cerrarCitaForm], ['overlayC', cerrarCita], ['overlayD', cerrarDetalle], ['overlay', cerrarModal], ['overlayIVS', cerrarVisita], ['overlayIMV', cerrarImpMove], ['overlayIMN', cerrarImpNueva], ['overlayIMP', cerrarImpDetalle], ['overlayITC', cerrarCarta], ['overlayITN', cerrarItinNuevo], ['overlayITF', cerrarItinFicha], ['overlaySQR', cerrarSolLink], ['overlaySOL', cerrarSol]];
   for (const [id, fn] of orden) {
     if (!$(id).classList.contains('hidden')) { fn(); break; }
   }
@@ -2935,6 +3072,503 @@ async function emitirInvoiceRapido(t0, items) {
     items, pagos: [], subtotal, pagado: 0, saldo: subtotal, notas: (negocio && negocio.nota_invoice) || '', pago_link: '' };
   const doc = await emitirDocumento({ p_tipo: 'invoice', p_tramite_id: Number(t.id), p_pago_id: null, p_deposito_id: null, p_cliente_id: t.cliente_id != null ? Number(t.cliente_id) : null, p_idioma: 'es', p_total: subtotal, p_datos: datos });
   if (doc) { docIdioma = 'es'; refrescarTodo(); abrirDocumento(doc.id); toast('Invoice ' + docNumero(doc) + ' emitido.'); }
+}
+
+/* =====================================================================
+   📬 P.O. BOXES (renta de cajas de correo)
+   Tabla pobox (la caja) + pobox_periodos (cada renta pagada).
+   Cada periodo es un trámite «P.O. Box» con su pago → recibos, por cobrar y Reportes.
+   ===================================================================== */
+const PB_PLANES = [{ meses: 6, precio: 65, txt: '6 meses · $65' }, { meses: 12, precio: 130, txt: '1 año · $130' }];
+const PB_AVISO = 15;          // días antes de vencer para ponerla en amarillo
+const PB_BUCKET = 'pobox-docs';
+const PB_FORMA_1583 = 'https://about.usps.com/forms/ps1583.pdf';
+let poboxes = [], pbPeriodos = [], pbPerMap = new Map();
+let pbId = null, pbEditId = null, pbfModo = 'nueva', pbfMeses = 6, pbfPagado = true, pbrMeses = 6, pbrPagado = true;
+let pbfMapa = new Map(), pbDocs = null, pbDocsDe = null;
+
+async function cargarPobox() {
+  try {
+    poboxes = await leerTodo('pobox', [['id', false]]);
+    try { pbPeriodos = await leerTodo('pobox_periodos', [['id', false]]); } catch (e) { console.error('Periodos P.O. Box:', e); pbPeriodos = []; }
+  } catch (e) { console.error('P.O. Box:', e); poboxes = null; pbPeriodos = []; }
+  pbPerMap = new Map();
+  (pbPeriodos || []).forEach(p => { const k = String(p.pobox_id); if (!pbPerMap.has(k)) pbPerMap.set(k, []); pbPerMap.get(k).push(p); });
+}
+const pbDe = id => (poboxes || []).find(x => String(x.id) === String(id));
+const pbPer = id => (pbPerMap.get(String(id)) || []).slice().sort((a, b) => String(b.desde).localeCompare(String(a.desde)) || Number(b.id) - Number(a.id));
+function pbMasMeses(fecha, meses) {
+  const d = parseDia(fecha), dia = d.getDate();
+  const r = new Date(d.getFullYear(), d.getMonth() + Number(meses), 1);
+  r.setDate(Math.min(dia, new Date(r.getFullYear(), r.getMonth() + 1, 0).getDate()));
+  return claveDia(r);
+}
+function pbDias(p) {
+  if (!p.vence) return null;
+  return Math.round((parseDia(p.vence) - inicioDia(new Date())) / 86400000);
+}
+function pbEstado(p) {
+  if (p.estado === 'cerrado') return 'cerrada';
+  const d = pbDias(p);
+  if (d === null) return 'sinfecha';
+  if (d < 0) return 'vencida';
+  if (d <= PB_AVISO) return 'porvencer';
+  return 'corriente';
+}
+const PB_EST = {
+  vencida: { t: 'Vencida', cls: 'b-bad', ico: '🔴' }, porvencer: { t: 'Por vencer', cls: 'b-wait', ico: '🟡' },
+  corriente: { t: 'Al corriente', cls: 'b-ok', ico: '🟢' }, cerrada: { t: 'Cerrada', cls: 'b-gray', ico: '⚪' }, sinfecha: { t: 'Sin fecha', cls: 'b-gray', ico: '⚪' }
+};
+function pbDiasTxt(p) {
+  const d = pbDias(p);
+  if (p.estado === 'cerrado') return p.fecha_cierre ? 'cerrada el ' + fechaSolo(p.fecha_cierre) : 'cerrada';
+  if (d === null) return 'sin fecha de vencimiento';
+  if (d < 0) return 'venció hace ' + (-d) + (d === -1 ? ' día' : ' días');
+  if (d === 0) return 'vence HOY';
+  return 'quedan ' + d + (d === 1 ? ' día' : ' días');
+}
+function pbBadge(p) { const e = PB_EST[pbEstado(p)]; return '<span class="badge ' + e.cls + '">' + e.ico + ' ' + e.t + '</span>'; }
+function pbSaldo(p) {
+  let s = 0;
+  pbPer(p.id).forEach(x => { const t = x.tramite_id != null ? (tramites || []).find(y => String(y.id) === String(x.tramite_id)) : null; if (t) { const f = finanzas(t); if (f.k === 'sin_pago' || f.k === 'parcial') s += f.pendiente; } });
+  return r2(s);
+}
+const pbAutorizados = p => (Array.isArray(p.autorizados) ? p.autorizados : []).filter(a => a && String(a.nombre || '').trim());
+const pbDocsOk = p => [p.doc_1583, p.doc_id, p.doc_domicilio].filter(Boolean).length;
+
+/* ----- lista ----- */
+function renderPobox() {
+  const body = $('pbTbody'), vacio = $('pbVacio');
+  if (!body) return;
+  if (poboxes === null) {
+    $('pbResumen').innerHTML = ''; body.innerHTML = ''; $('pbContador').textContent = '';
+    vacio.classList.remove('hidden');
+    vacio.innerHTML = 'Falta correr el <b>SQL del paso 21</b> en Supabase (SQL Editor) para activar P.O. Boxes.';
+    return;
+  }
+  const act = poboxes.filter(p => p.estado !== 'cerrado');
+  const n = k => act.filter(p => pbEstado(p) === k).length;
+  const ven = n('vencida'), por = n('porvencer'), cor = n('corriente');
+  const debe = r2(act.reduce((s, p) => s + pbSaldo(p), 0));
+  $('pbResumen').innerHTML =
+    '<div class="mbox"><span>Cajas activas</span><b>' + act.length + '</b><small>' + (poboxes.length - act.length) + ' cerradas</small></div>' +
+    '<div class="mbox ' + (ven ? 'm-red' : '') + ' pb-clic" data-pbf="vencidas"><span>🔴 Vencidas</span><b>' + ven + '</b><small>avisar y cobrar</small></div>' +
+    '<div class="mbox ' + (por ? 'm-yellow' : '') + ' pb-clic" data-pbf="porvencer"><span>🟡 Por vencer</span><b>' + por + '</b><small>en los próximos ' + PB_AVISO + ' días</small></div>' +
+    '<div class="mbox m-green pb-clic" data-pbf="corriente"><span>🟢 Al corriente</span><b>' + cor + '</b><small>' + (debe > 0 ? 'por cobrar ' + money(debe) : 'todo pagado') + '</small></div>';
+  const q = $('pbBuscar').value.trim(), fl = $('pbFiltro').value;
+  const filas = poboxes.filter(p => {
+    const e = pbEstado(p);
+    if (fl === 'activas' && e === 'cerrada') return false;
+    if (fl === 'vencidas' && e !== 'vencida') return false;
+    if (fl === 'porvencer' && e !== 'porvencer') return false;
+    if (fl === 'corriente' && e !== 'corriente') return false;
+    if (fl === 'cerradas' && e !== 'cerrada') return false;
+    return !q || coincide(q, [p.numero, '#' + p.numero, p.titular_nombre, p.telefono, p.correo, p.direccion_fisica].concat(pbAutorizados(p).map(a => a.nombre + ' ' + (a.telefono || ''))));
+  }).sort((a, b) => {
+    const o = { vencida: 0, porvencer: 1, corriente: 2, sinfecha: 3, cerrada: 4 };
+    return (o[pbEstado(a)] - o[pbEstado(b)]) || String(a.vence || '9999').localeCompare(String(b.vence || '9999')) || String(a.numero).localeCompare(String(b.numero), 'es', { numeric: true });
+  });
+  $('pbContador').textContent = filas.length + (filas.length === 1 ? ' caja' : ' cajas');
+  body.innerHTML = filas.map(p => {
+    const au = pbAutorizados(p), s = pbSaldo(p), d = pbDocsOk(p);
+    return '<tr data-id="' + esc(p.id) + '" class="pb-row pb-' + pbEstado(p) + '"><td><b class="pb-num">#' + esc(p.numero) + '</b></td>' +
+      '<td><b>' + esc(p.titular_nombre) + '</b>' + (au.length ? '<br><small class="muted">+ ' + esc(au.map(a => a.nombre).join(', ')) + '</small>' : '') + '</td>' +
+      '<td>' + esc(fmtTel(p.telefono) || '—') + '</td>' +
+      '<td>' + (p.vence ? esc(fechaSolo(p.vence)) + '<br><small class="muted">' + esc(pbDiasTxt(p)) + '</small>' : '—') + '</td>' +
+      '<td>' + pbBadge(p) + '</td>' +
+      '<td>' + (d === 3 ? '<span class="badge b-ok">✔ Completos</span>' : '<span class="badge b-wait">Faltan ' + (3 - d) + '</span>') + '</td>' +
+      '<td>' + (s > 0 ? '<span class="badge b-bad">Debe ' + esc(money(s)) + '</span>' : '<span class="badge b-gray">—</span>') + '</td></tr>';
+  }).join('');
+  if (!filas.length) {
+    vacio.classList.remove('hidden');
+    vacio.innerHTML = poboxes.length ? 'Ninguna caja coincide con tu búsqueda.' : 'Todavía no hay cajas registradas.<br>Agrega la primera con «+ Nueva caja».';
+  } else vacio.classList.add('hidden');
+}
+$('pbTbody').addEventListener('click', e => { const tr = e.target.closest('tr[data-id]'); if (tr) abrirPb(tr.dataset.id); });
+$('pbResumen').addEventListener('click', e => { const b = e.target.closest('[data-pbf]'); if (b) { $('pbFiltro').value = b.dataset.pbf; renderPobox(); } });
+
+/* ----- ficha ----- */
+function abrirPb(id) { if (!pbDe(id)) return; pbId = id; pbDocs = null; pbDocsDe = null; $('overlayPB').classList.remove('hidden'); renderPb(); pbCargarDocs(); }
+function cerrarPb() { pbId = null; $('overlayPB').classList.add('hidden'); }
+function renderPb() {
+  const p = pbDe(pbId);
+  if (!p) { cerrarPb(); return; }
+  const est = pbEstado(p), au = pbAutorizados(p), s = pbSaldo(p);
+  const cls = { vencida: 'm-red', porvencer: 'm-yellow', corriente: 'm-green' }[est] || '';
+  let h = '<div class="dhead"><div><h3>📬 Caja #' + esc(p.numero) + '</h3></div><div>' + pbBadge(p) + '</div></div>' +
+    '<div class="dsub">' + esc(p.titular_nombre) + (au.length ? '  ·  + ' + au.length + (au.length === 1 ? ' persona autorizada' : ' personas autorizadas') : '') + '</div>' +
+    '<div class="money">' +
+      '<div class="mbox ' + cls + '"><span>Vence</span><b>' + (p.vence ? esc(fechaSolo(p.vence)) : '—') + '</b><small>' + esc(pbDiasTxt(p)) + '</small></div>' +
+      '<div class="mbox ' + (s > 0 ? 'm-red' : '') + '"><span>Debe</span><b>' + esc(money(s)) + '</b><small>' + (s > 0 ? 'falta cobrar' : 'nada pendiente') + '</small></div>' +
+      '<div class="mbox ' + (pbDocsOk(p) === 3 ? 'm-green' : 'm-yellow') + '"><span>Documentos</span><b>' + pbDocsOk(p) + ' de 3</b><small>' + (pbDocsOk(p) === 3 ? 'completos' : 'faltan papeles') + '</small></div>' +
+    '</div>' +
+    '<div class="dacts">' +
+      (p.estado !== 'cerrado' ? '<button class="btn-primary" data-pb="renovar">💵 Renovar / cobrar</button>' : '') +
+      (p.estado !== 'cerrado' ? '<button class="btn btn-wa-soft" data-pb="avisarVence">📲 Avisar vencimiento</button>' : '') +
+      (p.estado !== 'cerrado' ? '<button class="btn btn-wa-soft" data-pb="avisarCorreo">📬 Llegó correspondencia</button>' : '') +
+      '<button class="btn" data-pb="editar">✏️ Editar</button>' +
+      (p.cliente_id != null ? '<button class="btn" data-pb="cliente">👤 Ver cliente</button>' : '') +
+    '</div>';
+
+  // datos
+  h += '<div class="sec"><h4>Titular</h4><div class="taxg">' +
+    pbCampo('Nombre', p.titular_nombre) + pbCampo('Teléfono', fmtTel(p.telefono)) + pbCampo('Correo', p.correo) + pbCampo('Dirección física', p.direccion_fisica) + '</div></div>';
+  // autorizados
+  h += '<div class="sec"><h4>Personas autorizadas (' + au.length + ' de 2)</h4>' +
+    (au.length ? au.map((a, i) => '<div class="row"><div><b>' + esc(a.nombre) + '</b><small>' + esc(fmtTel(a.telefono) || 'sin teléfono') + '</small></div>' +
+      '<button class="btn btn-sm' + (a.id_ok ? ' pb-ok' : '') + '" data-pb="auId" data-i="' + i + '">' + (a.id_ok ? '✔ ID recibida' : '🪪 Falta su ID') + '</button></div>').join('')
+      : '<div class="empty" style="padding:12px 8px">Solo el titular recibe correo. Agrega hasta 2 personas con «✏️ Editar».</div>') + '</div>';
+  // documentos
+  const chk = (campo, txt) => '<button class="pb-doc' + (p[campo] ? ' ok' : '') + '" data-pb="doc" data-c="' + campo + '">' + (p[campo] ? '✔' : '○') + ' ' + txt + '</button>';
+  h += '<div class="sec"><h4>Documentos</h4><div class="pb-docs">' + chk('doc_1583', 'Forma 1583 firmada y notarizada') + chk('doc_id', 'Identificación con foto') + chk('doc_domicilio', 'Comprobante de domicilio') + '</div>' +
+    '<div class="muted" style="font-size:12.5px;margin:6px 0 10px">Toca cada uno para marcarlo. <a href="' + PB_FORMA_1583 + '" target="_blank" rel="noopener">Descargar Forma 1583 (USPS)</a></div>' +
+    '<div id="pbArchivos">' + pbArchivosHtml() + '</div>' +
+    '<label class="btn btn-sm pb-subir">📎 Subir foto o PDF<input type="file" id="pbArchivo" accept="image/*,application/pdf" multiple hidden></label></div>';
+  // periodos y pagos
+  const per = pbPer(p.id);
+  h += '<div class="sec"><h4>Rentas y pagos</h4>';
+  if (!per.length) h += '<div class="empty" style="padding:12px 8px">Sin rentas registradas en el Hub' + (p.vence ? ' (se registró con su fecha de vencimiento)' : '') + '.</div>';
+  else h += per.map(x => {
+    const t = x.tramite_id != null ? (tramites || []).find(y => String(y.id) === String(x.tramite_id)) : null;
+    const f = t ? finanzas(t) : null;
+    const ps = t ? pagosDe(t.id) : [];
+    const est = !f ? '<span class="badge b-gray">—</span>' : (f.k === 'pagado' ? '<span class="badge b-ok">Pagado</span>' : (f.k === 'parcial' || f.k === 'sin_pago' ? '<span class="badge b-bad">Debe ' + esc(money(f.pendiente)) + '</span>' : '<span class="badge b-gray">' + esc(f.k === 'na' ? 'Cancelado' : 'Sin precio') + '</span>'));
+    return '<div class="row"><div><b>' + esc(fechaSolo(x.desde)) + ' → ' + esc(fechaSolo(x.hasta)) + '</b><small>' + (x.meses === 12 ? '1 año' : x.meses + ' meses') + ' · ' + esc(money(x.monto)) + (x.por ? ' · por ' + esc(x.por) : '') + '</small></div>' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;align-items:center">' + est + ps.map(botonRecibo).join('') +
+      (t && f && (f.k === 'parcial' || f.k === 'sin_pago') ? '<button class="btn btn-sm" data-pb="cobrar" data-t="' + esc(t.id) + '">+ Registrar pago</button>' : '') + '</div></div>';
+  }).join('');
+  h += '</div>';
+  // notas
+  h += '<div class="sec"><h4>Notas</h4><textarea id="pbNotas" style="min-height:70px;width:100%">' + esc(p.notas || '') + '</textarea>' +
+    '<div class="dacts" style="margin-top:8px"><button class="btn btn-sm" data-pb="notas">Guardar notas</button></div></div>';
+  h += '<div class="acts">' + (rol === 'dueno' ? '<button class="btn btn-danger left" data-pb="borrar">Eliminar</button>' : '') +
+    (p.estado === 'cerrado' ? '<button class="btn" data-pb="reabrir">↩ Reactivar caja</button>' : '<button class="btn" data-pb="cerrarCaja">🔒 Cerrar caja (ya no la renta)</button>') +
+    '<button class="btn" data-pb="cerrar">Cerrar</button></div>';
+  $('pbBody').innerHTML = h;
+}
+function pbCampo(label, v) { return '<div class="row cap"><div><small>' + esc(label) + '</small>' + (v ? '<b>' + esc(v) + '</b>' : '<b class="vacio">—</b>') + '</div></div>'; }
+
+$('pbBody').addEventListener('change', e => { if (e.target.id === 'pbArchivo') pbSubirArchivos(e.target.files); });
+$('pbBody').addEventListener('click', async e => {
+  const rec = e.target.closest('[data-act="recibo"]');
+  if (rec && !rec.disabled) { emitirRecibo(rec.dataset.id); return; }
+  const b = e.target.closest('[data-pb]');
+  if (!b) return;
+  const p = pbDe(pbId); if (!p) return;
+  const a = b.dataset.pb;
+  if (a === 'cerrar') cerrarPb();
+  else if (a === 'renovar') abrirPbRenovar(p.id);
+  else if (a === 'editar') abrirPbForm(p.id);
+  else if (a === 'cliente') { cerrarPb(); irA('clientes'); abrirPerfil(p.cliente_id); }
+  else if (a === 'avisarVence') pbWhats(p, 'vence');
+  else if (a === 'avisarCorreo') pbWhats(p, 'correo');
+  else if (a === 'cobrar') { cerrarPb(); abrirDetalle(Number(b.dataset.t)); abrirModalP(); }
+  else if (a === 'doc') pbGuardar(p.id, { [b.dataset.c]: !p[b.dataset.c] });
+  else if (a === 'auId') { const au = pbAutorizados(p).map((x, i) => i === Number(b.dataset.i) ? Object.assign({}, x, { id_ok: !x.id_ok }) : x); pbGuardar(p.id, { autorizados: au }); }
+  else if (a === 'notas') pbGuardar(p.id, { notas: $('pbNotas').value.trim() || null }, 'Notas guardadas.');
+  else if (a === 'abrirDoc') pbVerArchivo(b.dataset.path);
+  else if (a === 'cerrarCaja') { if (confirm('¿Cerrar la caja #' + p.numero + '? Úsalo cuando el cliente ya no la renta. El historial de pagos se queda.')) pbGuardar(p.id, { estado: 'cerrado', fecha_cierre: hoyStr() }, 'Caja cerrada.'); }
+  else if (a === 'reabrir') pbGuardar(p.id, { estado: 'activo', fecha_cierre: null }, 'Caja reactivada.');
+  else if (a === 'borrar') pbBorrar(p);
+});
+async function pbGuardar(id, patch, msg) {
+  const r = await supabaseClient.from('pobox').update(Object.assign({ updated_at: new Date().toISOString() }, patch)).eq('id', id).select();
+  if (r.error) { toast(/pobox_numero_activo|duplicate/i.test(r.error.message || '') ? 'Ya hay otra caja activa con ese número.' : 'No se pudo guardar: ' + r.error.message, true); return false; }
+  if (!r.data || !r.data.length) { toast('No se guardó. Revisa tus permisos.', true); return false; }
+  await cargarPobox(); refrescarTodo(); if (msg) toast(msg);
+  return true;
+}
+async function pbBorrar(p) {
+  if (!confirm('¿Eliminar la caja #' + p.numero + ' de ' + p.titular_nombre + '?\n\nSe borra la caja y su historial de rentas. Los pagos se quedan en Reportes porque ese dinero sí entró.\n\nSi solo dejó de rentarla, mejor usa «Cerrar caja».')) return;
+  const r = await supabaseClient.from('pobox').delete().eq('id', p.id).select('id');
+  if (r.error || !r.data || !r.data.length) { toast('No se pudo eliminar: ' + (r.error ? r.error.message : 'solo administradores'), true); return; }
+  cerrarPb(); await cargarPobox(); refrescarTodo(); toast('Caja eliminada.');
+}
+
+/* ----- WhatsApp ----- */
+function pbTextoWhats(p, tipo) {
+  const n = segPrimerNombre(p.titular_nombre), neg = negocioSnap(), d = pbDias(p);
+  const hola = 'Hola' + (n ? ' ' + n : '') + ' 👋, te saluda ' + (neg.nombre || 'AmericaMex') + '.';
+  if (tipo === 'correo') {
+    return hola + ' Te avisamos que llegó correspondencia a tu P.O. Box #' + p.numero + ' 📬. Puedes pasar a recogerla de lunes a jueves de 10am a 5pm.' +
+      (d !== null && d < 0 ? '\n\nOjo: tu caja está vencida desde el ' + fechaSolo(p.vence) + ', aprovecha para renovarla cuando vengas.' : '');
+  }
+  const L = [hola + ' Te recordamos que tu P.O. Box #' + p.numero + (d === null ? ' está por renovarse.' : d < 0 ? ' venció el ' + fechaSolo(p.vence) + '.' : d === 0 ? ' vence HOY.' : ' vence el ' + fechaSolo(p.vence) + '.')];
+  L.push('', 'Para renovar:', '• 6 meses: $65', '• 1 año: $130');
+  if (neg.square_link || neg.zelle_dato) L.push('', 'Puedes pagar:');
+  if (neg.square_link) L.push('💳 Con tarjeta: ' + neg.square_link);
+  if (neg.zelle_dato) L.push('🏦 Zelle: ' + neg.zelle_dato + (neg.zelle_nombre ? ' (a nombre de ' + neg.zelle_nombre + ')' : ''));
+  L.push('', 'O en la oficina, de lunes a jueves de 10am a 5pm. ¡Gracias!');
+  return L.join('\n');
+}
+function pbWhats(p, tipo) {
+  const num = waNumero(p.telefono);
+  window.open('https://wa.me/' + (num || '') + '?text=' + encodeURIComponent(pbTextoWhats(p, tipo)), '_blank', 'noopener');
+  if (!num) toast('Esta caja no tiene teléfono: elige el contacto en WhatsApp.');
+}
+
+/* ----- documentos escaneados (Supabase Storage, carpeta privada) ----- */
+function pbArchivosHtml() {
+  if (pbDocs === null) return '<div class="muted" style="font-size:12.5px">Cargando archivos…</div>';
+  if (pbDocs === false) return '<div class="muted" style="font-size:12.5px">Para subir archivos falta correr el SQL del paso 21 (carpeta de documentos).</div>';
+  if (!pbDocs.length) return '<div class="muted" style="font-size:12.5px;margin-bottom:8px">Todavía no hay archivos escaneados.</div>';
+  return '<div class="pb-files">' + pbDocs.map(f => '<button class="pb-file" data-pb="abrirDoc" data-path="' + esc(pbId + '/' + f.name) + '">' + (/\.pdf$/i.test(f.name) ? '📄' : '🖼️') + ' ' + esc(f.name.replace(/^\d+_/, '')) + '</button>').join('') + '</div>';
+}
+async function pbCargarDocs() {
+  const id = pbId; if (id == null) return;
+  try {
+    const { data, error } = await supabaseClient.storage.from(PB_BUCKET).list(String(id), { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
+    if (error) throw error;
+    if (pbId !== id) return;
+    pbDocs = (data || []).filter(f => f.name && !f.name.startsWith('.')); pbDocsDe = id;
+  } catch (e) { console.error('Archivos P.O. Box:', e); if (pbId === id) pbDocs = false; }
+  if ($('pbArchivos')) $('pbArchivos').innerHTML = pbArchivosHtml();
+}
+async function pbSubirArchivos(files) {
+  const id = pbId; if (id == null || !files || !files.length) return;
+  let ok = 0;
+  for (const f of files) {
+    if (f.size > 10 * 1024 * 1024) { toast('«' + f.name + '» pesa más de 10 MB.', true); continue; }
+    const limpio = f.name.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^\w.\-]+/g, '_').slice(-80);
+    const { error } = await supabaseClient.storage.from(PB_BUCKET).upload(id + '/' + Date.now() + '_' + limpio, f, { upsert: false, contentType: f.type || undefined });
+    if (error) { toast('No se pudo subir «' + f.name + '»: ' + error.message, true); continue; }
+    ok++;
+  }
+  if (ok) toast(ok === 1 ? 'Archivo subido.' : ok + ' archivos subidos.');
+  await pbCargarDocs();
+}
+async function pbVerArchivo(path) {
+  const { data, error } = await supabaseClient.storage.from(PB_BUCKET).createSignedUrl(path, 300);
+  if (error || !data) { toast('No pude abrir el archivo: ' + (error ? error.message : ''), true); return; }
+  window.open(data.signedUrl, '_blank', 'noopener');
+}
+
+/* ----- alta / edición ----- */
+function pbPintarPlanes(id, sel) {
+  $(id).innerHTML = PB_PLANES.map(x => '<button type="button" class="chip' + (x.meses === sel ? ' on' : '') + '" data-m="' + x.meses + '">' + x.txt + '</button>').join('');
+}
+function pbfActualizar() {
+  const esNueva = pbEditId == null;
+  $('pbfPagoSec').classList.toggle('hidden', !esNueva);
+  $('pbfVenceEdit').classList.toggle('hidden', esNueva);
+  document.querySelectorAll('#pbfModo button').forEach(b => b.classList.toggle('active', b.dataset.m === pbfModo));
+  $('pbfNueva').classList.toggle('hidden', pbfModo !== 'nueva');
+  $('pbfExistente').classList.toggle('hidden', pbfModo !== 'existente');
+  document.querySelectorAll('#pbfPagado button').forEach(b => b.classList.toggle('active', (b.dataset.p === 'si') === pbfPagado));
+  $('pbfMetodoBox').classList.toggle('hidden', !pbfPagado);
+  $('pbfHasta').textContent = $('pbfDesde').value ? fechaSolo(pbMasMeses($('pbfDesde').value, pbfMeses)) : '—';
+  const cobra = esNueva && pbfModo === 'nueva';
+  $('btnPbfRecibo').classList.toggle('hidden', !cobra || !pbfPagado || !(Number($('pbfPrecio').value) > 0));
+  $('btnPbfSolo').className = $('btnPbfRecibo').classList.contains('hidden') ? 'btn-primary' : 'btn';
+}
+function pbfCliId() {
+  const v = $('pbfTitular').value.trim();
+  if (!v) return null;
+  if (pbfMapa.has(v)) return pbfMapa.get(v);
+  const igual = (clientes || []).filter(c => normTexto(c.nombre) === normTexto(v));
+  return igual.length === 1 ? igual[0].id : null;
+}
+function pbfCliAyuda() {
+  const id = pbfCliId(), el = $('pbfCliAyuda'), c = id != null ? clientePorId(id) : null;
+  el.classList.toggle('ok', id != null);
+  el.textContent = id != null ? '✔ Cliente registrado' : ($('pbfTitular').value.trim() ? 'Es nuevo: se crea como cliente al guardar.' : '');
+  if (c && pbEditId == null) {
+    if (!$('pbfTel').value && c.telefono) $('pbfTel').value = fmtTel(c.telefono);
+    if (!$('pbfCorreo').value && c.correo) $('pbfCorreo').value = c.correo;
+    if (!$('pbfDir').value && c.direccion) $('pbfDir').value = c.direccion;
+  }
+}
+function abrirPbForm(id) {
+  if (poboxes === null) { toast('Falta correr el SQL del paso 21 en Supabase.', true); return; }
+  const p = id != null ? pbDe(id) : null;
+  pbEditId = p ? p.id : null;
+  pbfMapa = new Map();
+  $('pbfClientes').innerHTML = (clientes || []).slice().sort((a, b) => String(a.nombre || '').localeCompare(String(b.nombre || ''), 'es')).map(c => {
+    const k = String(c.nombre || '').trim() + (c.telefono ? ' · ' + fmtTel(c.telefono) : ' · #' + c.id);
+    pbfMapa.set(k, c.id); return '<option value="' + esc(k) + '"></option>';
+  }).join('');
+  $('pbfTitulo').textContent = p ? '✏️ Editar caja #' + p.numero : '📬 Nueva caja';
+  const sig = () => { const ns = (poboxes || []).filter(x => x.estado !== 'cerrado').map(x => parseInt(x.numero, 10)).filter(n => !isNaN(n)); return ns.length ? String(Math.max.apply(null, ns) + 1) : ''; };
+  $('pbfNumero').value = p ? p.numero : sig();
+  const c = p && p.cliente_id != null ? clientePorId(p.cliente_id) : null;
+  $('pbfTitular').value = p ? (c ? [...pbfMapa.entries()].find(e => String(e[1]) === String(c.id))[0] : p.titular_nombre) : '';
+  $('pbfTel').value = p ? fmtTel(p.telefono) : '';
+  $('pbfCorreo').value = p ? (p.correo || '') : '';
+  $('pbfDir').value = p ? (p.direccion_fisica || '') : '';
+  const au = p ? pbAutorizados(p) : [];
+  $('pbfA1').value = au[0] ? au[0].nombre : ''; $('pbfA1Tel').value = au[0] ? fmtTel(au[0].telefono) : '';
+  $('pbfA2').value = au[1] ? au[1].nombre : ''; $('pbfA2Tel').value = au[1] ? fmtTel(au[1].telefono) : '';
+  $('pbfD1583').checked = !!(p && p.doc_1583); $('pbfDId').checked = !!(p && p.doc_id); $('pbfDDom').checked = !!(p && p.doc_domicilio);
+  $('pbfNotas').value = p ? (p.notas || '') : '';
+  $('pbfVence').value = p && p.vence ? String(p.vence).slice(0, 10) : '';
+  pbfModo = 'nueva'; pbfMeses = 6; pbfPagado = true;
+  pbPintarPlanes('pbfPlan', pbfMeses);
+  $('pbfDesde').value = hoyStr(); $('pbfPrecio').value = '65.00'; $('pbfMetodo').value = 'efectivo'; $('pbfVenceEx').value = '';
+  pbfCliAyuda(); pbfActualizar();
+  $('overlayPBF').classList.remove('hidden');
+  (p ? $('pbfTitular') : $('pbfNumero')).focus();
+}
+function cerrarPbForm() { $('overlayPBF').classList.add('hidden'); }
+$('pbfModo').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { pbfModo = b.dataset.m; pbfActualizar(); } });
+$('pbfPagado').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { pbfPagado = b.dataset.p === 'si'; pbfActualizar(); } });
+$('pbfPlan').addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; pbfMeses = Number(b.dataset.m); pbPintarPlanes('pbfPlan', pbfMeses); $('pbfPrecio').value = PB_PLANES.find(x => x.meses === pbfMeses).precio.toFixed(2); pbfActualizar(); });
+['pbfDesde', 'pbfPrecio'].forEach(i => $(i).addEventListener('input', pbfActualizar));
+$('pbfTitular').addEventListener('input', pbfCliAyuda);
+
+async function pbAsegurarCliente(nombre, tel, correo, dir) {
+  const cid = pbfCliId();
+  if (cid != null) return cid;
+  const payload = { nombre };
+  if (tieneCol('telefono')) payload.telefono = tel || null;
+  if (tieneCol('correo')) payload.correo = correo || null;
+  if (tieneCol('direccion')) payload.direccion = dir || null;
+  const r = await supabaseClient.from('clientes').insert([payload]).select();
+  if (r.error || !r.data || !r.data.length) throw new Error('No pude crear el cliente: ' + (r.error ? r.error.message : 'revisa permisos'));
+  await cargarClientes();
+  return r.data[0].id;
+}
+async function pbCrearPeriodo(p, meses, desde, precio, pagado, metodo) {
+  const hasta = pbMasMeses(desde, meses);
+  const tPayload = { cliente_id: p.cliente_id != null ? Number(p.cliente_id) : null, tipo: 'P.O. Box', estado: 'completado', monto: precio,
+    notas: '📬 Caja #' + p.numero + ' · ' + (meses === 12 ? '1 año' : meses + ' meses') + ' (' + fechaSolo(desde) + ' → ' + fechaSolo(hasta) + ')' };
+  if (tieneColT('cliente_nombre')) tPayload.cliente_nombre = p.cliente_id != null ? null : p.titular_nombre;
+  if (tieneColT('fecha_completada')) tPayload.fecha_completada = new Date().toISOString();
+  const rt = await supabaseClient.from('tramites').insert([tPayload]).select();
+  if (rt.error || !rt.data || !rt.data.length) throw new Error('No pude registrar la renta: ' + (rt.error ? rt.error.message : 'revisa permisos'));
+  const t = rt.data[0];
+  let pago = null;
+  if (pagado && precio > 0) {
+    const rp = await supabaseClient.from('pagos').insert([{ tramite_id: t.id, monto: precio, metodo, fecha: hoyStr(), notas: 'P.O. Box #' + p.numero, registrado_nombre: nombrePerfil }]).select();
+    if (rp.error || !rp.data || !rp.data.length) toast('Se guardó la renta, pero no el pago: regístralo desde la caja.', true); else pago = rp.data[0];
+  }
+  const rper = await supabaseClient.from('pobox_periodos').insert([{ pobox_id: p.id, tramite_id: t.id, desde, hasta, meses, monto: precio, por: nombrePerfil }]).select();
+  if (rper.error) toast('La renta quedó, pero no se guardó en el historial de la caja: ' + rper.error.message, true);
+  const nuevoVence = !p.vence || hasta > String(p.vence).slice(0, 10) ? hasta : String(p.vence).slice(0, 10);
+  await supabaseClient.from('pobox').update({ vence: nuevoVence, estado: 'activo', fecha_cierre: null, updated_at: new Date().toISOString() }).eq('id', p.id);
+  return { pago, hasta };
+}
+async function guardarPbForm(conRecibo) {
+  const numero = $('pbfNumero').value.trim().replace(/^#/, '');
+  const titular = $('pbfTitular').value.split(' · ')[0].trim();
+  if (!numero) { toast('Escribe el número de caja.', true); $('pbfNumero').focus(); return; }
+  if (!titular) { toast('Escribe a nombre de quién está la caja.', true); $('pbfTitular').focus(); return; }
+  const dup = (poboxes || []).find(x => x.estado !== 'cerrado' && String(x.numero) === numero && String(x.id) !== String(pbEditId));
+  if (dup) { toast('La caja #' + numero + ' ya está rentada a ' + dup.titular_nombre + '.', true); $('pbfNumero').focus(); return; }
+  const au = [[$('pbfA1').value, $('pbfA1Tel').value], [$('pbfA2').value, $('pbfA2Tel').value]].filter(x => x[0].trim()).map((x, i) => {
+    const prev = pbEditId != null ? pbAutorizados(pbDe(pbEditId)).find(a => normTexto(a.nombre) === normTexto(x[0])) : null;
+    return { nombre: x[0].trim(), telefono: x[1].trim() || null, id_ok: !!(prev && prev.id_ok) };
+  });
+  const datos = { numero, titular_nombre: titular, telefono: $('pbfTel').value.trim() || null, correo: $('pbfCorreo').value.trim() || null, direccion_fisica: $('pbfDir').value.trim() || null,
+    autorizados: au, doc_1583: $('pbfD1583').checked, doc_id: $('pbfDId').checked, doc_domicilio: $('pbfDDom').checked, notas: $('pbfNotas').value.trim() || null };
+  let precio = 0;
+  if (pbEditId == null && pbfModo === 'nueva') {
+    precio = r2($('pbfPrecio').value);
+    if (!$('pbfDesde').value) { toast('Pon la fecha de inicio.', true); $('pbfDesde').focus(); return; }
+    if (isNaN(precio) || precio < 0) { toast('El precio no es válido.', true); $('pbfPrecio').focus(); return; }
+  }
+  if (pbEditId == null && pbfModo === 'existente' && !$('pbfVenceEx').value) { toast('Pon la fecha en que le vence.', true); $('pbfVenceEx').focus(); return; }
+  $('btnPbfSolo').disabled = $('btnPbfRecibo').disabled = true;
+  try {
+    datos.cliente_id = await pbAsegurarCliente(titular, datos.telefono, datos.correo, datos.direccion_fisica);
+    if (pbEditId != null) {
+      if ($('pbfVence').value) datos.vence = $('pbfVence').value;
+      const ok = await pbGuardar(pbEditId, datos, 'Caja actualizada.');
+      if (ok) cerrarPbForm();
+      return;
+    }
+    datos.estado = 'activo'; datos.creado_por = nombrePerfil;
+    if (pbfModo === 'existente') datos.vence = $('pbfVenceEx').value;
+    const r = await supabaseClient.from('pobox').insert([datos]).select();
+    if (r.error) throw new Error(/pobox_numero_activo|duplicate/i.test(r.error.message || '') ? 'La caja #' + numero + ' ya está rentada.' : r.error.message);
+    if (!r.data || !r.data.length) throw new Error('No se guardó. Revisa tus permisos.');
+    const caja = r.data[0];
+    let res = null;
+    if (pbfModo === 'nueva') res = await pbCrearPeriodo(caja, pbfMeses, $('pbfDesde').value, precio, pbfPagado, $('pbfMetodo').value);
+    cerrarPbForm();
+    await Promise.all([cargarPobox(), cargarTramites(), cargarPagos()]);
+    refrescarTodo();
+    toast('Caja #' + numero + ' registrada' + (res ? ' · vence el ' + fechaSolo(res.hasta) : '') + '.');
+    if (conRecibo && res && res.pago) await emitirRecibo(res.pago.id);
+    else abrirPb(caja.id);
+  } catch (e) { toast('Error: ' + e.message, true); }
+  finally { $('btnPbfSolo').disabled = $('btnPbfRecibo').disabled = false; }
+}
+
+/* ----- renovar ----- */
+function pbrActualizar() {
+  document.querySelectorAll('#pbrPagado button').forEach(b => b.classList.toggle('active', (b.dataset.p === 'si') === pbrPagado));
+  $('pbrMetodoBox').classList.toggle('hidden', !pbrPagado);
+  $('pbrHasta').textContent = $('pbrDesde').value ? fechaSolo(pbMasMeses($('pbrDesde').value, pbrMeses)) : '—';
+  $('btnPbrRecibo').classList.toggle('hidden', !pbrPagado || !(Number($('pbrPrecio').value) > 0));
+  $('btnPbrSolo').className = $('btnPbrRecibo').classList.contains('hidden') ? 'btn-primary' : 'btn';
+}
+function abrirPbRenovar(id) {
+  const p = pbDe(id); if (!p) return;
+  pbrMeses = 6; pbrPagado = true;
+  $('pbrTitulo').textContent = '💵 Renovar caja #' + p.numero;
+  $('pbrInfo').textContent = p.titular_nombre + '  ·  ' + (p.vence ? 'vence ' + fechaSolo(p.vence) + ' (' + pbDiasTxt(p) + ')' : 'sin fecha de vencimiento');
+  pbPintarPlanes('pbrPlan', pbrMeses);
+  $('pbrDesde').value = p.vence ? String(p.vence).slice(0, 10) : hoyStr();
+  $('pbrPrecio').value = '65.00'; $('pbrMetodo').value = 'efectivo';
+  pbrActualizar();
+  $('overlayPBR').dataset.id = p.id;
+  $('overlayPBR').classList.remove('hidden');
+}
+function cerrarPbRenovar() { $('overlayPBR').classList.add('hidden'); }
+$('pbrPlan').addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; pbrMeses = Number(b.dataset.m); pbPintarPlanes('pbrPlan', pbrMeses); $('pbrPrecio').value = PB_PLANES.find(x => x.meses === pbrMeses).precio.toFixed(2); pbrActualizar(); });
+$('pbrPagado').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { pbrPagado = b.dataset.p === 'si'; pbrActualizar(); } });
+['pbrDesde', 'pbrPrecio'].forEach(i => $(i).addEventListener('input', pbrActualizar));
+async function guardarPbRenovar(conRecibo) {
+  const p = pbDe($('overlayPBR').dataset.id); if (!p) return;
+  const desde = $('pbrDesde').value, precio = r2($('pbrPrecio').value);
+  if (!desde) { toast('Pon la fecha desde la que cuenta.', true); $('pbrDesde').focus(); return; }
+  if (isNaN(precio) || precio < 0) { toast('El precio no es válido.', true); $('pbrPrecio').focus(); return; }
+  $('btnPbrSolo').disabled = $('btnPbrRecibo').disabled = true;
+  try {
+    const res = await pbCrearPeriodo(p, pbrMeses, desde, precio, pbrPagado, $('pbrMetodo').value);
+    cerrarPbRenovar();
+    await Promise.all([cargarPobox(), cargarTramites(), cargarPagos()]);
+    refrescarTodo();
+    toast('Caja #' + p.numero + ' renovada hasta el ' + fechaSolo(res.hasta) + (pbrPagado ? '.' : ' · queda por cobrar ' + money(precio) + '.'));
+    if (conRecibo && res.pago) await emitirRecibo(res.pago.id);
+  } catch (e) { toast('Error: ' + e.message, true); }
+  finally { $('btnPbrSolo').disabled = $('btnPbrRecibo').disabled = false; }
+}
+
+/* ----- tarjeta del Dashboard ----- */
+function renderDashPb() {
+  const box = $('dashPb'); if (!box) return;
+  if (!poboxes || !poboxes.length) { box.innerHTML = ''; return; }
+  const lista = poboxes.filter(p => ['vencida', 'porvencer'].includes(pbEstado(p))).sort((a, b) => String(a.vence).localeCompare(String(b.vence)));
+  if (!lista.length) { box.innerHTML = ''; return; }
+  const ven = lista.filter(p => pbEstado(p) === 'vencida').length;
+  box.innerHTML = '<div class="card pb-card"><div class="seg-head"><h2>📬 P.O. Boxes por renovar</h2><span class="muted">' + (ven ? ven + (ven === 1 ? ' vencida' : ' vencidas') + ' · ' : '') + (lista.length - ven) + ' por vencer</span>' +
+    '<button class="btn btn-sm" data-dpb="todas">Ver todas</button></div>' +
+    lista.slice(0, 6).map(p => '<div class="seg-row"><div class="seg-info"><b>#' + esc(p.numero) + ' · ' + esc(p.titular_nombre) + '</b><small>' + pbBadge(p) + ' ' + esc(pbDiasTxt(p)) + (p.vence ? ' · ' + esc(fechaSolo(p.vence)) : '') + '</small></div>' +
+      '<div class="seg-acts"><button class="btn btn-sm btn-wa-hub" data-dpb="avisar" data-id="' + esc(p.id) + '">📲 Avisar</button><button class="btn btn-sm" data-dpb="abrir" data-id="' + esc(p.id) + '">Abrir</button></div></div>').join('') +
+    (lista.length > 6 ? '<div class="seg-prox">+' + (lista.length - 6) + ' más</div>' : '') + '</div>';
+}
+$('dashPb').addEventListener('click', e => {
+  const b = e.target.closest('[data-dpb]'); if (!b) return;
+  if (b.dataset.dpb === 'todas') { irA('pobox'); $('pbFiltro').value = 'activas'; renderPobox(); return; }
+  const p = pbDe(b.dataset.id); if (!p) return;
+  if (b.dataset.dpb === 'avisar') pbWhats(p, 'vence'); else abrirPb(p.id);
+});
+
+/* ----- lista para Excel (sirve también para el reporte trimestral al USPS) ----- */
+function exportarPobox() {
+  if (!poboxes || !poboxes.length) { toast('No hay cajas para exportar.', true); return; }
+  const filas = [['Caja', 'Titular', 'Dirección física', 'Teléfono', 'Correo', 'Autorizado 1', 'Autorizado 2', 'Vence', 'Estado', 'Forma 1583', 'ID', 'Comprobante de domicilio', 'Notas']];
+  poboxes.slice().sort((a, b) => String(a.numero).localeCompare(String(b.numero), 'es', { numeric: true })).forEach(p => {
+    const au = pbAutorizados(p);
+    filas.push([p.numero, p.titular_nombre, p.direccion_fisica || '', fmtTel(p.telefono), p.correo || '', au[0] ? au[0].nombre : '', au[1] ? au[1].nombre : '',
+      p.vence ? String(p.vence).slice(0, 10) : '', PB_EST[pbEstado(p)].t, p.doc_1583 ? 'Sí' : 'No', p.doc_id ? 'Sí' : 'No', p.doc_domicilio ? 'Sí' : 'No', p.notas || '']);
+  });
+  const csv = '﻿' + filas.map(f => f.map(csvCelda).join(',')).join('\r\n');
+  const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  const a = document.createElement('a'); a.href = url; a.download = 'po_boxes_' + hoyStr() + '.csv';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1500);
+  toast('Descargando la lista de cajas (ábrela con Excel).');
 }
 
 /* =====================================================================
