@@ -423,6 +423,10 @@ tr.us-off td{color:var(--muted)}
 .imp-card .tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
 .imp-card .tags .badge{padding:2px 8px;font-size:11.5px}
 .imp-card .qa{display:flex;gap:6px;margin-top:9px}
+.est-chip{border:0;cursor:pointer;font-family:inherit;line-height:1.3}
+.est-chip:hover{filter:brightness(.95);box-shadow:0 0 0 2px rgba(0,0,0,.08)}
+.est-line{background:#F6F8FB;border-radius:10px;padding:10px 12px}
+.est-line .est-t{font-weight:800;font-size:13px;color:var(--ink);width:100%}
 .imp-mas{width:100%;background:none;border:1px dashed #B5C0CF;border-radius:8px;padding:7px;font-weight:600;font-size:12px;color:var(--muted);margin-bottom:10px}
 .imp-mas:hover{background:rgba(255,255,255,.6);color:var(--ink)}
 .imp-vacia{padding:18px 6px;text-align:center;font-size:12.5px;font-weight:500;color:#8A98AD}
@@ -803,6 +807,7 @@ window.addEventListener('error', function (e) {
             <option value="evidencia">Piden más evidencia</option>
             <option value="negado">Rechazados</option>
             <option value="listo">Número recibido</option>
+            <option value="estatal">🏛 Falta mandar el estatal</option>
           </select>
           <span class="count" id="itContador"></span>
           <span class="spacer"></span>
@@ -957,6 +962,8 @@ window.addEventListener('error', function (e) {
     <div class="hidden" id="imvArchWrap">
       <div class="f"><label for="imvArchivero">Archivero / cajón *</label><input id="imvArchivero" type="text" placeholder="Ej. Archivero 2, cajón B"></div>
       <div class="f"><label style="display:flex;gap:10px;align-items:center;cursor:pointer"><input id="imvConf" type="checkbox" style="width:auto"> Ya imprimí la hoja de confirmación del IRS y va en el expediente</label></div>
+      <div class="f hidden" id="imvEstWrap"><label style="display:flex;gap:10px;align-items:center;cursor:pointer"><input id="imvEst" type="checkbox" style="width:auto"> 🏛 Ya se mandó la declaración estatal</label>
+        <label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-top:8px"><input id="imvEstNo" type="checkbox" style="width:auto"> No lleva estatal</label></div>
     </div>
     <div class="acts">
       <button class="btn" onclick="cerrarImpMove()">Cancelar</button>
@@ -2244,10 +2251,10 @@ function cliResumenHtml(c) {
   });
   (itins || []).filter(i => String(i.cliente_id) === String(c.id)).forEach(i => {
     const e = IT_ESTADOS[itEstado(i)];
-    ch.push('<button class="cli-chip" data-cr="it" data-id="' + esc(i.id) + '">🪪 ITIN ' + esc(i.relacion === 'cliente' ? '' : i.titular_nombre) + ' <span class="badge ' + e.cls + '">' + esc(e.t) + '</span></button>');
+    ch.push('<button class="cli-chip" data-cr="it" data-id="' + esc(i.id) + '">🪪 ITIN ' + esc(i.relacion === 'cliente' ? '' : i.titular_nombre) + ' <span class="badge ' + e.cls + '">' + esc(e.t) + '</span>' + (itFaltaEst(i) ? ' <span class="badge b-wait">🏛 Falta estatal</span>' : '') + '</button>');
   });
   (declaraciones || []).filter(d => String(d.cliente_id) === String(c.id)).sort((a, b) => b.anio - a.anio).slice(0, 3).forEach(d => {
-    ch.push('<button class="cli-chip" data-cr="imp" data-id="' + esc(d.id) + '">🧾 Impuestos ' + esc(d.anio) + ' <span class="badge b-gray">' + esc(impNombreEstado(d.estado)) + '</span></button>');
+    ch.push('<button class="cli-chip" data-cr="imp" data-id="' + esc(d.id) + '">🧾 Impuestos ' + esc(d.anio) + ' <span class="badge b-gray">' + esc(impNombreEstado(d.estado)) + '</span>' + (impFaltaEst(d) ? ' <span class="badge b-wait">🏛 Falta estatal</span>' : '') + '</button>');
   });
   const r = resumenCliente(c);
   if (r.pendiente > 0) ch.push('<button class="cli-chip" data-cr="pagos">💵 <span class="badge b-bad">Debe ' + esc(money(r.pendiente)) + '</span></button>');
@@ -4128,6 +4135,8 @@ function renderDashDia() {
   add(pbV + pbP, '📬', 'P.O. Boxes por renovar', pbV ? pbV + ' vencidas' : '', 'pobox', pbV > 0);
   const impT = (declaraciones || []).filter(d => !['aceptado', 'archivado'].includes(d.estado) && impNivel(d).n === 2).length;
   add(impT, '🧾', impT === 1 ? 'declaración atorada' : 'declaraciones atoradas', 'llevan demasiado en su cuadro', 'impuestos', true);
+  const estD = (declaraciones || []).filter(impFaltaEst).length, estI = (itins || []).filter(itFaltaEst).length;
+  add(estD + estI, '🏛', estD + estI === 1 ? 'estatal por mandar' : 'estatales por mandar', [estD ? estD + ' de impuestos' : '', estI ? estI + ' de ITIN' : ''].filter(Boolean).join(' · '), estD ? 'impuestos' : 'itin-estatal', false);
   let viejos = 0;
   (tramites || []).forEach(t => { const f = finanzas(t); if ((f.k === 'sin_pago' || f.k === 'parcial') && t.fecha_creacion && (ahora - new Date(t.fecha_creacion)) / 86400000 > 30) viejos++; });
   add(viejos, '💵', viejos === 1 ? 'cobro con más de 30 días' : 'cobros con más de 30 días', '', 'tramites-debe', false);
@@ -4142,6 +4151,7 @@ $('dashDia').addEventListener('click', e => {
   if (k === 'dashSeg') { $('dashSeg').scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
   if (k === 'tramites-debe') { irA('tramites'); $('filtroCobro').value = 'debe'; renderTramites(); return; }
   if (k === 'pobox') { irA('pobox'); $('pbFiltro').value = 'activas'; renderPobox(); return; }
+  if (k === 'itin-estatal') { irA('itin'); $('itFiltro').value = 'estatal'; renderItin(); return; }
   irA(k);
 });
 
@@ -6498,6 +6508,50 @@ function impSig(d) {
 const IMP_UMBRAL = { esperando_docs: [5, 10], en_preparacion: [3, 5], esperando_firmas: [5, 10], listo_efile: [2, 4], enviado: [7, 14], rechazado: [2, 5] };
 const impNombreEstado = k => (IMP_TODAS.find(c => c.k === k) || {}).corto || k;
 
+/* ----- declaración ESTATAL: null = pendiente · 'enviado' · 'no_aplica' (paso 23) ----- */
+const impTieneEst = () => Array.isArray(declaraciones) && declaraciones.length > 0 && 'estatal' in declaraciones[0];
+const impFaltaEst = d => impTieneEst() && !d.estatal && ['enviado', 'aceptado'].includes(d.estado);
+function estChip(attr, id, x, pendienteUrgente) {
+  if (x.estatal === 'enviado') return '<button class="badge b-ok est-chip" ' + attr + '="' + id + '" title="Estatal enviado' + (x.estatal_fecha ? ' el ' + fechaSolo(x.estatal_fecha) : '') + ' · toca para desmarcar">🏛 ✔ Estatal</button>';
+  if (x.estatal === 'no_aplica') return '<button class="badge b-gray est-chip" ' + attr + '="' + id + '" title="No lleva declaración estatal · toca para cambiar">🏛 No lleva estatal</button>';
+  return '<button class="badge ' + (pendienteUrgente ? 'b-wait' : 'b-gray') + ' est-chip" ' + attr + '="' + id + '" title="Toca cuando ya se mandó el estatal">🏛 ☐ Falta estatal</button>';
+}
+function estLinea(pre, x, titulo) {
+  return '<div class="it-line est-line"><span class="est-t">' + titulo + '</span>' +
+    '<label class="it-chk"><input id="' + pre + 'Est" type="checkbox"' + (x.estatal === 'enviado' ? ' checked' : '') + '> ✔ Ya se mandó el estatal</label>' +
+    '<input id="' + pre + 'EstF" type="date" value="' + esc(x.estatal_fecha ? String(x.estatal_fecha).slice(0, 10) : '') + '" aria-label="Fecha en que se mandó el estatal">' +
+    '<label class="it-chk"><input id="' + pre + 'EstNo" type="checkbox"' + (x.estatal === 'no_aplica' ? ' checked' : '') + '> No lleva estatal</label></div>';
+}
+function estLeer(pre, x) {
+  const si = $(pre + 'Est'), no = $(pre + 'EstNo');
+  if (!si || !no) return null;
+  if (si.checked) return { estatal: 'enviado', estatal_fecha: $(pre + 'EstF').value || (x.estatal === 'enviado' && x.estatal_fecha) || hoyStr() };
+  if (no.checked) return { estatal: 'no_aplica', estatal_fecha: null };
+  return { estatal: null, estatal_fecha: null };
+}
+// palomita y «no lleva» no pueden ir juntas
+document.addEventListener('change', e => {
+  const el = e.target; if (!el || !el.id || el.type !== 'checkbox' || !el.checked) return;
+  const m = el.id.match(/^(ip|itf|imv)Est(No)?$/); if (!m) return;
+  const otro = $(m[1] + 'Est' + (m[2] ? '' : 'No')); if (otro) otro.checked = false;
+  if (!m[2]) { const f = $(m[1] + 'EstF'); if (f && !f.value) f.value = hoyStr(); }
+});
+async function impCambiarEstatal(id) {
+  const d = impDe(id); if (!d) return;
+  let val;
+  if (d.estatal === 'enviado') { if (!confirm('¿Desmarcar el estatal de ' + (impCliente(d).nombre || '') + '? Quedaría como pendiente.')) return; val = null; }
+  else if (d.estatal === 'no_aplica') { if (!confirm('¿Sí lleva declaración estatal? Quedaría como pendiente.')) return; val = null; }
+  else val = 'enviado';
+  try {
+    const { data, error } = await supabaseClient.from('declaraciones').update({ estatal: val, estatal_fecha: val === 'enviado' ? hoyStr() : null, actualizado_nombre: nombrePerfil }).eq('id', d.id).select();
+    if (error) throw error;
+    if (!data || !data.length) throw new Error('No se guardó. Revisa tus permisos.');
+    toast(val ? '🏛 Estatal enviado: ' + (impCliente(d).nombre || '') : 'Estatal pendiente otra vez.');
+    await cargarDeclaraciones();
+    refrescarTodo();
+  } catch (e) { toast('No pude guardar el estatal: ' + e.message, true); }
+}
+
 async function cargarDeclaraciones() {
   try { declaraciones = await leerTodo('declaraciones', [['id', false]]); }
   catch (e) { console.error('Declaraciones:', e); declaraciones = null; }
@@ -6588,8 +6642,9 @@ function renderImpuestos() {
 
   // resumen del año / filtro
   const mapaT = new Map((tramites || []).map(t => [String(t.id), t]));
-  let cobrado = 0, porCobrar = 0, atoradas = 0, enProceso = 0;
+  let cobrado = 0, porCobrar = 0, atoradas = 0, enProceso = 0, sinEst = 0;
   lista.forEach(d => {
+    if (impFaltaEst(d)) sinEst++;
     const t = mapaT.get(String(d.tramite_id));
     if (t) {
       const f = finanzas(t);
@@ -6600,7 +6655,7 @@ function renderImpuestos() {
     if (impNivel(d).n === 2) atoradas++;
   });
   $('impResumen').innerHTML =
-    '<div class="mbox"><span>En proceso</span><b>' + enProceso + '</b><small>sin aceptar todavía</small></div>' +
+    '<div class="mbox' + (sinEst ? ' m-yellow' : '') + '"><span>En proceso</span><b>' + enProceso + '</b><small>' + (sinEst ? '🏛 ' + sinEst + (sinEst === 1 ? ' falta mandar el estatal' : ' faltan de mandar el estatal') : 'sin aceptar todavía') + '</small></div>' +
     '<div class="mbox ' + (atoradas ? 'm-red' : '') + '"><span>Atoradas</span><b>' + atoradas + '</b><small>' + (atoradas ? 'llevan demasiado en su cuadro' : 'nada atorado') + '</small></div>' +
     '<div class="mbox ' + (porCobrar > 0 ? 'm-yellow' : '') + '"><span>Por cobrar</span><b>' + money(porCobrar) + '</b><small>saldo de estas declaraciones</small></div>' +
     '<div class="mbox m-green"><span>Cobrado</span><b>' + money(cobrado) + '</b><small>ya está en Reportes</small></div>';
@@ -6643,6 +6698,7 @@ function impCardHtml(d) {
   if (d.estado !== 'archivado') tags.push('<span class="badge ' + (nv.n === 2 ? 'b-bad' : nv.n === 1 ? 'b-wait' : 'b-gray') + '">⏱ ' + impTxtDias(nv.dias) + '</span>');
   if (t) tags.push(badgeCobro(finanzas(t)));
   if (d.estado === 'aceptado' && !d.confirmacion_impresa) tags.push('<span class="badge b-wait">🖨 Falta imprimir confirmación</span>');
+  if (impTieneEst() && ['listo_efile', 'enviado', 'aceptado', 'rechazado'].includes(d.estado)) tags.push(estChip('data-imp-est', d.id, d, impFaltaEst(d)));
   if (d.estado === 'archivado' && d.archivero) tags.push('<span class="badge b-blue">📁 ' + esc(d.archivero) + '</span>');
   let extra = '';
   if ((d.estado === 'esperando_docs' || d.estado === 'esperando_firmas') && d.que_falta) extra = '<div class="falta">Falta: ' + esc(d.que_falta) + '</div>';
@@ -6664,6 +6720,8 @@ function impCardHtml(d) {
   board.addEventListener('click', e => {
     const mas = e.target.closest('[data-imp-mas]');
     if (mas) { impVerArchivo = mas.dataset.impMas === '1'; renderImpuestos(); return; }
+    const est = e.target.closest('[data-imp-est]');
+    if (est) { impCambiarEstatal(est.dataset.impEst); return; }
     const sig = e.target.closest('[data-imp-sig]');
     if (sig) { const d = impDe(sig.dataset.impSig); if (d && impSig(d)) moverDecl(d.id, impSig(d)); return; }
     const rb = e.target.closest('[data-imp-rech]');
@@ -6710,6 +6768,10 @@ async function moverDecl(id, nuevo, extra) {
   if (!d || d.estado === nuevo || !impColsTodas().some(c => c.k === nuevo)) return false;
   if (!extra && impPideModal(d, nuevo)) { abrirImpMove(id, nuevo); return false; }
   const payload = Object.assign({ estado: nuevo, actualizado_nombre: nombrePerfil }, extra || {});
+  if (nuevo === 'enviado' && impTieneEst() && !d.estatal && !(extra && 'estatal' in extra) &&
+      confirm('📤 ' + (impCliente(d).nombre || '') + ' · ' + d.anio + '\n\n¿El ESTATAL también se mandó junto con el federal (e-file)?\n\nAceptar = Sí, se mandaron los dos\nCancelar = No, el estatal queda pendiente')) {
+    payload.estatal = 'enviado'; payload.estatal_fecha = hoyStr();
+  }
   if (impTienePaso13() && nuevo !== 'en_preparacion' && !(extra && 'recoger_fecha' in extra)) payload.recoger_fecha = null;
   if (['en_preparacion', 'listo_efile', 'enviado', 'aceptado', 'archivado'].includes(nuevo) && !(extra && 'que_falta' in extra)) payload.que_falta = null;
   if (nuevo !== 'rechazado' && !(extra && 'motivo_rechazo' in extra)) payload.motivo_rechazo = null;
@@ -6731,7 +6793,7 @@ async function moverDecl(id, nuevo, extra) {
 function impPideModal(d, nuevo) {
   if (nuevo === 'en_preparacion') return !impEsDigital(d);
   if (nuevo === 'esperando_docs' || nuevo === 'esperando_firmas' || nuevo === 'rechazado') return true;
-  if (nuevo === 'archivado') return !(d.confirmacion_impresa && d.archivero);
+  if (nuevo === 'archivado') return !(d.confirmacion_impresa && d.archivero && (!impTieneEst() || d.estatal));
   return false;
 }
 
@@ -6755,6 +6817,8 @@ function abrirImpMove(id, nuevo) {
   $('imvMotivo').value = d.motivo_rechazo || '';
   $('imvArchivero').value = d.archivero || '';
   $('imvConf').checked = !!d.confirmacion_impresa;
+  $('imvEstWrap').classList.toggle('hidden', !(nuevo === 'archivado' && impTieneEst()));
+  $('imvEst').checked = d.estatal === 'enviado'; $('imvEstNo').checked = d.estatal === 'no_aplica';
   $('imvFalta').placeholder = nuevo === 'esperando_firmas' ? 'Ej. firma de la esposa' : 'Ej. W-2 de la esposa, acta del bebé';
   $('overlayIMV').classList.remove('hidden');
   (pideFalta ? $('imvFalta') : nuevo === 'rechazado' ? $('imvMotivo') : nuevo === 'en_preparacion' ? $('imvRecoger') : $('imvArchivero')).focus();
@@ -6784,6 +6848,11 @@ async function confirmarImpMove() {
     if (!a) { toast('Dime en qué archivero o cajón lo guardas.', true); $('imvArchivero').focus(); return; }
     if (!$('imvConf').checked && !confirm('¿Archivar sin marcar que ya imprimiste la confirmación?')) return;
     extra.archivero = a; extra.confirmacion_impresa = $('imvConf').checked;
+    if (impTieneEst()) {
+      if ($('imvEst').checked) { extra.estatal = 'enviado'; extra.estatal_fecha = d.estatal === 'enviado' && d.estatal_fecha ? d.estatal_fecha : hoyStr(); }
+      else if ($('imvEstNo').checked) { extra.estatal = 'no_aplica'; extra.estatal_fecha = null; }
+      else if (!confirm('¿Archivar sin haber mandado el estatal?')) return;
+    }
   }
   $('btnImv').disabled = true;
   try {
@@ -7089,6 +7158,7 @@ function renderImpDetalle() {
     '<div class="f hidden" id="ipMotivoWrap"><label for="ipMotivo">Motivo del rechazo</label><input id="ipMotivo" type="text" value="' + esc(d.motivo_rechazo || '') + '"></div>' +
     '<div class="f2"><div class="f"><label for="ipArch">Archivero / cajón</label><input id="ipArch" type="text" value="' + esc(d.archivero || '') + '" placeholder="Ej. Archivero 2, cajón B"></div>' +
     '<div class="f"><label>&nbsp;</label><label style="display:flex;gap:10px;align-items:center;cursor:pointer;margin-top:10px"><input id="ipConf" type="checkbox" style="width:auto"' + (d.confirmacion_impresa ? ' checked' : '') + '> Confirmación impresa</label></div></div>' +
+    (impTieneEst() ? estLinea('ip', d, '🏛 Declaración estatal') : ((declaraciones || []).length ? '<div class="it-nota">Para marcar el estatal, corre el <b>paso 23</b> en Supabase.</div>' : '')) +
     '<div class="f"><label for="ipNotas">Notas</label><textarea id="ipNotas" style="min-height:60px">' + esc(d.notas || '') + '</textarea></div>' +
     '<div class="acts" style="margin-top:6px"><button class="btn-primary" id="btnIpGuardar" data-ip="guardar">Guardar cambios</button></div></div>';
 
@@ -7160,6 +7230,8 @@ async function guardarImpDetalle() {
   } else payload.motivo_rechazo = null;
   if (nuevo === 'archivado' && !payload.archivero) { toast('Dime en qué archivero o cajón lo guardas.', true); $('ipArch').focus(); return; }
   payload.estado = nuevo;
+  const est = impTieneEst() ? estLeer('ip', d) : null;
+  if (est) Object.assign(payload, est);
   if (impTienePaso13() && $('ipModo')) { payload.modalidad = $('ipModo').value; payload.recoger_fecha = $('ipRecoger').value || null; }
   $('btnIpGuardar').disabled = true;
   try {
@@ -7249,6 +7321,8 @@ const itCliente = i => clientePorId(i.cliente_id) || {};
 const itTramite = i => (tramites || []).find(x => String(x.id) === String(i.tramite_id));
 const itCartasDe = i => itCartasMap.get(String(i.id)) || [];
 const itCartaAbierta = c => !c.respondida && (c.tipo === 'evidencia' || c.tipo === 'otra');
+const itTieneEst = () => Array.isArray(itins) && itins.length > 0 && 'estatal' in itins[0];
+const itFaltaEst = i => itTieneEst() && !!i.numero_ultimos4 && !i.negado && !i.estatal;
 function itEstado(i) {
   if (i.numero_ultimos4) return 'listo';
   if (i.negado) return 'negado';
@@ -7273,7 +7347,8 @@ function itBadgeDias(i) {
 }
 function itAvance(i) {
   const c = (on, t) => '<span class="' + (on ? 'on' : '') + '">' + (on ? '✔ ' : '') + t + '</span>';
-  return '<div class="it-av">' + c(i.docs_entregados, 'Docs') + c(i.w7_firmada, 'W-7') + c(i.enviado, 'Enviado') + c(!!i.numero_ultimos4, 'Número') + '</div>';
+  return '<div class="it-av">' + c(i.docs_entregados, 'Docs') + c(i.w7_firmada, 'W-7') + c(i.enviado, 'Enviado') + c(!!i.numero_ultimos4, 'Número') +
+    (itTieneEst() && i.numero_ultimos4 && !i.negado ? (i.estatal === 'no_aplica' ? '<span>Sin estatal</span>' : c(i.estatal === 'enviado', 'Estatal')) : '') + '</div>';
 }
 
 function renderItin() {
@@ -7285,8 +7360,9 @@ function renderItin() {
     return;
   }
   // resumen
-  let porEnviar = 0, esperando = 0, evidencia = 0, listos = 0, tarde = 0, porCobrar = 0;
+  let porEnviar = 0, esperando = 0, evidencia = 0, listos = 0, tarde = 0, porCobrar = 0, sinEst = 0;
   itins.forEach(i => {
+    if (itFaltaEst(i)) sinEst++;
     const e = itEstado(i);
     if (e === 'porenviar') porEnviar++;
     if (e === 'esperando') { esperando++; if ((itDiasEnviado(i) || 0) >= 77) tarde++; }
@@ -7299,7 +7375,7 @@ function renderItin() {
     '<div class="mbox ' + (porEnviar ? 'm-yellow' : '') + '"><span>Listos para enviar</span><b>' + porEnviar + '</b><small>docs y W-7 completos</small></div>' +
     '<div class="mbox"><span>Esperando al IRS</span><b>' + esperando + '</b><small>' + (tarde ? tarde + ' con más de 11 semanas' : 'tardan de 7 a 11 semanas') + '</small></div>' +
     '<div class="mbox ' + (evidencia ? 'm-red' : '') + '"><span>Piden evidencia</span><b>' + evidencia + '</b><small>' + (evidencia ? 'hay que responder' : 'nada pendiente') + '</small></div>' +
-    '<div class="mbox m-green"><span>Números recibidos</span><b>' + listos + '</b><small>' + (porCobrar > 0 ? 'Por cobrar: ' + money(porCobrar) : 'todo cobrado') + '</small></div>';
+    '<div class="mbox ' + (sinEst ? 'm-yellow' : 'm-green') + '"><span>Números recibidos</span><b>' + listos + '</b><small>' + (sinEst ? '🏛 ' + sinEst + ' falta' + (sinEst === 1 ? '' : 'n') + ' mandar el estatal' + (porCobrar > 0 ? ' · por cobrar ' + money(porCobrar) : '') : (porCobrar > 0 ? 'Por cobrar: ' + money(porCobrar) : 'todo cobrado')) + '</small></div>';
 
   // cartas sin ubicar
   const sin = (itCartas || []).filter(c => c.itin_id == null);
@@ -7314,7 +7390,7 @@ function renderItin() {
   const filas = [];
   itins.forEach(i => {
     const e = itEstado(i);
-    if (fl === 'activos' ? e === 'listo' : (fl !== 'todos' && e !== fl)) return;
+    if (fl === 'estatal' ? !itFaltaEst(i) : fl === 'activos' ? (e === 'listo' && !itFaltaEst(i)) : (fl !== 'todos' && e !== fl)) return;
     const c = itCliente(i);
     if (q) {
       const bolsa = normTexto([i.titular_nombre, c.nombre, i.numero_ultimos4, i.titular_nacimiento, i.titular_nacimiento ? fechaSolo(i.titular_nacimiento) : ''].join(' '));
@@ -7323,19 +7399,20 @@ function renderItin() {
     }
     filas.push({ i, e, c, t: itTramite(i) });
   });
-  filas.sort((a, b) => IT_ESTADOS[a.e].rank - IT_ESTADOS[b.e].rank || Number(b.i.id) - Number(a.i.id));
+  const itRank = x => itFaltaEst(x.i) ? 1.5 : IT_ESTADOS[x.e].rank;
+  filas.sort((a, b) => itRank(a) - itRank(b) || Number(b.i.id) - Number(a.i.id));
   $('itContador').textContent = filas.length + (filas.length === 1 ? ' ITIN' : ' ITIN');
   body.innerHTML = filas.map(({ i, e, c, t }) => {
     const f = t ? finanzas(t) : null;
     return '<tr data-id="' + esc(i.id) + '"><td><b>' + esc(i.titular_nombre) + '</b><br><small class="muted">' + esc(IT_REL[i.relacion] || '') + (i.tipo === 'renovacion' ? ' · renovación' : '') + (i.titular_nacimiento ? ' · nació ' + esc(fechaSolo(i.titular_nacimiento)) : '') + '</small></td>' +
       '<td>' + esc(c.nombre || '—') + (i.relacion === 'cliente' ? '' : '') + '</td>' +
-      '<td><span class="badge ' + IT_ESTADOS[e].cls + '">' + IT_ESTADOS[e].t + '</span>' + (i.numero_ultimos4 ? '<br><small class="muted">••• •• ' + esc(i.numero_ultimos4) + '</small>' : '') + '</td>' +
+      '<td><span class="badge ' + IT_ESTADOS[e].cls + '">' + IT_ESTADOS[e].t + '</span>' + (i.numero_ultimos4 ? '<br><small class="muted">••• •• ' + esc(i.numero_ultimos4) + '</small>' : '') + (itFaltaEst(i) ? '<br><span class="badge b-wait" style="padding:2px 8px;font-size:11px;margin-top:4px">🏛 Falta mandar estatal</span>' : '') + '</td>' +
       '<td>' + itAvance(i) + '</td><td>' + itBadgeDias(i) + '</td>' +
       '<td class="num">' + (t && t.monto != null ? money(t.monto) : '—') + '</td><td>' + (f ? badgeCobro(f) : '—') + '</td></tr>';
   }).join('');
   if (!filas.length) {
     vacio.classList.remove('hidden');
-    vacio.innerHTML = (q || fl !== 'activos') ? 'Ningún ITIN coincide con tu búsqueda.' : (itins.length ? 'No hay ITIN en proceso. 🎉' : 'Todavía no hay ITIN.<br>Agrega el primero con «+ Nuevo ITIN».');
+    vacio.innerHTML = (fl === 'estatal' && !q) ? 'No hay estatales pendientes. 🎉' : (q || fl !== 'activos') ? 'Ningún ITIN coincide con tu búsqueda.' : (itins.length ? 'No hay ITIN en proceso. 🎉' : 'Todavía no hay ITIN.<br>Agrega el primero con «+ Nuevo ITIN».');
   } else vacio.classList.add('hidden');
 }
 $('itTbody').addEventListener('click', e => {
@@ -7403,6 +7480,7 @@ function renderItinFicha() {
     '<div class="it-line">' + chk('itfW7', i.w7_firmada, 'W-7 firmada') + dt('itfW7F', i.w7_fecha) + '</div>' +
     '<div class="it-line">' + chk('itfEnv', i.enviado, 'Ya se mandó por correo al IRS') + dt('itfEnvF', i.enviado_fecha) + '</div>' +
     (dias !== null && !i.numero_ultimos4 && !i.negado ? '<div class="muted" style="font-size:12.5px;font-weight:700;margin:-2px 0 8px">Van ' + (dias < 7 ? dias + ' días' : Math.floor(dias / 7) + ' semanas') + ' desde que se mandó (el IRS tarda de 7 a 11 semanas).</div>' : '') +
+    (itTieneEst() && i.numero_ultimos4 && !i.negado ? estLinea('itf', i, '🏛 Declaración estatal (ya con el ITIN se puede mandar por e-file)') : '') +
     '<div class="f2"><div class="f"><label for="itfGuia">Guía / número de rastreo</label><input id="itfGuia" type="text" value="' + esc(i.envio_guia || '') + '"></div>' +
     '<div class="f"><label for="itfCosto">Costo del envío (USD)</label><input id="itfCosto" type="number" min="0" step="0.01" value="' + (i.envio_costo != null ? esc(i.envio_costo) : '') + '" placeholder="0.00"></div></div>' +
     '<div class="f"><label for="itfMet">Cómo se pagó el envío</label><select id="itfMet">' + metOpts + '</select></div>' +
@@ -7417,6 +7495,7 @@ function renderItinFicha() {
       '<div class="dacts" style="margin:0"><button class="btn btn-sm" data-it="vernum">' + (itNumVisto ? 'Ocultar' : 'Ver número') + '</button>' +
       (itNumVisto ? '<button class="btn btn-sm" data-it="copiar">📋 Copiar</button>' : '') +
       '<button class="btn btn-sm" data-it="cambiarnum">Cambiar</button></div></div>' +
+      (itFaltaEst(i) ? '<div class="it-nota" style="margin-top:8px">🏛 Ya llegó el número: <b>falta mandar la declaración estatal</b>. Cuando la mandes, márcalo arriba en <b>Avance</b> y dale Guardar cambios.</div>' : '') +
       '<div class="muted" style="font-size:12px;font-weight:600;margin-top:6px">Se guarda cifrado; cada vez que alguien lo abre queda registrado.</div>';
   } else {
     h += '<div class="f2" style="align-items:end"><div class="f"><label for="itfNum">Número de ITIN recibido (9 dígitos, empieza con 9)</label><input id="itfNum" type="text" inputmode="numeric" autocomplete="off" placeholder="9XX-XX-XXXX"></div>' +
@@ -7525,6 +7604,8 @@ async function guardarItinFicha() {
     negado: neg, negado_fecha: neg ? (i.negado_fecha || hoy) : null,
     notas: $('itfNotas').value.trim() || null, actualizado_nombre: nombrePerfil
   };
+  const est = itTieneEst() ? estLeer('itf', i) : null;
+  if (est) Object.assign(payload, est);
   $('btnItfGuardar').disabled = true;
   try {
     const { data, error } = await supabaseClient.from('itins').update(payload).eq('id', i.id).select();
@@ -7570,7 +7651,7 @@ async function guardarItinNumero() {
     if (error) throw error;
     $('itfNum').value = '';
     itNumEdit = false; itNumVisto = null;
-    toast('ITIN guardado (cifrado). 🎉');
+    toast('ITIN guardado (cifrado). 🎉' + (itTieneEst() ? ' Ahora falta mandar el estatal.' : ''));
     await itRecargarTodo();
     itCargarLog(i.id);
   } catch (e) { toast('No pude guardar el número: ' + e.message, true); }
