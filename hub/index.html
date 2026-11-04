@@ -360,6 +360,25 @@ a.btn-primary{display:inline-flex;align-items:center;gap:6px}
 .pb-file:hover{background:#EEF3FA}
 .pb-subir{cursor:pointer}
 .pb-card{margin-bottom:22px;border-left:4px solid #F0B429}
+.vivo-dot{width:9px;height:9px;border-radius:50%;background:#C3CCD8;display:inline-block;margin-right:8px;vertical-align:middle}
+.vivo-dot.on{background:#1f9d55;box-shadow:0 0 0 3px rgba(31,157,85,.18)}
+.resp-aviso{margin-bottom:16px}
+.cat-row{display:grid;grid-template-columns:1fr 110px 34px;gap:8px;margin-bottom:6px;align-items:center}
+.cmp-ok{opacity:.6}.cmp-ok b::after{content:' ✔';color:#1f9d55}
+tr.us-off td{color:var(--muted)}
+.fila-mas td{text-align:center;color:var(--muted);font-size:13px;background:#F7F9FB}
+.cli-res{display:flex;flex-wrap:wrap;gap:8px;margin:-4px 0 16px}
+.cli-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-weight:600;font-size:13px;cursor:pointer;color:var(--ink)}
+.cli-chip:hover{background:#F3F6FA}.cli-chip .badge{font-size:11px;padding:1px 7px}
+.dia-card{margin-bottom:22px;border-left:4px solid #2f6fdb}
+.dia-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:6px}
+.dia-it{display:flex;align-items:center;gap:12px;text-align:left;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 12px;cursor:pointer;font:inherit;color:var(--ink)}
+.dia-it:disabled{cursor:default;opacity:.55}
+.dia-it.on{border-color:#9DBCEB;background:#F2F7FE}.dia-it.urg{border-color:#F1B5AF;background:#FFF5F4}
+.dia-it:not(:disabled):hover{filter:brightness(.98);transform:translateY(-1px)}
+.dia-n{flex:none;min-width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font:800 18px var(--font-d,inherit);background:#EEF2F6;color:var(--muted)}
+.dia-it.on .dia-n{background:#2f6fdb;color:#fff}.dia-it.urg .dia-n{background:#E53935;color:#fff}
+.dia-t{font-weight:600;font-size:13.5px;line-height:1.3}.dia-t small{display:block;color:var(--muted);font-weight:500;font-size:12px}
 .btn-rech{color:#B42318;border-color:#F1B5AF;background:#FFF5F4;font-weight:700}.btn-rech:hover{background:#FDE4E1;border-color:#E8857B}
 .btn-wa-soft{background:#E7F8EE;border-color:#9FDDB6;color:#0F7A38;font-weight:700}.btn-wa-soft:hover{background:#D3F2E0;border-color:#6FCB92}
 .seg-card{margin-bottom:22px;border-left:4px solid #17B04F}
@@ -596,6 +615,7 @@ window.addEventListener('error', function (e) {
       <button data-page="solicitudes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>Solicitudes <span class="badge b-bad hidden" id="solBadge" style="padding:0 8px;font-size:11.5px"></span></button>
       <div class="navgrp hidden" id="navgrpNeg">Negocio</div>
       <button data-page="finanzas" id="navFinanzas" class="hidden"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 16v-5M12 16V7M17 16v-3"/></svg>Reportes</button>
+      <button data-page="usuarios" id="navUsuarios" class="hidden"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21v-1a6 6 0 0 1 12 0v1"/><path d="M19 8v6M16 11h6"/></svg>Usuarios</button>
     </nav>
     <div class="side-foot">
       <div class="user-row">
@@ -610,10 +630,10 @@ window.addEventListener('error', function (e) {
     <header class="topbar">
       <h1 id="pageTitle">Dashboard</h1>
       <div class="gsearch">
-        <input id="gBuscar" type="search" placeholder="Buscar cliente por nombre o teléfono" autocomplete="off" aria-label="Buscar cliente">
+        <input id="gBuscar" type="search" placeholder="Buscar cliente, teléfono, caja #101, recibo R-0012…" autocomplete="off" aria-label="Buscar">
         <div class="gres hidden" id="gRes"></div>
       </div>
-      <div class="top-acts"><button class="btn btn-sm" id="btnRefrescar" onclick="actualizarDatos()" title="Traer lo último que capturó el equipo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 21v-5h5"/></svg><span>Actualizar</span></button><button class="btn btn-sm hidden" id="btnAjustes" onclick="abrirNegocio()"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/></svg><span>Datos del negocio</span></button><div class="fecha" id="fechaHoy"></div></div>
+      <div class="top-acts"><span class="vivo-dot" id="vivoDot" title="Sin conexión en vivo"></span><button class="btn btn-sm" id="btnRefrescar" onclick="actualizarDatos()" title="Traer lo último que capturó el equipo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 21v-5h5"/></svg><span>Actualizar</span></button><button class="btn btn-sm hidden" id="btnAjustes" onclick="abrirNegocio()"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/></svg><span>Datos del negocio</span></button><div class="fecha" id="fechaHoy"></div></div>
     </header>
 
     <div class="content">
@@ -627,6 +647,8 @@ window.addEventListener('error', function (e) {
           <button class="btn" onclick="abrirRapido('consulta')">💬 Consulta <small>alguien pregunta algo</small></button>
           <button class="btn btn-wa-soft" onclick="abrirSeguimiento()">📲 Seguimiento <small>recordar escribirle</small></button>
         </div>
+        <div id="dashResp"></div>
+        <div id="dashDia"></div>
         <div id="dashSeg"></div>
         <div id="dashPb"></div>
         <div class="stats">
@@ -724,6 +746,7 @@ window.addEventListener('error', function (e) {
           <select class="filtro" id="impModo" onchange="renderImpuestos()"><option value="">Presencial y digital</option><option value="presencial">Solo presenciales</option><option value="digital">Solo digitales</option></select>
           <span class="count" id="impContador"></span>
           <span class="spacer"></span>
+          <button class="btn" onclick="abrirCampana()">📣 Campaña de temporada</button>
           <button class="btn-primary" onclick="abrirImpNueva()">+ Nueva declaración</button>
         </div>
         <div class="imp-sum" id="impResumen"></div>
@@ -733,6 +756,15 @@ window.addEventListener('error', function (e) {
       </div>
 
       <!-- ITIN (REGISTRO) -->
+      <div class="page" id="page-usuarios">
+        <div class="toolbar">
+          <span class="muted" style="font-weight:600">Quién puede entrar al Hub y qué puede hacer.</span>
+          <span class="spacer"></span>
+          <button class="btn" onclick="renderUsuarios(true)">↻ Recargar</button>
+          <button class="btn-primary" onclick="abrirUsuarioNuevo()">+ Nuevo usuario</button>
+        </div>
+        <div id="usBody"></div>
+      </div>
       <div class="page" id="page-pobox">
         <div class="toolbar">
           <input class="search" id="pbBuscar" type="search" placeholder="Buscar número de caja, nombre, teléfono o persona autorizada" oninput="renderPobox()">
@@ -862,6 +894,8 @@ window.addEventListener('error', function (e) {
         <div class="cal-bar">
           <button class="btn-primary" onclick="abrirGastoForm()">+ Registrar gasto</button>
           <button class="btn" onclick="abrirFijos()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 2l4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>Gastos fijos</button>
+          <button class="btn" id="btnRespaldo" onclick="respaldoCompleto()">💾 Respaldo completo</button>
+          <button class="btn" onclick="abrirBitacora()">🗂 Bitácora</button>
           <button class="btn" onclick="exportarBalance()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>Exportar a Excel</button>
         </div>
         <div id="repBody"></div>
@@ -1363,6 +1397,45 @@ window.addEventListener('error', function (e) {
   </div>
 </div>
 
+<!-- BITÁCORA -->
+<div class="overlay hidden" id="overlayAUD" onclick="if(event.target===this)cerrarBitacora()">
+  <div class="modal" style="max-width:640px" role="dialog" aria-modal="true" aria-labelledby="audTitulo">
+    <div class="dhead"><h3 id="audTitulo">🗂 Bitácora</h3><button class="btn btn-sm" onclick="cerrarBitacora()">Cerrar</button></div>
+    <div class="dsub" style="margin-bottom:10px">Quién borró o corrigió algo, y cuándo (los últimos 300 movimientos).</div>
+    <div id="audBody"></div>
+  </div>
+</div>
+
+<!-- CAMPAÑA DE TEMPORADA -->
+<div class="overlay hidden" id="overlayCMP" onclick="if(event.target===this)cerrarCampana()">
+  <div class="modal" style="max-width:720px" role="dialog" aria-modal="true" aria-labelledby="cmpTitulo">
+    <div class="dhead"><h3 id="cmpTitulo">📣 Campaña de temporada</h3><button class="btn btn-sm" onclick="cerrarCampana()">Cerrar</button></div>
+    <div class="dsub" style="margin-bottom:12px">Clientes que hicieron impuestos con ustedes y todavía no regresan este año. Escríbeles por WhatsApp con un toque.</div>
+    <div class="f2">
+      <div class="f"><label for="cmpPasado">Hicieron impuestos de</label><select id="cmpPasado"></select></div>
+      <div class="f"><label for="cmpActual">…pero no tienen todavía los de</label><select id="cmpActual"></select></div>
+    </div>
+    <div class="f"><label for="cmpMsg">Mensaje ({nombre} se cambia por el nombre de cada cliente)</label><textarea id="cmpMsg" style="min-height:80px"></textarea></div>
+    <div class="muted" id="cmpCuenta" style="font-weight:700;margin:4px 0 6px"></div>
+    <div id="cmpBody"></div>
+  </div>
+</div>
+
+<!-- NUEVO USUARIO -->
+<div class="overlay hidden" id="overlayUN" onclick="if(event.target===this)cerrarUsuarioNuevo()">
+  <div class="modal" style="max-width:460px" role="dialog" aria-modal="true" aria-labelledby="unTitulo">
+    <h3 id="unTitulo">👥 Nuevo usuario</h3>
+    <div class="f"><label for="unNombre">Nombre *</label><input id="unNombre" type="text" placeholder="Ej. Fernanda"></div>
+    <div class="f"><label for="unCorreo">Correo *</label><input id="unCorreo" type="email" placeholder="correo@gmail.com"></div>
+    <div class="f2">
+      <div class="f"><label for="unRol">Rol</label><select id="unRol"><option value="staff">Equipo</option><option value="dueno">Administrador</option></select></div>
+      <div class="f"><label for="unPw">Contraseña temporal</label><input id="unPw" type="text" autocomplete="off"></div>
+    </div>
+    <div class="hint" style="background:#eef3fa;color:#3d5573">Al crearlo te copio el link, el correo y la contraseña para que se los mandes por WhatsApp.</div>
+    <div class="acts"><button class="btn" onclick="cerrarUsuarioNuevo()">Cancelar</button><button class="btn-primary" id="btnUnGuardar" onclick="guardarUsuarioNuevo()">Crear usuario</button></div>
+  </div>
+</div>
+
 <!-- MODAL SEGUIMIENTO WHATSAPP -->
 <div class="overlay hidden" id="overlaySG" onclick="if(event.target===this)cerrarSeguimiento()">
   <div class="modal" style="max-width:560px" role="dialog" aria-modal="true" aria-labelledby="modalSGTitulo">
@@ -1531,6 +1604,11 @@ window.addEventListener('error', function (e) {
       <div class="f"><label for="ngSquare">Link de pago de Square (tarjeta)</label><input id="ngSquare" type="url" placeholder="https://square.link/u/…">
         <small class="qhelp">En Square: Pagos en línea → Links de pago → crea uno y pega aquí el link. En el invoice sale como botón y con código QR.</small></div>
       <div class="f"><label for="ngPago">Otras formas de pago (texto libre)</label><textarea id="ngPago" style="min-height:56px" placeholder="Ej. Efectivo o tarjeta en la oficina"></textarea></div>
+    </div>
+    <div class="sec"><h4>💲 Catálogo de precios</h4>
+      <div class="muted" style="font-size:12.5px;margin-bottom:8px">Con esto el Hub pone el precio solo en Cobro rápido y en Nuevo trámite cuando escribes el servicio.</div>
+      <div id="ngCat"></div>
+      <div class="dacts" style="margin-top:6px"><button type="button" class="btn btn-sm" onclick="catAgregar()">+ Agregar servicio</button><button type="button" class="btn btn-sm" onclick="catSugeridos()">Cargar los precios de la página web</button></div>
     </div>
     <div class="f"><label for="ngNotaInvoice">Nota que va por defecto en los invoices</label><textarea id="ngNotaInvoice" style="min-height:56px"></textarea></div>
     <div class="f"><label for="ngPoliticaDep">Texto del recibo de depósito</label><textarea id="ngPoliticaDep" style="min-height:56px"></textarea></div>
@@ -1842,6 +1920,7 @@ async function entrar(user) {
   $('userRol').classList.toggle('admin', rol === 'dueno');
   $('navFinanzas').classList.toggle('hidden', rol !== 'dueno');
   $('navgrpNeg').classList.toggle('hidden', rol !== 'dueno');
+  $('navUsuarios').classList.toggle('hidden', rol !== 'dueno');
   $('loginScreen').classList.add('hidden');
   $('app').classList.remove('hidden');
   ponerFecha();
@@ -1862,6 +1941,7 @@ async function entrar(user) {
   llenarTiposList();
   renderDashboard();
   renderCalendario();
+  iniciarEnVivo();
 }
 
 /* ---------- CARGA DE DATOS (todo en paralelo: antes iba una por una) ---------- */
@@ -1915,7 +1995,7 @@ function ponerFecha() {
 }
 
 /* ---------- NAVEGACIÓN ---------- */
-const titulos = { dashboard:'Dashboard', clientes:'Clientes', tramites:'Trámites', citas:'Calendario', tareas:'Tareas', impuestos:'Impuestos', itin:'ITIN', pobox:'P.O. Boxes', solicitudes:'Solicitudes', finanzas:'Reportes' };
+const titulos = { dashboard:'Dashboard', clientes:'Clientes', tramites:'Trámites', citas:'Calendario', tareas:'Tareas', impuestos:'Impuestos', itin:'ITIN', pobox:'P.O. Boxes', usuarios:'Usuarios', solicitudes:'Solicitudes', finanzas:'Reportes' };
 
 function irA(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('show'));
@@ -1931,6 +2011,7 @@ function irA(page) {
   if (page === 'impuestos') renderImpuestos();
   if (page === 'itin') renderItin();
   if (page === 'pobox') renderPobox();
+  if (page === 'usuarios') renderUsuarios();
   if (page === 'solicitudes') renderSolicitudes();
   if (page === 'finanzas') renderReportes();
 }
@@ -2023,6 +2104,8 @@ function refrescarTodo() {
 /* ---------- DASHBOARD ---------- */
 function renderDashboard() {
   $('stClientes').textContent = clientes.length;
+  renderAvisoRespaldo();
+  renderDashDia();
   renderDashSeg();
   renderDashPb();
   const pbAlerta = (poboxes || []).filter(p => pbEstado(p) === 'vencida').length;
@@ -2101,13 +2184,24 @@ $('page-dashboard').addEventListener('click', e => {
 });
 
 /* ---------- CLIENTES: LISTA ---------- */
+/* listas largas: se dibujan por partes para que abran al instante */
+const LIM_PASO = 200;
+const filaMasPre = (arr, fn) => arr.map(fn).join('');
+let limCli = LIM_PASO, limCliClave = '', limTr = LIM_PASO, limTrClave = '';
+function filaMas(nCols, mostrados, total, act) {
+  if (total <= mostrados) return '';
+  return '<tr class="fila-mas"><td colspan="' + nCols + '">Mostrando ' + mostrados.toLocaleString('es-MX') + ' de ' + total.toLocaleString('es-MX') +
+    ' · <button class="btn btn-sm" data-mas="' + act + '">Ver ' + Math.min(LIM_PASO, total - mostrados) + ' más</button> <button class="btn btn-sm" data-mas="' + act + '-todos">Ver todos</button></td></tr>';
+}
 function renderClientes() {
   const q = $('buscar').value.trim();
-  const lista = clientes.filter(c => coincide(q, [c.nombre, c.telefono, c.correo, c.direccion]));
-  $('contador').textContent = lista.length + (lista.length === 1 ? ' cliente' : ' clientes');
-  $('tbodyClientes').innerHTML = lista.map(c =>
+  if (q !== limCliClave) { limCliClave = q; limCli = LIM_PASO; }
+  const todos = clientes.filter(c => coincide(q, [c.nombre, c.telefono, c.correo, c.direccion]));
+  const lista = todos.slice(0, limCli);
+  $('contador').textContent = todos.length + (todos.length === 1 ? ' cliente' : ' clientes');
+  $('tbodyClientes').innerHTML = filaMasPre(lista, c =>
     '<tr data-id="' + esc(c.id) + '"><td><b>' + esc(c.nombre) + '</b></td><td>' + esc(fmtTel(c.telefono) || '—') + '</td><td>' + esc(c.correo || '—') + '</td><td>' + esc(c.direccion || '—') + '</td></tr>'
-  ).join('');
+  ) + filaMas(4, lista.length, todos.length, 'cli');
   const vacio = $('clientesVacio');
   if (!lista.length) {
     vacio.classList.remove('hidden');
@@ -2117,7 +2211,9 @@ function renderClientes() {
   }
 }
 $('tbodyClientes').addEventListener('click', e => {
-  const tr = e.target.closest('tr');
+  const m = e.target.closest('[data-mas]');
+  if (m) { limCli = m.dataset.mas.endsWith('-todos') ? Infinity : limCli + LIM_PASO; renderClientes(); return; }
+  const tr = e.target.closest('tr[data-id]');
   if (tr) abrirPerfil(tr.dataset.id);
 });
 
@@ -2139,6 +2235,34 @@ function cerrarPerfil() {
   $('clientesLista').classList.remove('hidden');
 }
 
+/* chips con todo lo del cliente: cajas, ITIN, declaraciones, saldo, accesos */
+function cliResumenHtml(c) {
+  const ch = [];
+  (poboxes || []).filter(p => String(p.cliente_id) === String(c.id)).forEach(p => {
+    const e = PB_EST[pbEstado(p)];
+    ch.push('<button class="cli-chip" data-cr="pb" data-id="' + esc(p.id) + '">📬 Caja #' + esc(p.numero) + ' <span class="badge ' + e.cls + '">' + e.ico + ' ' + esc(pbDiasTxt(p)) + '</span></button>');
+  });
+  (itins || []).filter(i => String(i.cliente_id) === String(c.id)).forEach(i => {
+    const e = IT_ESTADOS[itEstado(i)];
+    ch.push('<button class="cli-chip" data-cr="it" data-id="' + esc(i.id) + '">🪪 ITIN ' + esc(i.relacion === 'cliente' ? '' : i.titular_nombre) + ' <span class="badge ' + e.cls + '">' + esc(e.t) + '</span></button>');
+  });
+  (declaraciones || []).filter(d => String(d.cliente_id) === String(c.id)).sort((a, b) => b.anio - a.anio).slice(0, 3).forEach(d => {
+    ch.push('<button class="cli-chip" data-cr="imp" data-id="' + esc(d.id) + '">🧾 Impuestos ' + esc(d.anio) + ' <span class="badge b-gray">' + esc(impNombreEstado(d.estado)) + '</span></button>');
+  });
+  const r = resumenCliente(c);
+  if (r.pendiente > 0) ch.push('<button class="cli-chip" data-cr="pagos">💵 <span class="badge b-bad">Debe ' + esc(money(r.pendiente)) + '</span></button>');
+  const na = (accesos || []).filter(a => String(a.cliente_id) === String(c.id)).length;
+  if (na) ch.push('<button class="cli-chip" data-cr="accesos">🔑 ' + na + (na === 1 ? ' acceso' : ' accesos') + '</button>');
+  return ch.length ? '<div class="cli-res">' + ch.join('') + '</div>' : '';
+}
+$('clientePerfil').addEventListener('click', e => {
+  const b = e.target.closest('[data-cr]'); if (!b) return;
+  const k = b.dataset.cr;
+  if (k === 'pb') abrirPb(b.dataset.id);
+  else if (k === 'it') abrirItinFicha(Number(b.dataset.id));
+  else if (k === 'imp') abrirImpDetalle(Number(b.dataset.id));
+  else { perfilTab = k; renderPerfil(); }
+});
 function renderPerfil() {
   const c = clientePorId(perfilId);
   if (!c) { cerrarPerfil(); return; }
@@ -2152,6 +2276,7 @@ function renderPerfil() {
     '<button class="btn btn-wa-soft" id="btnSegCli">📲 Seguimiento</button>' +
     '<button class="btn" id="btnEditar">Editar</button>' +
     (rol === 'dueno' ? '<button class="btn btn-danger" id="btnBorrar">Eliminar</button>' : '') + '</div>' +
+    cliResumenHtml(c) +
     '<div class="tabs" id="tabs">' + tabs.map(t => '<button data-tab="' + t[0] + '" class="' + (t[0] === perfilTab ? 'active' : '') + '">' + t[1] + '</button>').join('') + '</div>' +
     '<div class="card" id="tabBody"></div>';
 
@@ -2463,7 +2588,7 @@ function cerrarModal() { $('overlay').classList.add('hidden'); }
 
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
-  const orden = [['overlayPBR', cerrarPbRenovar], ['overlayPBF', cerrarPbForm], ['overlayPB', cerrarPb], ['overlaySG', cerrarSeguimiento], ['overlayR', cerrarReembolso], ['overlayQ', cerrarRapido], ['overlayNEG', cerrarNegocio], ['overlayIV', cerrarInvoiceForm], ['overlayDOC', cerrarDocumento], ['overlayGFF', cerrarFijoForm], ['overlayGA', cerrarGastoForm], ['overlayGF', cerrarFijos], ['overlayTR', cerrarTareaForm], ['overlayX', cerrarModalX], ['overlayA', cerrarModalA], ['overlayP', cerrarModalP], ['overlayT', cerrarModalT], ['overlayAP', cerrarAplicar], ['overlayDP', cerrarDepForm], ['overlayCF', cerrarCitaForm], ['overlayC', cerrarCita], ['overlayD', cerrarDetalle], ['overlay', cerrarModal], ['overlayIVS', cerrarVisita], ['overlayIMV', cerrarImpMove], ['overlayIMN', cerrarImpNueva], ['overlayIMP', cerrarImpDetalle], ['overlayITC', cerrarCarta], ['overlayITN', cerrarItinNuevo], ['overlayITF', cerrarItinFicha], ['overlaySQR', cerrarSolLink], ['overlaySOL', cerrarSol]];
+  const orden = [['overlayUN', cerrarUsuarioNuevo], ['overlayCMP', cerrarCampana], ['overlayAUD', cerrarBitacora], ['overlayPBR', cerrarPbRenovar], ['overlayPBF', cerrarPbForm], ['overlayPB', cerrarPb], ['overlaySG', cerrarSeguimiento], ['overlayR', cerrarReembolso], ['overlayQ', cerrarRapido], ['overlayNEG', cerrarNegocio], ['overlayIV', cerrarInvoiceForm], ['overlayDOC', cerrarDocumento], ['overlayGFF', cerrarFijoForm], ['overlayGA', cerrarGastoForm], ['overlayGF', cerrarFijos], ['overlayTR', cerrarTareaForm], ['overlayX', cerrarModalX], ['overlayA', cerrarModalA], ['overlayP', cerrarModalP], ['overlayT', cerrarModalT], ['overlayAP', cerrarAplicar], ['overlayDP', cerrarDepForm], ['overlayCF', cerrarCitaForm], ['overlayC', cerrarCita], ['overlayD', cerrarDetalle], ['overlay', cerrarModal], ['overlayIVS', cerrarVisita], ['overlayIMV', cerrarImpMove], ['overlayIMN', cerrarImpNueva], ['overlayIMP', cerrarImpDetalle], ['overlayITC', cerrarCarta], ['overlayITN', cerrarItinNuevo], ['overlayITF', cerrarItinFicha], ['overlaySQR', cerrarSolLink], ['overlaySOL', cerrarSol]];
   for (const [id, fn] of orden) {
     if (!$(id).classList.contains('hidden')) { fn(); break; }
   }
@@ -2558,13 +2683,16 @@ function renderTramites() {
     }
     filas.push({ t, f });
   });
+  const claveT = [q, fe, fc, fs].join('|');
+  if (claveT !== limTrClave) { limTrClave = claveT; limTr = LIM_PASO; }
   $('contadorT').textContent = filas.length + (filas.length === 1 ? ' trámite' : ' trámites');
-  $('tbodyTramites').innerHTML = filas.map(({ t, f }) =>
+  const totalT = filas.length;
+  $('tbodyTramites').innerHTML = filas.slice(0, limTr).map(({ t, f }) =>
     '<tr data-id="' + esc(t.id) + '"><td><b>' + esc(nombreTramite(t)) + '</b>' + (sinCliente(t) ? ' <span class="badge b-gray">Sin cliente</span>' : '') + '</td><td>' + esc(t.tipo || '—') + '</td><td>' + badgeTramite(t) + '</td>' +
     '<td class="num">' + (t.monto != null ? money(t.monto) : '—') + '</td>' +
     '<td class="num">' + (pagos === null ? '—' : money(f.pagado)) + '</td><td>' + badgeCobro(f) + '</td>' +
     '<td>' + esc(t.fecha_limite ? fechaSolo(t.fecha_limite) : '—') + '</td><td>' + seguimientoBadge(t) + '</td></tr>'
-  ).join('');
+  ).join('') + filaMas(8, Math.min(limTr, totalT), totalT, 'tr');
   if (!filas.length) {
     vacio.classList.remove('hidden');
     vacio.innerHTML = (q || fe || fc || fs) ? 'Ningún trámite coincide con tu búsqueda.' : 'Todavía no hay trámites.<br>Agrega el primero con «Nuevo trámite».';
@@ -2572,8 +2700,11 @@ function renderTramites() {
     vacio.classList.add('hidden');
   }
 }
+$('tTipo').addEventListener('input', () => { const pc = precioCatalogo($('tTipo').value); if (pc != null && !$('tMonto').value) $('tMonto').value = pc.toFixed(2); });
 $('tbodyTramites').addEventListener('click', e => {
-  const tr = e.target.closest('tr');
+  const m = e.target.closest('[data-mas]');
+  if (m) { limTr = m.dataset.mas.endsWith('-todos') ? Infinity : limTr + LIM_PASO; renderTramites(); return; }
+  const tr = e.target.closest('tr[data-id]');
   if (tr) abrirDetalle(Number(tr.dataset.id));
 });
 
@@ -2971,12 +3102,12 @@ $('qPagado').addEventListener('click', e => { const b = e.target.closest('button
 $('qChips').addEventListener('click', e => {
   const b = e.target.closest('.chip'); if (!b) return;
   $('qConcepto').value = b.dataset.c;
-  const pr = qPrecioGuardado(b.dataset.c);
+  const pc = precioCatalogo(b.dataset.c), pr = pc != null ? pc : qPrecioGuardado(b.dataset.c);
   if (pr != null && !$('qPrecio').value) $('qPrecio').value = pr;
   qMarcarChip(); qActualizar();
   (qModo === 'deposito' ? (pr != null ? $('qDep') : $('qPrecio')) : (pr != null ? $('qCant') : $('qPrecio'))).focus();
 });
-$('qConcepto').addEventListener('input', qMarcarChip);
+$('qConcepto').addEventListener('input', () => { qMarcarChip(); const pc = precioCatalogo($('qConcepto').value); if (pc != null && !$('qPrecio').value) { $('qPrecio').value = pc.toFixed(2); qActualizar(); } });
 $('qCliente').addEventListener('input', qClienteAyuda);
 ['qCant', 'qPrecio', 'qDep'].forEach(id => $(id).addEventListener('input', qActualizar));
 
@@ -3073,6 +3204,268 @@ async function emitirInvoiceRapido(t0, items) {
   const doc = await emitirDocumento({ p_tipo: 'invoice', p_tramite_id: Number(t.id), p_pago_id: null, p_deposito_id: null, p_cliente_id: t.cliente_id != null ? Number(t.cliente_id) : null, p_idioma: 'es', p_total: subtotal, p_datos: datos });
   if (doc) { docIdioma = 'es'; refrescarTodo(); abrirDocumento(doc.id); toast('Invoice ' + docNumero(doc) + ' emitido.'); }
 }
+
+/* =====================================================================
+   💾 RESPALDO COMPLETO · 🗂 BITÁCORA · 🔄 EN VIVO · 💲 CATÁLOGO · 📣 CAMPAÑA · 👥 USUARIOS
+   ===================================================================== */
+
+/* ---------- 💾 Respaldo completo (Excel + archivo de respaldo) ---------- */
+const RESP_TABLAS = ['clientes', 'tramites', 'pagos', 'actualizaciones', 'accesos', 'citas', 'depositos', 'tareas', 'gastos', 'gastos_fijos', 'documentos', 'negocio',
+  'declaraciones', 'declaraciones_visitas', 'itins', 'itin_cartas', 'intake_envios', 'pobox', 'pobox_periodos', 'perfiles', 'auditoria'];
+const RESP_KEY = 'amx_ultimo_respaldo';
+function respUltimo() { try { const v = localStorage.getItem(RESP_KEY); return v ? Number(v) : null; } catch (e) { return null; } }
+function cargarLibXLSX(cb) {
+  if (typeof XLSX !== 'undefined') { cb(true); return; }
+  const sc = document.createElement('script');
+  sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  sc.onload = () => cb(true); sc.onerror = () => cb(false);
+  document.head.appendChild(sc);
+}
+function bajarArchivo(nombre, blob) {
+  const url = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = url; a.download = nombre; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+async function respaldoCompleto() {
+  if (rol !== 'dueno') return;
+  const b = $('btnRespaldo'); if (b) b.disabled = true;
+  toast('Preparando el respaldo… no cierres esta ventana.');
+  const datos = {}, faltan = [];
+  for (const t of RESP_TABLAS) {
+    try {
+      let filas = await leerTodo(t, [['id', true]]);
+      if (t === 'intake_envios') filas = filas.map(x => { const y = Object.assign({}, x); delete y.datos_cifrados; return y; }); // nunca copiar SSN/banco
+      datos[t] = filas;
+    } catch (e) { faltan.push(t); }
+  }
+  const fecha = hoyStr(), base = 'respaldo_americamex_' + fecha;
+  const total = Object.values(datos).reduce((s, x) => s + x.length, 0);
+  bajarArchivo(base + '.json', new Blob([JSON.stringify({ app: 'AmericaMex Hub', fecha: new Date().toISOString(), por: nombrePerfil, tablas: datos }, null, 1)], { type: 'application/json' }));
+  cargarLibXLSX(ok => {
+    if (ok) {
+      try {
+        const wb = XLSX.utils.book_new();
+        Object.keys(datos).forEach(t => {
+          const filas = datos[t].map(r => { const o = {}; Object.keys(r).forEach(k => { const v = r[k]; o[k] = v !== null && typeof v === 'object' ? JSON.stringify(v) : v; }); return o; });
+          XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(filas.length ? filas : [{ '(vacía)': '' }]), t.slice(0, 31));
+        });
+        XLSX.writeFile(wb, base + '.xlsx');
+      } catch (e) { console.error(e); }
+    }
+    try { localStorage.setItem(RESP_KEY, String(Date.now())); } catch (e) {}
+    if (b) b.disabled = false;
+    renderDashboard();
+    toast('Respaldo listo: ' + total.toLocaleString('es-MX') + ' registros' + (ok ? ' (Excel + archivo de respaldo)' : ' (archivo de respaldo)') + '. Guárdalo en tu Google Drive o USB.' + (faltan.length ? ' Sin acceso a: ' + faltan.join(', ') : ''));
+  });
+}
+function renderAvisoRespaldo() {
+  const box = $('dashResp'); if (!box) return;
+  if (rol !== 'dueno') { box.innerHTML = ''; return; }
+  const u = respUltimo(), dias = u ? Math.floor((Date.now() - u) / 86400000) : null;
+  if (dias !== null && dias < 7) { box.innerHTML = ''; return; }
+  box.innerHTML = '<div class="hint dep resp-aviso">💾 <span>' + (dias === null ? 'Todavía no has hecho un respaldo desde esta computadora.' : 'Tu último respaldo fue hace ' + dias + ' días.') +
+    ' Hazlo una vez por semana: baja todo en Excel y guárdalo en tu Drive o USB.</span><button class="btn btn-sm" onclick="respaldoCompleto()">Respaldar ahora</button></div>';
+}
+
+/* ---------- 🗂 Bitácora de borrados y correcciones (solo administradores) ---------- */
+const AUD_TABLA = { clientes: 'Cliente', tramites: 'Trámite', pagos: 'Pago', gastos: 'Gasto', declaraciones: 'Declaración', itins: 'ITIN', pobox: 'P.O. Box', citas: 'Cita', depositos: 'Depósito' };
+function audResumen(r) {
+  const x = r.registro || {}, n = r.nuevo || {};
+  if (r.tabla === 'pagos') return r.accion === 'UPDATE' ? money(x.monto) + ' ' + (METODOS[x.metodo] || x.metodo || '') + ' → ' + money(n.monto) + ' ' + (METODOS[n.metodo] || n.metodo || '') : money(x.monto) + ' · ' + (METODOS[x.metodo] || x.metodo || '') + ' · ' + fechaSolo(x.fecha);
+  if (r.tabla === 'clientes') return x.nombre || '';
+  if (r.tabla === 'tramites') return (x.tipo || 'Trámite') + (x.monto != null ? ' · ' + money(x.monto) : '') + (x.cliente_id != null ? ' · ' + nombreDeCliente(x.cliente_id) : (x.cliente_nombre ? ' · ' + x.cliente_nombre : ''));
+  if (r.tabla === 'gastos') return (x.concepto || '') + ' · ' + money(x.monto);
+  if (r.tabla === 'pobox') return 'Caja #' + x.numero + ' · ' + (x.titular_nombre || '');
+  if (r.tabla === 'itins') return x.titular_nombre || '';
+  if (r.tabla === 'declaraciones') return (x.anio || '') + ' · ' + nombreDeCliente(x.cliente_id);
+  if (r.tabla === 'citas') return (x.tipo || 'Cita') + ' · ' + (x.inicio ? fechaCorta(x.inicio) : '');
+  if (r.tabla === 'depositos') return money(x.monto);
+  return '';
+}
+async function abrirBitacora() {
+  if (rol !== 'dueno') return;
+  $('overlayAUD').classList.remove('hidden');
+  $('audBody').innerHTML = '<div class="empty">Cargando…</div>';
+  const { data, error } = await supabaseClient.from('auditoria').select('*').order('id', { ascending: false }).limit(300);
+  if (error) { $('audBody').innerHTML = '<div class="empty">Falta correr el <b>SQL del paso 22</b> en Supabase para activar la bitácora.</div>'; return; }
+  if (!data || !data.length) { $('audBody').innerHTML = '<div class="empty">Nadie ha borrado ni corregido nada todavía. 👍</div>'; return; }
+  $('audBody').innerHTML = data.map(r => '<div class="row"><div><b>' + (r.accion === 'UPDATE' ? '✏️ Corrigió ' : '🗑 Borró ') + esc((AUD_TABLA[r.tabla] || r.tabla).toLowerCase()) + '</b><small>' + esc(audResumen(r)) + '</small></div>' +
+    '<div style="text-align:right;flex:none"><b style="font-size:13px">' + esc(r.por || '—') + '</b><small>' + esc(fechaCorta(r.fecha)) + '</small></div></div>').join('');
+}
+function cerrarBitacora() { $('overlayAUD').classList.add('hidden'); }
+
+/* ---------- 🔄 En vivo: si alguien del equipo captura algo, se ve al instante ---------- */
+const VIVO_CARGA = {
+  clientes: () => cargarClientes(), tramites: () => cargarTramites(), pagos: () => cargarPagos(), actualizaciones: () => cargarActs(), tareas: () => cargarTareas(),
+  citas: () => cargarCitas(), depositos: () => cargarDepositos(), documentos: () => cargarDocumentos(), declaraciones: () => cargarDeclaraciones(),
+  declaraciones_visitas: () => cargarDeclaraciones(), itins: () => cargarItins(), itin_cartas: () => cargarItins(), intake_envios: () => cargarSolicitudes(),
+  pobox: () => cargarPobox(), pobox_periodos: () => cargarPobox(), gastos: () => (rol === 'dueno' ? cargarGastos() : null)
+};
+let vivoCanal = null, vivoPend = new Set(), vivoTimer = null;
+function vivoEstado(on) { const el = $('vivoDot'); if (el) { el.classList.toggle('on', !!on); el.title = on ? 'En vivo: los cambios del equipo aparecen solos' : 'Sin conexión en vivo (usa Actualizar)'; } }
+function iniciarEnVivo() {
+  if (vivoCanal || typeof supabaseClient.channel !== 'function') return;
+  try {
+    vivoCanal = supabaseClient.channel('hub-vivo');
+    Object.keys(VIVO_CARGA).forEach(t => vivoCanal.on('postgres_changes', { event: '*', schema: 'public', table: t }, () => { vivoPend.add(t); vivoProgramar(); }));
+    vivoCanal.subscribe(st => vivoEstado(st === 'SUBSCRIBED'));
+  } catch (e) { console.error('En vivo:', e); vivoEstado(false); }
+}
+function vivoProgramar() { clearTimeout(vivoTimer); vivoTimer = setTimeout(vivoAplicar, 900); }
+async function vivoAplicar() {
+  // si estás escribiendo en una ventana, espera a que termines para no borrarte lo que llevas
+  const a = document.activeElement;
+  if (hayVentanaAbierta() && a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) { vivoTimer = setTimeout(vivoAplicar, 2500); return; }
+  if (cargandoTodo || !vivoPend.size) return;
+  const ts = [...vivoPend]; vivoPend.clear();
+  const fns = [...new Set(ts.map(t => VIVO_CARGA[t]))];
+  try { await Promise.all(fns.map(f => f())); indexar(); refrescarTodo(); } catch (e) { console.error('En vivo:', e); }
+}
+
+/* ---------- 💲 Catálogo de precios ---------- */
+const CAT_SUGERIDO = [['Declaración personal (1040 + W-2)', 120], ['Declaración con dependientes', 145], ['Declaración 1099 / trabajo por tu cuenta', 175], ['ITIN + declaración', 225],
+  ['Apostilla + traducción', 150], ['Doble nacionalidad', 450], ['Notarización (por firma)', 15], ['Traducción certificada', 45], ['P.O. Box 6 meses', 65], ['P.O. Box 1 año', 130], ['Copias', 0.5], ['Impresiones', 0.5]];
+const catalogo = () => (negocio && Array.isArray(negocio.catalogo) ? negocio.catalogo : []).filter(x => x && x.nombre);
+function precioCatalogo(nombre) {
+  const k = normTexto(nombre); if (!k) return null;
+  const it = catalogo().find(x => normTexto(x.nombre) === k);
+  return it && it.precio != null && !isNaN(Number(it.precio)) ? Number(it.precio) : null;
+}
+function catPintar(lista) {
+  $('ngCat').innerHTML = lista.map((x, i) => '<div class="cat-row"><input type="text" class="cat-n" value="' + esc(x.nombre) + '" placeholder="Servicio"><input type="number" class="cat-p" min="0" step="0.01" value="' + (x.precio != null ? esc(x.precio) : '') + '" placeholder="0.00"><button type="button" class="xbtn" data-cat-del="' + i + '" title="Quitar">✕</button></div>').join('') ||
+    '<div class="muted" style="font-size:12.5px;padding:6px 0">Sin servicios todavía.</div>';
+}
+function catLeer() { return [...document.querySelectorAll('#ngCat .cat-row')].map(r => ({ nombre: r.querySelector('.cat-n').value.trim(), precio: r.querySelector('.cat-p').value === '' ? null : r2(r.querySelector('.cat-p').value) })).filter(x => x.nombre); }
+$('ngCat').addEventListener('click', e => { const b = e.target.closest('[data-cat-del]'); if (!b) return; const l = catLeer(); l.splice(Number(b.dataset.catDel), 1); catPintar(l); });
+function catAgregar() { const l = catLeer(); l.push({ nombre: '', precio: null }); catPintar(l); const ns = document.querySelectorAll('#ngCat .cat-n'); if (ns.length) ns[ns.length - 1].focus(); }
+function catSugeridos() { const l = catLeer(), ya = new Set(l.map(x => normTexto(x.nombre))); CAT_SUGERIDO.forEach(([n, p]) => { if (!ya.has(normTexto(n))) l.push({ nombre: n, precio: p }); }); catPintar(l); }
+
+/* ---------- 📣 Campaña de temporada: clientes del año pasado que no han regresado ---------- */
+const CMP_KEY = 'amx_campana_escritos';
+let cmpEscritos = new Set();
+function cmpCargarEscritos() { try { cmpEscritos = new Set(JSON.parse(localStorage.getItem(CMP_KEY) || '[]')); } catch (e) { cmpEscritos = new Set(); } }
+function cmpGuardarEscritos() { try { localStorage.setItem(CMP_KEY, JSON.stringify([...cmpEscritos])); } catch (e) {} }
+function abrirCampana() {
+  if (declaraciones === null) { toast('Falta correr el SQL del paso 12 en Supabase.', true); return; }
+  const anios = [...new Set((declaraciones || []).map(d => Number(d.anio)))].sort((a, b) => b - a);
+  if (!anios.length) { toast('Todavía no hay declaraciones registradas para comparar.', true); return; }
+  const actual = Math.max(anios[0], new Date().getFullYear() - 1);
+  const opts = (sel, lista) => lista.map(a => '<option value="' + a + '"' + (a === sel ? ' selected' : '') + '>' + a + '</option>').join('');
+  const todos = [...new Set(anios.concat([actual, actual - 1]))].sort((a, b) => b - a);
+  $('cmpActual').innerHTML = opts(actual, todos);
+  $('cmpPasado').innerHTML = opts(actual - 1, todos);
+  $('cmpMsg').value = 'Hola {nombre} 👋, te saluda ' + ((negocio && negocio.nombre) || 'AmericaMex Tax') + '. ¡Ya empezó la temporada de impuestos! El año pasado te ayudamos con tu declaración y queremos volver a hacerlo. ¿Te agendamos? Puedes adelantar tus datos desde tu celular aquí: ' + solUrlBase();
+  cmpCargarEscritos();
+  $('overlayCMP').classList.remove('hidden');
+  renderCampana();
+}
+function cerrarCampana() { $('overlayCMP').classList.add('hidden'); }
+function cmpLista() {
+  const act = Number($('cmpActual').value), pas = Number($('cmpPasado').value);
+  const ya = new Set((declaraciones || []).filter(d => Number(d.anio) === act).map(d => String(d.cliente_id)));
+  const vistos = new Set(), out = [];
+  (declaraciones || []).filter(d => Number(d.anio) === pas && !ya.has(String(d.cliente_id))).forEach(d => {
+    const k = String(d.cliente_id); if (vistos.has(k)) return; vistos.add(k);
+    const c = clientePorId(d.cliente_id); if (c) out.push({ c, d });
+  });
+  return out.sort((a, b) => String(a.c.nombre).localeCompare(String(b.c.nombre), 'es'));
+}
+function renderCampana() {
+  const lista = cmpLista(), act = $('cmpActual').value;
+  const clave = c => act + ':' + c.id;
+  const hechos = lista.filter(x => cmpEscritos.has(clave(x.c))).length;
+  $('cmpCuenta').textContent = lista.length ? lista.length + (lista.length === 1 ? ' cliente no ha regresado' : ' clientes no han regresado') + ' · ya les escribiste a ' + hechos : '';
+  $('cmpBody').innerHTML = lista.length ? lista.map(({ c, d }) => {
+    const ok = cmpEscritos.has(clave(c));
+    return '<div class="row' + (ok ? ' cmp-ok' : '') + '"><div><b>' + esc(c.nombre) + '</b><small>' + esc((fmtTel(c.telefono) || 'sin teléfono') + ' · ' + d.anio + ': ' + impNombreEstado(d.estado) + (d.preparador ? ' · preparó ' + d.preparador : '')) + '</small></div>' +
+      '<div style="display:flex;gap:6px;flex:none">' + (c.telefono ? '<button class="btn btn-sm btn-wa-hub" data-cmp="wa" data-id="' + esc(c.id) + '">📲 ' + (ok ? 'Otra vez' : 'Mandar') + '</button>' : '<span class="badge b-gray">sin teléfono</span>') +
+      '<button class="btn btn-sm" data-cmp="ok" data-id="' + esc(c.id) + '">' + (ok ? '↩ Quitar ✔' : '✔ Ya le escribí') + '</button></div></div>';
+  }).join('') : '<div class="empty">🎉 Todos los clientes de ' + esc($('cmpPasado').value) + ' ya tienen su declaración de ' + esc(act) + '.</div>';
+}
+$('cmpBody').addEventListener('click', e => {
+  const b = e.target.closest('[data-cmp]'); if (!b) return;
+  const c = clientePorId(b.dataset.id); if (!c) return;
+  const k = $('cmpActual').value + ':' + c.id;
+  if (b.dataset.cmp === 'wa') {
+    const msg = $('cmpMsg').value.replace(/\{nombre\}/g, segPrimerNombre(c.nombre));
+    window.open('https://wa.me/' + waNumero(c.telefono) + '?text=' + encodeURIComponent(msg), '_blank', 'noopener');
+    cmpEscritos.add(k);
+  } else { if (cmpEscritos.has(k)) cmpEscritos.delete(k); else cmpEscritos.add(k); }
+  cmpGuardarEscritos(); renderCampana();
+});
+['cmpActual', 'cmpPasado'].forEach(i => $(i).addEventListener('change', renderCampana));
+
+/* ---------- 👥 Usuarios (solo administradores) ---------- */
+let usuarios = null;
+async function equipoFn(body) {
+  const { data, error } = await supabaseClient.functions.invoke('equipo', { body });
+  if (error) {
+    let m = error.message;
+    try { const j = await error.context.json(); if (j && j.error) m = j.error; } catch (x) { /* sin detalle */ }
+    if (/not found|404|Failed to send/i.test(m)) m = 'Falta desplegar la función «equipo» en Supabase (Edge Functions).';
+    throw new Error(m);
+  }
+  if (data && data.error) throw new Error(data.error);
+  return data;
+}
+async function renderUsuarios(recargar) {
+  const body = $('usBody'); if (!body) return;
+  if (rol !== 'dueno') { body.innerHTML = '<div class="card empty">🔒 Solo para administradores.</div>'; return; }
+  if (recargar || usuarios === null) {
+    body.innerHTML = '<div class="card empty">Cargando usuarios…</div>';
+    try { usuarios = (await equipoFn({ accion: 'listar' })).usuarios || []; }
+    catch (e) { body.innerHTML = '<div class="card empty">' + esc(e.message) + '</div>'; usuarios = null; return; }
+  }
+  const fmtAcc = v => v ? fechaCorta(v) : 'nunca ha entrado';
+  body.innerHTML = '<div class="tablewrap"><table><thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Último acceso</th><th>Estado</th><th></th></tr></thead><tbody>' +
+    usuarios.map(u => '<tr' + (u.activo ? '' : ' class="us-off"') + '><td><b>' + esc(u.nombre || '—') + '</b>' + (u.soy_yo ? ' <span class="badge b-blue">tú</span>' : '') + '</td><td>' + esc(u.correo || '') + '</td>' +
+      '<td>' + (u.activo && !u.soy_yo ? '<select class="filtro us-rol" data-id="' + esc(u.id) + '"><option value="staff"' + (u.rol === 'staff' ? ' selected' : '') + '>Equipo</option><option value="dueno"' + (u.rol === 'dueno' ? ' selected' : '') + '>Administrador</option></select>' : esc(u.rol === 'dueno' ? 'Administrador' : 'Equipo')) + '</td>' +
+      '<td>' + esc(fmtAcc(u.ultimo_acceso)) + '</td><td>' + (u.activo ? '<span class="badge b-ok">Activo</span>' : '<span class="badge b-gray">Sin acceso</span>') + '</td>' +
+      '<td style="white-space:nowrap;text-align:right">' + (u.activo ? '<button class="btn btn-sm" data-us="pw" data-id="' + esc(u.id) + '">🔑 Contraseña</button>' : '') +
+      (u.soy_yo ? '' : (u.activo ? ' <button class="btn btn-sm btn-rech" data-us="off" data-id="' + esc(u.id) + '">Quitar acceso</button>' : ' <button class="btn btn-sm" data-us="on" data-id="' + esc(u.id) + '">↩ Dar acceso otra vez</button>')) + '</td></tr>').join('') +
+    '</tbody></table></div><div class="muted" style="font-size:12.5px;margin-top:10px">«Equipo» puede capturar todo; «Administrador» además ve Reportes, gastos, bitácora y usuarios, y puede borrar. Quitar acceso no borra nada de lo que esa persona capturó.</div>';
+}
+function genPassword() { const c = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let s = ''; const a = new Uint32Array(10); crypto.getRandomValues(a); a.forEach(n => { s += c[n % c.length]; }); return s.slice(0, 4) + '-' + s.slice(4, 10); }
+function abrirUsuarioNuevo() { $('unNombre').value = ''; $('unCorreo').value = ''; $('unRol').value = 'staff'; $('unPw').value = genPassword(); $('overlayUN').classList.remove('hidden'); $('unNombre').focus(); }
+function cerrarUsuarioNuevo() { $('overlayUN').classList.add('hidden'); }
+async function guardarUsuarioNuevo() {
+  const nombre = $('unNombre').value.trim(), correo = $('unCorreo').value.trim(), pw = $('unPw').value.trim();
+  if (!nombre) { toast('Escribe el nombre.', true); $('unNombre').focus(); return; }
+  if (!correo) { toast('Escribe el correo.', true); $('unCorreo').focus(); return; }
+  if (pw.length < 8) { toast('La contraseña debe tener al menos 8 caracteres.', true); $('unPw').focus(); return; }
+  $('btnUnGuardar').disabled = true;
+  try {
+    await equipoFn({ accion: 'crear', nombre, correo, password: pw, rol: $('unRol').value });
+    cerrarUsuarioNuevo();
+    try { await navigator.clipboard.writeText('Hub de AmericaMex\n' + location.href.split('?')[0].split('#')[0] + '\nCorreo: ' + correo + '\nContraseña: ' + pw); } catch (e) {}
+    toast('Usuario creado. Copié los datos de acceso para que se los mandes (pídele que cambie la contraseña).');
+    await renderUsuarios(true); await cargarEquipo();
+  } catch (e) { toast('No se pudo crear: ' + e.message, true); }
+  finally { $('btnUnGuardar').disabled = false; }
+}
+$('usBody').addEventListener('change', async e => {
+  const s = e.target.closest('.us-rol'); if (!s) return;
+  try { await equipoFn({ accion: 'actualizar', id: s.dataset.id, rol: s.value }); toast('Rol actualizado.'); await renderUsuarios(true); }
+  catch (x) { toast('No se pudo: ' + x.message, true); renderUsuarios(true); }
+});
+$('usBody').addEventListener('click', async e => {
+  const b = e.target.closest('[data-us]'); if (!b) return;
+  const u = (usuarios || []).find(x => String(x.id) === String(b.dataset.id)); if (!u) return;
+  try {
+    if (b.dataset.us === 'pw') {
+      const pw = prompt('Nueva contraseña para ' + (u.nombre || u.correo) + ' (mínimo 8 caracteres):', genPassword());
+      if (pw === null) return;
+      await equipoFn({ accion: 'password', id: u.id, password: pw.trim() });
+      try { await navigator.clipboard.writeText(pw.trim()); } catch (x) {}
+      toast('Contraseña cambiada (la copié para que se la mandes).');
+    } else if (b.dataset.us === 'off') {
+      if (!confirm('¿Quitarle el acceso al Hub a ' + (u.nombre || u.correo) + '? Ya no podrá entrar. Lo que capturó se queda.')) return;
+      await equipoFn({ accion: 'desactivar', id: u.id }); toast('Acceso quitado.'); await renderUsuarios(true);
+    } else if (b.dataset.us === 'on') {
+      await equipoFn({ accion: 'reactivar', id: u.id }); toast('Acceso devuelto.'); await renderUsuarios(true);
+    }
+  } catch (x) { toast('No se pudo: ' + x.message, true); }
+});
 
 /* =====================================================================
    📬 P.O. BOXES (renta de cajas de correo)
@@ -3715,6 +4108,42 @@ function segPartes(t) {
   const tipo = String(t.titulo || '').split(' · ')[1] || '';
   return { tel, msg: desc, nombre, tipo };
 }
+
+/* ----- ☀️ Tu día: todo lo que toca hoy en una sola lista ----- */
+function renderDashDia() {
+  const box = $('dashDia'); if (!box) return;
+  const hoy = hoyStr(), ahora = new Date();
+  const items = [];
+  const add = (n, ico, txt, sub, ir, urg) => items.push({ n, ico, txt, sub, ir, urg });
+  const cH = (citas || []).filter(c => String(c.inicio).slice(0, 10) === hoy && ['programada', 'confirmada'].includes(c.estado)).sort((a, b) => String(a.inicio).localeCompare(String(b.inicio)));
+  const prox = cH.find(c => new Date(c.inicio) >= ahora);
+  add(cH.length, '📅', cH.length === 1 ? 'cita hoy' : 'citas hoy', prox ? 'la próxima a las ' + new Date(prox.inicio).toLocaleTimeString('es-MX', { hour: 'numeric', minute: '2-digit' }) : '', 'citas', false);
+  const tMias = (tareas || []).filter(t => !esSeg(t) && t.estado !== 'hecha' && t.fecha_limite && String(t.fecha_limite).slice(0, 10) <= hoy && (esMia(t) || !t.asignado_a));
+  add(tMias.length, '✅', tMias.length === 1 ? 'tarea tuya para hoy o atrasada' : 'tareas tuyas para hoy o atrasadas', '', 'tareas', tMias.some(t => String(t.fecha_limite).slice(0, 10) < hoy));
+  const seg = (tareas || []).filter(t => esSeg(t) && t.estado !== 'hecha' && (!t.fecha_limite || String(t.fecha_limite).slice(0, 10) <= hoy));
+  add(seg.length, '📲', seg.length === 1 ? 'WhatsApp por mandar' : 'WhatsApps por mandar', '', 'dashSeg', false);
+  const solN = (solicitudes || []).filter(x => x.estado === 'nuevo').length;
+  add(solN, '📥', solN === 1 ? 'solicitud por capturar' : 'solicitudes por capturar', 'se borran a las 48 h', 'solicitudes', true);
+  const pbV = (poboxes || []).filter(p => pbEstado(p) === 'vencida').length, pbP = (poboxes || []).filter(p => pbEstado(p) === 'porvencer').length;
+  add(pbV + pbP, '📬', 'P.O. Boxes por renovar', pbV ? pbV + ' vencidas' : '', 'pobox', pbV > 0);
+  const impT = (declaraciones || []).filter(d => !['aceptado', 'archivado'].includes(d.estado) && impNivel(d).n === 2).length;
+  add(impT, '🧾', impT === 1 ? 'declaración atorada' : 'declaraciones atoradas', 'llevan demasiado en su cuadro', 'impuestos', true);
+  let viejos = 0;
+  (tramites || []).forEach(t => { const f = finanzas(t); if ((f.k === 'sin_pago' || f.k === 'parcial') && t.fecha_creacion && (ahora - new Date(t.fecha_creacion)) / 86400000 > 30) viejos++; });
+  add(viejos, '💵', viejos === 1 ? 'cobro con más de 30 días' : 'cobros con más de 30 días', '', 'tramites-debe', false);
+  const pend = items.filter(x => x.n > 0);
+  box.innerHTML = '<div class="card dia-card"><div class="seg-head"><h2>☀️ Tu día</h2><span class="muted">' + (pend.length ? 'esto es lo que toca' : 'todo al corriente 🎉') + '</span></div>' +
+    '<div class="dia-grid">' + items.map(x => '<button class="dia-it' + (x.n ? (x.urg ? ' urg' : ' on') : '') + '" data-dia="' + x.ir + '"' + (x.n ? '' : ' disabled') + '>' +
+      '<span class="dia-n">' + (x.n ? x.n : '✓') + '</span><span class="dia-t">' + x.ico + ' ' + esc(x.txt) + (x.sub && x.n ? '<small>' + esc(x.sub) + '</small>' : '') + '</span></button>').join('') + '</div></div>';
+}
+$('dashDia').addEventListener('click', e => {
+  const b = e.target.closest('[data-dia]'); if (!b || b.disabled) return;
+  const k = b.dataset.dia;
+  if (k === 'dashSeg') { $('dashSeg').scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+  if (k === 'tramites-debe') { irA('tramites'); $('filtroCobro').value = 'debe'; renderTramites(); return; }
+  if (k === 'pobox') { irA('pobox'); $('pbFiltro').value = 'activas'; renderPobox(); return; }
+  irA(k);
+});
 
 /* ----- tarjeta del Dashboard ----- */
 function renderDashSeg() {
@@ -4985,6 +5414,7 @@ function llenarTiposList() {
   if (!el) return;
   const usados = [...variantesTipos().values()].sort((a, b) => b.n - a.n).map(mejorVariante);
   const ya = new Set(usados.map(normTexto));
+  catalogo().forEach(x => { if (!ya.has(normTexto(x.nombre))) { usados.push(x.nombre); ya.add(normTexto(x.nombre)); } });
   el.innerHTML = usados.concat(TIPOS_BASE.filter(x => !ya.has(normTexto(x)))).map(x => '<option value="' + esc(x) + '"></option>').join('');
 }
 
@@ -5971,6 +6401,7 @@ function abrirNegocio() {
   const n = negocio;
   $('ngNombre').value = n.nombre || ''; $('ngEslogan').value = n.eslogan || ''; $('ngDireccion').value = n.direccion || '';
   $('ngTelefono').value = n.telefono || ''; $('ngCorreo').value = n.correo || ''; $('ngWeb').value = n.sitio_web || '';
+  catPintar(catalogo());
   $('ngPago').value = n.datos_pago || ''; $('ngZelleNombre').value = n.zelle_nombre || ''; $('ngZelleDato').value = n.zelle_dato || ''; $('ngSquare').value = n.square_link || ''; $('ngNotaInvoice').value = n.nota_invoice || ''; $('ngPoliticaDep').value = n.politica_deposito || ''; $('ngPie').value = n.aviso_pie || '';
   $('overlayNEG').classList.remove('hidden');
   $('ngDireccion').focus();
@@ -5987,11 +6418,11 @@ async function guardarNegocio() {
   };
   $('btnGuardarNeg').disabled = true;
   try {
-    const pagosNuevos = { zelle_nombre: v('ngZelleNombre') || null, zelle_dato: v('ngZelleDato') || null, square_link: v('ngSquare') || null };
+    const pagosNuevos = { zelle_nombre: v('ngZelleNombre') || null, zelle_dato: v('ngZelleDato') || null, square_link: v('ngSquare') || null, catalogo: catLeer() };
     let r = await supabaseClient.from('negocio').update(Object.assign({}, payload, pagosNuevos)).eq('id', 1).select();
-    if (r.error && /zelle_|square_/.test(r.error.message || '')) {
+    if (r.error && /zelle_|square_|catalogo/.test(r.error.message || '')) {
       r = await supabaseClient.from('negocio').update(payload).eq('id', 1).select();
-      if (!r.error) toast('Se guardó, pero falta correr el SQL del paso 20 para guardar Zelle y Square.', true);
+      if (!r.error) toast('Se guardó, pero falta correr el SQL del paso 20/22 para guardar Zelle, Square y el catálogo.', true);
     }
     const { data, error } = r;
     if (error) throw error;
@@ -7672,24 +8103,49 @@ function solImprimirQR() {
 
 /* ---------- BUSCADOR GLOBAL (arriba): cliente por nombre o teléfono desde cualquier pantalla ---------- */
 let gSel = 0, gLista = [];
+function gResultados(q) {
+  const out = [], qn = normTexto(q), dig = q.replace(/\D/g, '');
+  const activos = id => (tramites || []).filter(t => String(t.cliente_id) === String(id) && esActivo(t)).length;
+  clientes.filter(c => coincide(q, [c.nombre, c.telefono, c.correo])).slice(0, 6).forEach(c => {
+    const n = activos(c.id);
+    out.push({ ico: '👤', t: c.nombre, sub: (fmtTel(c.telefono) || 'sin teléfono') + (n ? ' · ' + n + (n === 1 ? ' trámite activo' : ' trámites activos') : ''), ir: () => { irA('clientes'); abrirPerfil(c.id); } });
+  });
+  // P.O. Box: «#101», «101» o nombre del titular / autorizado
+  const qCaja = q.replace(/^#|^caja\s*/i, '').trim();
+  (poboxes || []).filter(p => String(p.numero) === qCaja || (qn.length >= 3 && normTexto([p.titular_nombre].concat(pbAutorizados(p).map(a => a.nombre)).join(' ')).includes(qn))).slice(0, 4).forEach(p => {
+    out.push({ ico: '📬', t: 'Caja #' + p.numero + ' · ' + p.titular_nombre, sub: PB_EST[pbEstado(p)].t + ' · ' + pbDiasTxt(p), ir: () => { irA('pobox'); abrirPb(p.id); } });
+  });
+  // recibos e invoices: R-0012, I-3, D-0001
+  const md = q.match(/^\s*([RID])\s*-?\s*0*(\d+)\s*$/i);
+  if (md) (documentos || []).filter(d => DOC_PREFIJO[d.tipo] === md[1].toUpperCase() && String(d.numero) === md[2]).forEach(d => {
+    out.push({ ico: '🧾', t: docTipoNombre(d) + ' ' + docNumero(d), sub: (d.datos && d.datos.cliente ? d.datos.cliente.nombre : '') + ' · ' + money(d.total) + (d.anulado ? ' · anulado' : ''), ir: () => abrirDocumento(d.id) });
+  });
+  // número de caso de un trámite
+  if (q.length >= 3) (tramites || []).filter(t => t.numero_caso && normTexto(t.numero_caso).includes(qn)).slice(0, 3).forEach(t => {
+    out.push({ ico: '📋', t: (t.tipo || 'Trámite') + ' · caso ' + t.numero_caso, sub: nombreTramite(t), ir: () => { irA('tramites'); abrirDetalle(t.id); } });
+  });
+  // ITIN de titulares que no son el cliente (esposa, hijos, papás)
+  if (qn.length >= 3) (itins || []).filter(i => i.relacion !== 'cliente' && normTexto(i.titular_nombre).includes(qn)).slice(0, 3).forEach(i => {
+    out.push({ ico: '🪪', t: 'ITIN · ' + i.titular_nombre, sub: 'de ' + (itCliente(i).nombre || '—') + ' · ' + IT_ESTADOS[itEstado(i)].t, ir: () => { irA('itin'); abrirItinFicha(i.id); } });
+  });
+  return out.slice(0, 12);
+}
 function gBuscarRender() {
   const q = $('gBuscar').value.trim(), box = $('gRes');
   if (!q) { box.classList.add('hidden'); box.innerHTML = ''; gLista = []; return; }
-  gLista = clientes.filter(c => coincide(q, [c.nombre, c.telefono, c.correo])).slice(0, 8);
+  gLista = gResultados(q);
   if (gSel >= gLista.length) gSel = 0;
-  const activos = id => (tramites || []).filter(t => String(t.cliente_id) === String(id) && esActivo(t)).length;
-  box.innerHTML = (gLista.length ? gLista.map((c, i) => {
-      const n = activos(c.id);
-      return '<button type="button" data-gi="' + i + '" class="' + (i === gSel ? 'sel' : '') + '"><b>' + esc(c.nombre) + '</b><small>' + esc(fmtTel(c.telefono) || 'sin teléfono') + (n ? ' · ' + n + (n === 1 ? ' trámite activo' : ' trámites activos') : '') + '</small></button>';
-    }).join('') : '<div class="gvacio">Ningún cliente coincide con «' + esc(q) + '»</div>') +
+  box.innerHTML = (gLista.length ? gLista.map((r, i) =>
+      '<button type="button" data-gi="' + i + '" class="' + (i === gSel ? 'sel' : '') + '"><b>' + r.ico + ' ' + esc(r.t) + '</b><small>' + esc(r.sub) + '</small></button>').join('')
+    : '<div class="gvacio">Nada coincide con «' + esc(q) + '»</div>') +
     '<button type="button" data-gnuevo="1" class="gnuevo">➕ Nuevo cliente</button>';
   box.classList.remove('hidden');
 }
 function gAbrir(i) {
-  const c = gLista[i];
-  if (!c) return;
+  const r = gLista[i];
+  if (!r) return;
   $('gBuscar').value = ''; gBuscarRender(); $('gBuscar').blur();
-  irA('clientes'); abrirPerfil(c.id);
+  r.ir();
 }
 $('gBuscar').addEventListener('input', () => { gSel = 0; gBuscarRender(); });
 $('gBuscar').addEventListener('focus', gBuscarRender);
