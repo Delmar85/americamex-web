@@ -375,6 +375,9 @@ a.btn-primary{display:inline-flex;align-items:center;gap:6px}
 .dt-panel.on{display:block}
 .dt-tot{font-size:13px;font-weight:700;color:#5a6b84;margin:6px 0 4px}
 .dia-ok{font-weight:700;color:var(--ok);padding:6px 2px}
+.dit-fila{display:grid;grid-template-columns:170px minmax(0,1fr) 150px 34px;gap:8px;align-items:center;margin-bottom:8px}
+.dit-fila input:disabled{background:var(--hover);color:var(--muted)}
+@media (max-width:640px){.dit-fila{grid-template-columns:1fr 34px;background:#F6F8FB;border-radius:12px;padding:10px}.dit-fila .dit-nom,.dit-fila .dit-nac{grid-column:1}.dit-fila .xbtn{grid-column:2;grid-row:1}}
 .pb-sinfecha-nota{font-size:12.5px;font-weight:600;color:#5a6b84;margin:-8px 0 14px}
 .vivo-dot{width:9px;height:9px;border-radius:50%;background:#C3CCD8;display:inline-block;margin-right:8px;vertical-align:middle}
 .vivo-dot.on{background:#1f9d55;box-shadow:0 0 0 3px rgba(31,157,85,.18)}
@@ -708,6 +711,12 @@ body.sin-red .app{padding-top:38px}
 .ms-fila.no{background:#FFF8F7}.ms-fila.no span,.ms-fila.no small{color:var(--bad)}
 .ms-ayuda{font-size:13px;line-height:1.6;color:#3d5573;background:#EEF3FA;border-radius:12px;padding:12px 14px;margin-bottom:12px}
 .ms-ayuda code{background:#fff;border:1px solid var(--line2);border-radius:6px;padding:1px 7px;font-size:12.5px}
+.wm-it{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;background:#fff;box-shadow:var(--shadow)}
+.wm-it.hecho{opacity:.75;box-shadow:none}
+.wm-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}.wm-top b{font-size:15.5px}.wm-top .muted{font-size:12.5px;font-weight:600;white-space:nowrap}
+.wm-sub{font-size:13px;color:var(--muted);font-weight:600;margin-top:3px}
+.wm-msg{margin-top:8px;padding:10px 12px;border-radius:10px;background:#F4F7FB;font-size:14px;white-space:pre-wrap;word-break:break-word}
+.wm-hechos{margin-top:14px}.wm-hechos summary{cursor:pointer;font-weight:700;color:var(--muted);padding:6px 0}
 #msTexto{min-height:150px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
 
 @media (max-width:1100px){.hd-kpis{grid-template-columns:1fr 1fr}}
@@ -768,7 +777,7 @@ window.addEventListener('error', function (e) {
       <button data-page="usuarios" id="navUsuarios" class="hidden"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21v-1a6 6 0 0 1 12 0v1"/><path d="M19 8v6M16 11h6"/></svg>Usuarios</button>
     </nav>
     <div class="side-foot">
-      <div class="ver" id="hubVer">AmericaMex Hub · v28</div>
+      <div class="ver" id="hubVer">AmericaMex Hub · v30</div>
       <div class="user-row">
         <div class="avatar" id="userInitial">D</div>
         <div class="who"><b id="userName">Usuario</b><span id="userRol" class="rol-tag">Asociado</span></div>
@@ -982,6 +991,7 @@ window.addEventListener('error', function (e) {
           </select>
           <span class="count" id="solContador"></span>
           <span class="spacer"></span>
+          <button class="btn hidden" id="btnWebMsgs" onclick="abrirWebMsgs()">📩 Mensajes de la página</button>
           <button class="btn-primary" onclick="abrirSolLink()">Enlace y QR del formulario</button>
         </div>
         <div class="it-nota">🔒 SSN, banco y datos de dependientes llegan <b>cifrados</b> y se borran solos a las 48 horas (o al instante cuando marcas la solicitud como capturada). Aquí solo se ven los últimos 4 del SSN.</div>
@@ -1142,6 +1152,7 @@ window.addEventListener('error', function (e) {
       <div class="f"><label for="inPrep">Preparador</label><input id="inPrep" type="text"></div>
     </div>
     <div class="f" id="inModoWrap"><label for="inModo">¿Cómo viene el cliente?</label><select id="inModo"><option value="presencial">Presencial (viene a la oficina)</option><option value="digital">Digital (todo por WhatsApp / en línea)</option></select></div>
+    <label class="checkline" style="margin:2px 0 14px"><input type="checkbox" id="inItin"> <span>🪪 Lleva solicitud de ITIN <span class="muted" style="font-weight:600">(te pido los nombres al guardar)</span></span></label>
     <div class="f"><label for="inFalta">¿Qué falta? (si aplica)</label><input id="inFalta" type="text" placeholder="Ej. 1099 de Uber, acta del bebé"></div>
     <div class="f"><label for="inNotas">Notas</label><textarea id="inNotas" style="min-height:60px"></textarea></div>
     <div class="acts">
@@ -1225,7 +1236,7 @@ window.addEventListener('error', function (e) {
 <div class="overlay z45 hidden" id="overlaySQR" onclick="if(event.target===this)cerrarSolLink()">
   <div class="modal" style="max-width:460px" role="dialog" aria-modal="true">
     <h3>Formulario para clientes</h3>
-    <div class="dsub" style="margin-bottom:12px">Mándalo por WhatsApp o enséñales el QR para que lo llenen en su celular.</div>
+    <div class="dsub" style="margin-bottom:12px">Mándalo por WhatsApp o enséñales el QR para que lo llenen en su celular. <b>Este enlace es el completo:</b> pide seguro social y banco, viajan cifrados y se borran cuando marcas «Ya capturé». El de la página web no los pide.</div>
     <div class="f"><label for="sqUrl">Enlace del formulario</label><input id="sqUrl" type="url" oninput="solQR()"></div>
     <div class="f"><label for="sqLang">Idioma con el que abre</label><select id="sqLang" onchange="solQR()"><option value="es">Español</option><option value="en">English</option></select></div>
     <div id="sqCanvas" style="text-align:center;margin:10px 0"></div>
@@ -1799,6 +1810,25 @@ window.addEventListener('error', function (e) {
 
 <div id="printArea"></div>
 
+<!-- IMPUESTOS: AGREGAR ITIN A LA DECLARACIÓN -->
+<div class="overlay z45 hidden" id="overlayDIT" onclick="if(event.target===this)cerrarDeclItin()">
+  <div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="ditTitulo">
+    <h3 id="ditTitulo">🪪 Solicitud de ITIN con esta declaración</h3>
+    <div class="dsub" id="ditInfo" style="margin-top:-8px"></div>
+    <label style="margin-bottom:8px">¿Quién necesita ITIN? <span class="muted" style="font-weight:600">(una persona por renglón)</span></label>
+    <div id="ditFilas"></div>
+    <button class="btn btn-sm" type="button" onclick="ditFila().querySelector('.dit-nom').focus()">＋ Otra persona</button>
+    <div class="f" style="margin-top:18px"><label>¿Cómo se cobra el ITIN?</label>
+      <div class="seg" id="ditCobro"><button type="button" data-c="incluido" class="active">Ya va incluido en la declaración</button><button type="button" data-c="aparte">Se cobra aparte</button></div>
+      <span class="qhelp" id="ditAyuda"></span></div>
+    <div class="f hidden" id="ditPrecioWrap"><label for="ditPrecio">Precio de cada ITIN</label><input id="ditPrecio" type="number" min="0" step="0.01"></div>
+    <div class="acts">
+      <button class="btn" onclick="cerrarDeclItin()">Cancelar</button>
+      <button class="btn-primary" id="btnDit" onclick="guardarDeclItin()">Agregar al registro de ITIN</button>
+    </div>
+  </div>
+</div>
+
 <div class="sin-red-bar hidden" id="sinRed" role="alert">📡 Sin internet. Lo que captures ahorita NO se guarda. Revisa el wifi.</div>
 
 <!-- CORTE DE CAJA -->
@@ -1821,6 +1851,16 @@ window.addEventListener('error', function (e) {
       <button class="btn-primary" id="btnCorte" onclick="guardarCorte()">Guardar corte</button>
     </div>
     <div id="ccHist" data-nosucio></div>
+  </div>
+</div>
+
+<!-- MENSAJES DE LA PÁGINA WEB -->
+<div class="overlay hidden" id="overlayWM" onclick="if(event.target===this)cerrarWebMsgs()">
+  <div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="wmTitulo">
+    <h3 id="wmTitulo">📩 Mensajes de la página web</h3>
+    <div class="dsub">Gente que llenó «¿Prefieres que te contactemos?» en la página. Contéstales y márcalos como atendidos.</div>
+    <div id="wmBody" data-nosucio></div>
+    <div class="acts"><button class="btn" onclick="cerrarWebMsgs()">Cerrar</button></div>
   </div>
 </div>
 
@@ -2163,7 +2203,7 @@ async function cargarTodo() {
       cargarClientes(), cargarTramites(), cargarPagos(), cargarActs(), cargarAccesos(),
       cargarCitas(), cargarDepositos(), cargarTareas(), cargarEquipo(),
       rol === 'dueno' ? cargarGastos() : null, rol === 'dueno' ? cargarGastosFijos() : null,
-      cargarDocumentos(), cargarNegocio(), cargarDeclaraciones(), cargarItins(), cargarPobox(), cargarSolicitudes(), cargarCortes()
+      cargarDocumentos(), cargarNegocio(), cargarDeclaraciones(), cargarItins(), cargarPobox(), cargarSolicitudes(), cargarCortes(), cargarWebMsgs()
     ]);
     indexar();
     ultimaCarga = Date.now();
@@ -2340,6 +2380,7 @@ $('dashTabs').addEventListener('click', e => {
 function renderDashboard() {
   $st('stClientes').textContent = clientes.length;
   renderAvisoRespaldo();
+  pintarWebBoton();
   renderDashHero();
   renderDashDia();
   renderDashSeg();
@@ -3464,7 +3505,7 @@ async function emitirInvoiceRapido(t0, items) {
 
 /* ---------- 💾 Respaldo completo (Excel + archivo de respaldo) ---------- */
 const RESP_TABLAS = ['clientes', 'tramites', 'pagos', 'actualizaciones', 'accesos', 'citas', 'depositos', 'tareas', 'gastos', 'gastos_fijos', 'documentos', 'negocio',
-  'declaraciones', 'declaraciones_visitas', 'itins', 'itin_cartas', 'intake_envios', 'pobox', 'pobox_periodos', 'perfiles', 'auditoria', 'cortes_caja'];
+  'declaraciones', 'declaraciones_visitas', 'itins', 'itin_cartas', 'intake_envios', 'pobox', 'pobox_periodos', 'perfiles', 'auditoria', 'cortes_caja', 'web_contactos'];
 const RESP_KEY = 'amx_ultimo_respaldo';
 function respUltimo() { try { const v = localStorage.getItem(RESP_KEY); return v ? Number(v) : null; } catch (e) { return null; } }
 function cargarLibXLSX(cb) {
@@ -4378,6 +4419,8 @@ function renderDashDia() {
   add(seg.length, '📲', seg.length === 1 ? 'WhatsApp por mandar' : 'WhatsApps por mandar', '', 'dashSeg', false);
   const solN = (solicitudes || []).filter(x => x.estado === 'nuevo').length;
   add(solN, '📥', solN === 1 ? 'solicitud por capturar' : 'solicitudes por capturar', 'se borran a las 48 h', 'solicitudes', true);
+  const wmN = webNuevos();
+  add(wmN.length, '📩', wmN.length === 1 ? 'mensaje de la página web' : 'mensajes de la página web', wmN.length ? 'el más viejo ' + haceCuanto(wmN[wmN.length - 1].created_at) : '', 'webmsgs', true);
   const pbV = (poboxes || []).filter(p => pbEstado(p) === 'vencida').length, pbP = (poboxes || []).filter(p => pbEstado(p) === 'porvencer').length;
   // P.O. Boxes: sus avisos viven en su sección (el menú marca las vencidas)
   const impT = (declaraciones || []).filter(d => !['aceptado', 'archivado'].includes(d.estado) && impNivel(d).n === 2).length;
@@ -4401,6 +4444,7 @@ $('dashDia').addEventListener('click', e => {
   if (k === 'tramites-debe') { irA('tramites'); $('filtroCobro').value = 'debe'; renderTramites(); return; }
   if (k === 'pobox') { irA('pobox'); $('pbFiltro').value = 'activas'; renderPobox(); return; }
   if (k === 'corte') { abrirCorte(); return; }
+  if (k === 'webmsgs') { abrirWebMsgs(); return; }
   if (k === 'itin-estatal') { irA('itin'); $('itFiltro').value = 'estatal'; renderItin(); return; }
   irA(k);
 });
@@ -6772,7 +6816,7 @@ const impNombreEstado = k => (IMP_TODAS.find(c => c.k === k) || {}).corto || k;
 
 /* ----- declaración ESTATAL: null = pendiente · 'enviado' · 'no_aplica' (paso 23) ----- */
 const impTieneEst = () => Array.isArray(declaraciones) && declaraciones.length > 0 && 'estatal' in declaraciones[0];
-const impFaltaEst = d => impTieneEst() && !d.estatal && ['enviado', 'aceptado'].includes(d.estado);
+const impFaltaEst = d => impTieneEst() && !d.estatal && (['enviado', 'aceptado'].includes(d.estado) || (d.estado !== 'archivado' && declItinListo(d)));
 function estChip(attr, id, x, pendienteUrgente) {
   if (x.estatal === 'enviado') return '<button class="badge b-ok est-chip" ' + attr + '="' + id + '" title="Estatal enviado' + (x.estatal_fecha ? ' el ' + fechaSolo(x.estatal_fecha) : '') + ' · toca para desmarcar">🏛 ✔ Estatal</button>';
   if (x.estatal === 'no_aplica') return '<button class="badge b-gray est-chip" ' + attr + '="' + id + '" title="No lleva declaración estatal · toca para cambiar">🏛 No lleva estatal</button>';
@@ -6959,6 +7003,7 @@ function impCardHtml(d) {
   if (d.estado === 'en_preparacion' && d.recoger_fecha) tags.push('<span class="badge b-blue">Recoge ' + esc(fechaDM(d.recoger_fecha)) + '</span>');
   if (d.estado !== 'archivado') tags.push('<span class="badge ' + (nv.n === 2 ? 'b-bad' : nv.n === 1 ? 'b-wait' : 'b-gray') + '">⏱ ' + impTxtDias(nv.dias) + '</span>');
   if (t) tags.push(badgeCobro(finanzas(t)));
+  { const bi = declItinBadge(d); if (bi) tags.push(bi); }
   if (d.estado === 'aceptado' && !d.confirmacion_impresa) tags.push('<span class="badge b-wait">🖨 Falta imprimir confirmación</span>');
   if (impTieneEst() && ['listo_efile', 'enviado', 'aceptado', 'rechazado'].includes(d.estado)) tags.push(estChip('data-imp-est', d.id, d, impFaltaEst(d)));
   if (d.estado === 'archivado' && d.archivero) tags.push('<span class="badge b-blue">📁 ' + esc(d.archivero) + '</span>');
@@ -7356,7 +7401,8 @@ async function guardarImpNueva() {
     else if (!/^\d{4}$/.test(impAnioActivo()) || Number(impAnioActivo()) < anio) impAnio = String(anio);
     refrescarTodo();
     toast('Declaración creada.');
-    if (nueva && nueva.id != null) abrirImpDetalle(nueva.id);
+    const conItin = $('inItin').checked; $('inItin').checked = false;
+    if (nueva && nueva.id != null) { await abrirImpDetalle(nueva.id); if (conItin) abrirDeclItin(nueva.id); }
   } catch (e) {
     toast('No se pudo crear: ' + e.message, true);
   } finally {
@@ -7429,6 +7475,7 @@ function renderImpDetalle() {
     h += '<div class="sec"><h4>Visitas a la oficina (' + vs.length + ')</h4><div class="dacts"><button class="btn-primary btn-sm" data-ip="visita">🚶 ＋ Registrar visita</button></div>' +
       (vs.length ? vs.map(v => '<div class="row"><div><b>' + esc(v.motivo || 'Visita') + '</b><small>' + esc([fechaSolo(v.fecha), v.por].filter(Boolean).join('  ·  ')) + '</small></div><button class="xbtn" data-ip="quitarvis" data-vid="' + esc(v.id) + '" aria-label="Quitar visita">✕</button></div>').join('') : '<div class="empty" style="padding:14px 10px">Todavía no hay visitas registradas.</div>') + '</div>';
   }
+  h += declItinSeccion(d);
   h += '<div class="sec"><h4>Cobro</h4>';
   if (f) {
     h += '<div class="money"><div class="mbox"><span>Precio</span><b>' + (t.monto != null ? money(t.monto) : '—') + '</b></div>' +
@@ -7475,6 +7522,9 @@ $('impBody').addEventListener('click', async e => {
   else if (a === 'quitarvis') borrarVisita(b.dataset.vid);
   else if (a === 'guardar') guardarImpDetalle();
   else if (a === 'borrar') borrarDecl();
+  else if (a === 'additin') abrirDeclItin(d.id);
+  else if (a === 'ligaritin') { e.stopPropagation(); ligarItinADecl(Number(b.dataset.iid), d.id); }
+  else if (a === 'veritin') { cerrarImpDetalle(); irA('itin'); abrirItinFicha(Number(b.dataset.iid)); }
 });
 
 async function guardarImpDetalle() {
@@ -7577,6 +7627,7 @@ async function cargarItins() {
     if (!itCartasMap.has(k)) itCartasMap.set(k, []);
     itCartasMap.get(k).push(c);
   });
+  itIndexarDecl();
 }
 const itDe = id => (itins || []).find(x => String(x.id) === String(id));
 const itCliente = i => clientePorId(i.cliente_id) || {};
@@ -7584,7 +7635,7 @@ const itTramite = i => (tramites || []).find(x => String(x.id) === String(i.tram
 const itCartasDe = i => itCartasMap.get(String(i.id)) || [];
 const itCartaAbierta = c => !c.respondida && (c.tipo === 'evidencia' || c.tipo === 'otra');
 const itTieneEst = () => Array.isArray(itins) && itins.length > 0 && 'estatal' in itins[0];
-const itFaltaEst = i => itTieneEst() && !!i.numero_ultimos4 && !i.negado && !i.estatal;
+const itFaltaEst = i => itTieneEst() && !!i.numero_ultimos4 && !i.negado && !itEst(i).estatal;
 function itEstado(i) {
   if (i.numero_ultimos4) return 'listo';
   if (i.negado) return 'negado';
@@ -7610,7 +7661,7 @@ function itBadgeDias(i) {
 function itAvance(i) {
   const c = (on, t) => '<span class="' + (on ? 'on' : '') + '">' + (on ? '✔ ' : '') + t + '</span>';
   return '<div class="it-av">' + c(i.docs_entregados, 'Docs') + c(i.w7_firmada, 'W-7') + c(i.enviado, 'Enviado') + c(!!i.numero_ultimos4, 'Número') +
-    (itTieneEst() && i.numero_ultimos4 && !i.negado ? (i.estatal === 'no_aplica' ? '<span>Sin estatal</span>' : c(i.estatal === 'enviado', 'Estatal')) : '') + '</div>';
+    (itTieneEst() && i.numero_ultimos4 && !i.negado ? (itEst(i).estatal === 'no_aplica' ? '<span>Sin estatal</span>' : c(itEst(i).estatal === 'enviado', 'Estatal')) : '') + '</div>';
 }
 
 function renderItin() {
@@ -7666,7 +7717,7 @@ function renderItin() {
   $('itContador').textContent = filas.length + (filas.length === 1 ? ' ITIN' : ' ITIN');
   body.innerHTML = filas.map(({ i, e, c, t }) => {
     const f = t ? finanzas(t) : null;
-    return '<tr data-id="' + esc(i.id) + '"><td><b>' + esc(i.titular_nombre) + '</b><br><small class="muted">' + esc(IT_REL[i.relacion] || '') + (i.tipo === 'renovacion' ? ' · renovación' : '') + (i.titular_nacimiento ? ' · nació ' + esc(fechaSolo(i.titular_nacimiento)) : '') + '</small></td>' +
+    return '<tr data-id="' + esc(i.id) + '"><td><b>' + esc(i.titular_nombre) + '</b><br><small class="muted">' + esc(IT_REL[i.relacion] || '') + (i.tipo === 'renovacion' ? ' · renovación' : '') + (i.titular_nacimiento ? ' · nació ' + esc(fechaSolo(i.titular_nacimiento)) : '') + (declDeItin(i) ? ' · 🧾 con declaración ' + esc(declDeItin(i).anio) : '') + '</small></td>' +
       '<td>' + esc(c.nombre || '—') + (i.relacion === 'cliente' ? '' : '') + '</td>' +
       '<td><span class="badge ' + IT_ESTADOS[e].cls + '">' + IT_ESTADOS[e].t + '</span>' + (i.numero_ultimos4 ? '<br><small class="muted">••• •• ' + esc(i.numero_ultimos4) + '</small>' : '') + (itFaltaEst(i) ? '<br><span class="badge b-wait" style="padding:2px 8px;font-size:11px;margin-top:4px">🏛 Falta mandar estatal</span>' : '') + '</td>' +
       '<td>' + itAvance(i) + '</td><td>' + itBadgeDias(i) + '</td>' +
@@ -7728,6 +7779,7 @@ function renderItinFicha() {
       '<button class="btn btn-sm" data-it="cliente">👤 Ver cliente</button>' +
       '<button class="btn btn-sm" data-it="tarea">✅ Nueva tarea</button>' +
       '<button class="btn btn-sm" data-it="otrofam">➕ Otro titular de esta familia</button>' +
+      (declDeItin(i) ? '<button class="btn btn-sm" data-it="verdecl">🧾 Ver declaración ' + esc(declDeItin(i).anio) + '</button>' : '') +
     '</div>';
 
   h += '<div class="sec"><h4>Titular</h4>' +
@@ -7742,7 +7794,7 @@ function renderItinFicha() {
     '<div class="it-line">' + chk('itfW7', i.w7_firmada, 'W-7 firmada') + dt('itfW7F', i.w7_fecha) + '</div>' +
     '<div class="it-line">' + chk('itfEnv', i.enviado, 'Ya se mandó por correo al IRS') + dt('itfEnvF', i.enviado_fecha) + '</div>' +
     (dias !== null && !i.numero_ultimos4 && !i.negado ? '<div class="muted" style="font-size:12.5px;font-weight:700;margin:-2px 0 8px">Van ' + (dias < 7 ? dias + ' días' : Math.floor(dias / 7) + ' semanas') + ' desde que se mandó (el IRS tarda de 7 a 11 semanas).</div>' : '') +
-    (itTieneEst() && i.numero_ultimos4 && !i.negado ? estLinea('itf', i, '🏛 Declaración estatal (ya con el ITIN se puede mandar por e-file)') : '') +
+    (itTieneEst() && i.numero_ultimos4 && !i.negado ? estLinea('itf', itEst(i), '🏛 Declaración estatal (ya con el ITIN se puede mandar por e-file)') : '') +
     '<div class="f2"><div class="f"><label for="itfGuia">Guía / número de rastreo</label><input id="itfGuia" type="text" value="' + esc(i.envio_guia || '') + '"></div>' +
     '<div class="f"><label for="itfCosto">Costo del envío (USD)</label><input id="itfCosto" type="number" min="0" step="0.01" value="' + (i.envio_costo != null ? esc(i.envio_costo) : '') + '" placeholder="0.00"></div></div>' +
     '<div class="f"><label for="itfMet">Cómo se pagó el envío</label><select id="itfMet">' + metOpts + '</select></div>' +
@@ -7815,6 +7867,7 @@ $('itBody').addEventListener('click', async e => {
   else if (a === 'cliente') { cerrarItinFicha(); irA('clientes'); abrirPerfil(i.cliente_id); }
   else if (a === 'tarea') abrirTareaForm(null, { cliente_id: i.cliente_id, tramite_id: i.tramite_id, titulo: 'ITIN de ' + i.titular_nombre + ': ' });
   else if (a === 'otrofam') { const cid = i.cliente_id; cerrarItinFicha(); abrirItinNuevo(cid); }
+  else if (a === 'verdecl') { const dd = declDeItin(i); if (dd) { cerrarItinFicha(); irA('impuestos'); abrirImpDetalle(dd.id); } }
   else if (a === 'pago') { const t = itTramite(i); if (t) { detalleId = t.id; abrirModalP(); } }
   else if (a === 'precio') guardarItinPrecio();
   else if (a === 'guardarnum') guardarItinNumero();
@@ -7866,13 +7919,18 @@ async function guardarItinFicha() {
     negado: neg, negado_fecha: neg ? (i.negado_fecha || hoy) : null,
     notas: $('itfNotas').value.trim() || null, actualizado_nombre: nombrePerfil
   };
-  const est = itTieneEst() ? estLeer('itf', i) : null;
-  if (est) Object.assign(payload, est);
+  const est = itTieneEst() ? estLeer('itf', itEst(i)) : null;
+  const declLig = declDeItin(i);
+  if (est && !(declLig && impTieneEst())) Object.assign(payload, est);
   $('btnItfGuardar').disabled = true;
   try {
     const { data, error } = await supabaseClient.from('itins').update(payload).eq('id', i.id).select();
     if (error) throw error;
     if (!data || !data.length) throw new Error('No se guardó. Revisa tus permisos.');
+    if (est && declLig && impTieneEst() && (est.estatal || null) !== (declLig.estatal || null)) {
+      await supabaseClient.from('declaraciones').update(Object.assign({ actualizado_nombre: nombrePerfil }, est)).eq('id', declLig.id);
+      await cargarDeclaraciones();
+    }
     toast('Cambios guardados.' + (costo > 0 ? ' El envío quedó en Gastos.' : ''));
     await itRecargarTodo();
   } catch (e) {
@@ -8121,7 +8179,7 @@ let solicitudes = [];
 let solId = null;
 let solSens = null;       // datos sensibles abiertos (solo en memoria, se ocultan solos)
 let solTimer = null;
-const SOL_SERV = { impuestos: 'Impuestos', itin: 'ITIN', migracion: 'Migración', otro: 'Otro' };
+const SOL_SERV = { impuestos: 'Impuestos', itin: 'ITIN', migracion: 'Migración', otro: 'Otro', seguro: '🔒 Datos protegidos' };
 
 async function cargarSolicitudes() {
   try { await supabaseClient.rpc('intake_purgar'); } catch (e) { /* si falla, la función también valida la fecha */ }
@@ -8307,16 +8365,21 @@ function renderSol() {
       (d.prev.length ? 'Ya mandó otra solicitud (' + d.prev.length + '). ' : '') +
       'Revisa fecha de nacimiento y últimos 4 del SSN: si son padre e hijo con el mismo nombre, uno es Sr. y otro Jr.</div>';
   }
-  html += solHojaTaxAct(s, h);
   if (s.estado === 'nuevo') {
     const opts = clientes.slice().sort((a, b) => String(a.nombre || '').localeCompare(String(b.nombre || ''), 'es')).map(c => '<option value="' + esc(c.id) + '">' + esc(c.nombre) + (c.telefono ? ' · ' + esc(fmtTel(c.telefono)) : '') + '</option>').join('');
-    html += '<div class="sec"><h4>Pasarlo a clientes</h4>' +
-      '<div class="dacts"><button class="btn-primary btn-sm" data-sol="crearcli">➕ Crear cliente nuevo</button></div>' +
+    const esTaxSol = s.servicio === 'impuestos' || s.servicio === 'itin';
+    const nIt = solItinNombres(s);
+    html += '<div class="sec"><h4>' + (esTaxSol ? 'Siguiente paso' : 'Pasarlo a clientes') + '</h4>' +
+      (nIt.length ? '<div class="it-nota">🪪 Necesitan ITIN: <b>' + esc(nIt.join(', ')) + '</b></div>' : '') +
+      (esTaxSol ? '<div class="dacts"><button class="btn-primary" data-sol="aimpuestos">⚡ Pasar a Impuestos <small style="font-weight:500;opacity:.85;margin-left:6px">crea el cliente y su declaración' + (nIt.length || s.servicio === 'itin' ? ' + ITIN' : '') + '</small></button></div>' : '') +
+      (s.servicio !== 'seguro' && !s.ssn_ultimos4 ? '<div class="it-nota">Esta solicitud llegó <b>sin seguro social</b> (la llenó desde la página web). Si vas a hacerle la declaración, pídeselo por el enlace seguro:</div><div class="dacts"><button class="btn btn-sm" data-sol="pedirseguro">🔒 Pedirle seguro social y banco por enlace seguro</button></div>' : '') +
+      '<div class="dacts"><button class="btn' + (esTaxSol ? '' : '-primary') + ' btn-sm" data-sol="crearcli">➕ ' + (esTaxSol ? 'Solo crear el cliente' : 'Crear cliente nuevo') + '</button></div>' +
       '<div class="f2" style="align-items:end"><div class="f"><label for="solLigar">…o ligar a un cliente que ya existe</label><select id="solLigar"><option value="">Elige un cliente</option>' + opts + '</select></div><div class="f"><button class="btn" data-sol="ligar">Ligar</button></div></div>' +
       '<div class="muted" style="font-size:12px;font-weight:600">Cuando termines de capturar en tu programa, marca «Ya capturé»: se borran los datos sensibles al instante.</div></div>';
   } else if (s.cliente_id) {
     html += '<div class="sec"><h4>Cliente</h4><div class="dacts"><button class="btn btn-sm" data-sol="vercl" data-cid="' + esc(s.cliente_id) + '">👤 Ver cliente</button></div></div>';
   }
+  html += solHojaTaxAct(s, h);
   html += '<div class="acts">' + (rol === 'dueno' ? '<button class="btn btn-danger left" data-sol="borrar">Eliminar</button>' : '') +
     (s.estado === 'nuevo' ? '<a class="btn" href="https://www.encyro.com/my" target="_blank" rel="noopener">Abrir Encyro</a><button class="btn" data-sol="descartar">Descartar</button><button class="btn-primary" data-sol="capturado">✔ Ya capturé (borrar sensibles)</button>' : '') +
     '<button class="btn" data-sol="cerrar">Cerrar</button></div>';
@@ -8356,6 +8419,8 @@ $('solBody').addEventListener('click', async e => {
   const a = b.dataset.sol;
   if (a === 'cerrar') cerrarSol();
   else if (a === 'ver') solVer();
+  else if (a === 'aimpuestos') solPasarImpuestos();
+  else if (a === 'pedirseguro') solPedirSeguro();
   else if (a === 'ocultar') { solSens = null; clearTimeout(solTimer); renderSol(); }
   else if (a === 'copiartodo') { try { await navigator.clipboard.writeText(solTextoTodo(s)); toast(solSens ? 'Copié todo (incluye SSN y banco: pégalo solo en TaxAct).' : 'Copié todo lo que no es protegido.'); } catch (x) { toast('No pude copiar.', true); } }
   else if (a === 'copiar') { try { await navigator.clipboard.writeText(b.dataset.v); toast('Copiado.'); } catch (x) { toast('No pude copiar.', true); } }
@@ -8408,7 +8473,11 @@ function solUrlFinal() {
   const base = $('sqUrl').value.trim();
   if (!base) return '';
   try { localStorage.setItem('formUrl', base); } catch (e) { /* sin almacenamiento */ }
-  return $('sqLang').value === 'en' ? base + (base.includes('?') ? '&' : '?') + 'l=en' : base;
+  // el enlace que manda la oficina es el COMPLETO (c=1): sí pide seguro social y banco, cifrados
+  let u = base;
+  const pon = (k, v) => { if (!new RegExp('[?&]' + k + '=').test(u)) u += (u.includes('?') ? '&' : '?') + k + '=' + v; };
+  pon('c', '1'); if ($('sqLang').value === 'en') pon('l', 'en');
+  return u;
 }
 function abrirSolLink() { $('sqUrl').value = solUrlBase(); $('sqLang').value = 'es'; $('overlaySQR').classList.remove('hidden'); solQR(); }
 function cerrarSolLink() { $('overlaySQR').classList.add('hidden'); }
@@ -8520,7 +8589,7 @@ document.addEventListener('keydown', e => {
 /* =====================================================================
    v28 · PROTECCIONES (a prueba de errores) + CONTROL DEL NEGOCIO
    ===================================================================== */
-const HUB_VERSION = 'v28';
+const HUB_VERSION = 'v30';
 
 /* ---------- 1) Errores inesperados y falta de internet ---------- */
 let _ultAvisoErr = 0;
@@ -8861,6 +8930,245 @@ async function guardarMasivo() {
     refrescarTodo();
     toast('Listo: se guardaron ' + filas.length + (masivoTipo === 'cajas' ? ' cajas.' : ' clientes.'));
   } catch (e) { toast('No pude guardar todo: ' + e.message + '. Toca «Actualizar» y revisa cuáles sí quedaron.', true); msRevisar(); }
+}
+
+/* ---------- 9) 📩 Mensajes de la página web (formulario «¿Prefieres que te contactemos?») ---------- */
+let webMsgs = [];
+async function cargarWebMsgs() {
+  try { webMsgs = await leerTodo('web_contactos', [['id', false]]); } catch (e) { webMsgs = null; }
+}
+const webNuevos = () => (webMsgs || []).filter(m => m.estado !== 'atendido');
+function haceCuanto(ts) {
+  const min = Math.max(0, Math.round((Date.now() - new Date(ts).getTime()) / 60000));
+  if (isNaN(min)) return '';
+  if (min < 60) return 'hace ' + min + ' min';
+  if (min < 1440) return 'hace ' + Math.round(min / 60) + ' h';
+  const d = Math.round(min / 1440);
+  return 'hace ' + d + (d === 1 ? ' día' : ' días');
+}
+function pintarWebBoton() {
+  const b = $('btnWebMsgs'); if (!b) return;
+  const n = webNuevos().length;
+  b.classList.toggle('hidden', webMsgs === null);
+  b.innerHTML = '📩 Mensajes de la página' + (n ? ' <span class="badge b-bad" style="margin-left:6px">' + n + '</span>' : '');
+}
+function abrirWebMsgs() { $('overlayWM').classList.remove('hidden'); renderWebMsgs(); }
+function cerrarWebMsgs() { $('overlayWM').classList.add('hidden'); }
+function renderWebMsgs() {
+  const box = $('wmBody'); if (!box) return;
+  if (webMsgs === null) { box.innerHTML = '<div class="hint">Para recibir aquí los mensajes de la página falta correr el <b>SQL del paso 25</b> en Supabase.</div>'; return; }
+  const nuevos = webNuevos(), hechos = webMsgs.filter(m => m.estado === 'atendido').slice(0, 25);
+  const fila = (m, hecho) => {
+    const ya = clienteParecido(m.nombre, m.telefono);
+    return '<div class="wm-it' + (hecho ? ' hecho' : '') + '"><div class="wm-top"><b>' + esc(m.nombre) + '</b><span class="muted">' + esc(haceCuanto(m.created_at)) + (m.idioma === 'en' ? ' · 🇺🇸 inglés' : '') + '</span></div>' +
+      '<div class="wm-sub">' + esc(fmtTel(m.telefono) || 'sin teléfono') + (m.servicio ? ' · <span class="badge b-blue">' + esc(m.servicio) + '</span>' : '') + (ya ? ' · <span class="badge b-gray">ya es cliente</span>' : '') + '</div>' +
+      (m.comentario ? '<div class="wm-msg">' + esc(m.comentario) + '</div>' : '') +
+      (hecho ? '<div class="wm-sub">✔ Atendido' + (m.atendido_por ? ' por ' + esc(m.atendido_por) : '') + '</div>'
+        : '<div class="dacts" style="margin:10px 0 0"><button class="btn btn-sm btn-wa-hub" data-wm="wa" data-id="' + esc(m.id) + '">📲 WhatsApp</button>' +
+          '<a class="btn btn-sm" href="tel:' + esc(soloDigitos(m.telefono)) + '">📞 Llamar</a>' +
+          (ya ? '<button class="btn btn-sm" data-wm="ver" data-cid="' + esc(ya.id) + '">👤 Ver cliente</button>' : '<button class="btn btn-sm" data-wm="cliente" data-id="' + esc(m.id) + '">👤 Crear cliente</button>') +
+          '<button class="btn btn-sm btn-primary" data-wm="listo" data-id="' + esc(m.id) + '">✔ Atendido</button></div>') + '</div>';
+  };
+  box.innerHTML = (nuevos.length ? nuevos.map(m => fila(m, false)).join('') : '<div class="empty">No hay mensajes pendientes de la página. 🎉</div>') +
+    (hechos.length ? '<details class="wm-hechos"><summary>Ya atendidos (' + hechos.length + ')</summary>' + hechos.map(m => fila(m, true)).join('') + '</details>' : '');
+}
+$('wmBody').addEventListener('click', async e => {
+  const b = e.target.closest('[data-wm]'); if (!b) return;
+  const a = b.dataset.wm;
+  if (a === 'ver') { cerrarWebMsgs(); irA('clientes'); abrirPerfil(Number(b.dataset.cid)); return; }
+  const m = (webMsgs || []).find(x => String(x.id) === String(b.dataset.id)); if (!m) return;
+  if (a === 'wa') {
+    const en = m.idioma === 'en', nom = String(m.nombre || '').split(' ')[0];
+    const txt = en ? 'Hi ' + nom + ', this is AmericaMex. We got your message from our website' + (m.servicio ? ' about ' + m.servicio : '') + '. How can we help you?'
+      : 'Hola ' + nom + ', le escribimos de AmericaMex. Recibimos su mensaje de la página' + (m.servicio ? ' sobre ' + m.servicio : '') + '. ¿En qué le podemos ayudar?';
+    window.open('https://wa.me/' + waNumero(m.telefono) + '?text=' + encodeURIComponent(txt), '_blank', 'noopener');
+  } else if (a === 'cliente') {
+    cerrarWebMsgs(); abrirModal();
+    $('fNombre').value = m.nombre || ''; $('fTelefono').value = fmtTel(m.telefono) || m.telefono || '';
+    if ($('fIdioma')) $('fIdioma').value = m.idioma === 'en' ? 'en' : 'es';
+    $('fNotas').value = ['Llegó por la página web' + (m.servicio ? ': ' + m.servicio : ''), m.comentario].filter(Boolean).join('\n');
+  } else if (a === 'listo') {
+    b.disabled = true;
+    const r = await supabaseClient.from('web_contactos').update({ estado: 'atendido', atendido_por: nombrePerfil, atendido_at: new Date().toISOString() }).eq('id', m.id).select();
+    if (r.error || !r.data || !r.data.length) { toast('No pude marcarlo: ' + (r.error ? r.error.message : 'revisa permisos'), true); b.disabled = false; return; }
+    await cargarWebMsgs(); renderWebMsgs(); renderDashboard(); pintarWebBoton();
+    toast('Mensaje atendido ✔');
+  }
+});
+VIVO_CARGA.web_contactos = async () => { const antes = webNuevos().length; await cargarWebMsgs(); if (webNuevos().length > antes) toast('📩 Llegó un mensaje nuevo de la página web.'); };
+
+/* =====================================================================
+   v30 · IMPUESTOS ↔ ITIN conectados (sin capturar doble) y solicitudes de un toque
+   ===================================================================== */
+let itDeclMap = new Map();
+const itTieneDecl = () => Array.isArray(itins) && itins.length > 0 && 'declaracion_id' in itins[0];
+function itIndexarDecl() {
+  itDeclMap = new Map();
+  (itins || []).forEach(i => { if (i.declaracion_id == null) return; const k = String(i.declaracion_id); if (!itDeclMap.has(k)) itDeclMap.set(k, []); itDeclMap.get(k).push(i); });
+}
+const itinsDeDecl = d => itDeclMap.get(String(d.id)) || [];
+const itinsSueltosDe = d => (itins || []).filter(i => String(i.cliente_id) === String(d.cliente_id) && i.declaracion_id == null);
+const declDeItin = i => (i && i.declaracion_id != null) ? (impDe(i.declaracion_id) || null) : null;
+// el estatal de un ITIN ligado es el de su declaración: se marca una sola vez
+const itEst = i => { const d = declDeItin(i); return d && impTieneEst() ? { estatal: d.estatal, estatal_fecha: d.estatal_fecha } : { estatal: i.estatal, estatal_fecha: i.estatal_fecha }; };
+const declItinListo = d => { const l = itinsDeDecl(d).filter(i => !i.negado); return l.length > 0 && l.every(i => i.numero_ultimos4); };
+function declItinBadge(d) {
+  const l = itinsDeDecl(d); if (!l.length) return '';
+  const ok = l.filter(i => i.numero_ultimos4).length, mal = l.some(i => itEstado(i) === 'evidencia' || itEstado(i) === 'negado');
+  return '<span class="badge ' + (mal ? 'b-bad' : ok === l.length ? 'b-ok' : 'b-blue') + '" title="' + esc(l.map(i => i.titular_nombre + ': ' + IT_ESTADOS[itEstado(i)].t).join(' · ')) + '">🪪 ITIN ' + ok + '/' + l.length + '</span>';
+}
+function declItinSeccion(d) {
+  if (itins === null) return '';
+  const l = itinsDeDecl(d), sueltos = itinsSueltosDe(d);
+  const fila = (i, ligar) => '<div class="row click" data-ip="veritin" data-iid="' + esc(i.id) + '"><div style="min-width:0"><b>' + esc(i.titular_nombre) + '</b><small>' + esc(IT_REL[i.relacion] || '') + (i.numero_ultimos4 ? ' · •••-••-' + esc(i.numero_ultimos4) : '') + '</small>' + itAvance(i) + '</div>' +
+    '<div class="ag-right"><span class="badge ' + IT_ESTADOS[itEstado(i)].cls + '">' + IT_ESTADOS[itEstado(i)].t + '</span>' + (ligar ? '<button class="btn btn-sm" data-ip="ligaritin" data-iid="' + esc(i.id) + '">🔗 Ligar</button>' : '') + '</div></div>';
+  let h = '<div class="sec"><h4>🪪 ITIN de esta declaración (' + l.length + ')</h4><div class="dacts"><button class="btn-primary btn-sm" data-ip="additin">＋ Agregar solicitud de ITIN</button></div>';
+  h += l.length ? l.map(i => fila(i, false)).join('') : '<div class="empty" style="padding:12px 10px">Esta declaración no lleva ITIN. Si alguien necesita uno, agrégalo aquí y queda en el registro de ITIN sin capturar doble.</div>';
+  if (declItinListo(d) && impTieneEst() && !d.estatal) h += '<div class="it-nota" style="margin-top:8px">🏛 Ya llegó el ITIN: <b>falta mandar la declaración estatal</b>. Márcalo arriba en «Declaración estatal».</div>';
+  if (sueltos.length) h += '<div class="muted" style="font-size:12.5px;font-weight:700;margin:12px 0 2px">Otros ITIN de este cliente' + (itTieneDecl() ? ' (sin ligar a una declaración)' : '') + '</div>' + sueltos.map(i => fila(i, itTieneDecl())).join('');
+  if (!itTieneDecl() && (itins || []).length) h += '<div class="it-nota" style="margin-top:8px">Para que cada ITIN quede ligado a su declaración, corre el <b>paso 26</b> en Supabase.</div>';
+  return h + '</div>';
+}
+
+/* ----- ventana: agregar ITIN a una declaración ----- */
+let ditDeclId = null, ditCobro = 'incluido';
+const DIT_REL = [['cliente', 'El mismo cliente'], ['conyuge', 'Esposo / esposa'], ['hijo', 'Hijo / hija'], ['padre', 'Padre / madre'], ['otro', 'Otro familiar']];
+function ditFila(x) {
+  x = x || {};
+  const d = impDe(ditDeclId), c = d ? impCliente(d) : {};
+  const div = document.createElement('div'); div.className = 'dit-fila';
+  div.innerHTML = '<select class="dit-rel" aria-label="¿Para quién es?">' + DIT_REL.map(r => '<option value="' + r[0] + '">' + r[1] + '</option>').join('') + '</select>' +
+    '<input class="dit-nom" type="text" placeholder="Nombre completo, como en su pasaporte" aria-label="Nombre del titular">' +
+    '<input class="dit-nac" type="date" aria-label="Fecha de nacimiento" title="Fecha de nacimiento (opcional)"><button type="button" class="xbtn" aria-label="Quitar">✕</button>';
+  const rel = div.querySelector('.dit-rel'), nom = div.querySelector('.dit-nom');
+  const ajusta = () => { if (rel.value === 'cliente') { nom.value = c.nombre || ''; nom.disabled = true; } else { if (nom.disabled) nom.value = ''; nom.disabled = false; } };
+  rel.value = x.rel || ($('ditFilas').querySelector('.dit-fila') ? 'hijo' : 'cliente');
+  rel.addEventListener('change', ajusta); ajusta();
+  if (x.nombre && rel.value !== 'cliente') nom.value = x.nombre;
+  if (x.nac) div.querySelector('.dit-nac').value = x.nac;
+  div.querySelector('.xbtn').onclick = () => { div.remove(); if (!$('ditFilas').children.length) ditFila(); };
+  $('ditFilas').appendChild(div);
+  return div;
+}
+function abrirDeclItin(declId, sugeridos) {
+  const d = impDe(declId); if (!d) return;
+  if (itins === null) { toast('Falta correr el SQL del paso 14 (registro de ITIN).', true); return; }
+  ditDeclId = d.id; ditCobro = 'incluido';
+  const c = impCliente(d);
+  $('ditInfo').textContent = (c.nombre || '') + ' · Impuestos ' + d.anio;
+  $('ditFilas').innerHTML = '';
+  const yaHay = new Set((itins || []).filter(i => String(i.cliente_id) === String(d.cliente_id)).map(i => normTexto(i.titular_nombre)));
+  const lista = (sugeridos || []).filter(n => n && !yaHay.has(normTexto(n)));
+  if (lista.length) lista.forEach(n => ditFila(normTexto(n) === normTexto(c.nombre) ? { rel: 'cliente' } : { rel: 'hijo', nombre: n }));
+  else ditFila(yaHay.has(normTexto(c.nombre)) ? { rel: 'hijo' } : { rel: 'cliente' });
+  $('ditPrecio').value = IT_PRECIO.toFixed(2);
+  ditPintarCobro();
+  $('overlayDIT').classList.remove('hidden');
+  const f = $('ditFilas').querySelector('.dit-nom:not(:disabled)'); if (f) setTimeout(() => f.focus(), 60);
+}
+function cerrarDeclItin() { ditDeclId = null; $('overlayDIT').classList.add('hidden'); }
+function ditPintarCobro() {
+  $('ditCobro').querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.c === ditCobro));
+  $('ditPrecioWrap').classList.toggle('hidden', ditCobro !== 'aparte');
+  $('ditAyuda').textContent = ditCobro === 'incluido' ? 'El cobro va en la declaración (pon ahí el precio completo). El ITIN queda en su registro en $0 para que no se cobre doble.' : 'Cada ITIN queda con su propio precio y sus propios pagos, aparte de la declaración.';
+}
+$('ditCobro').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { ditCobro = b.dataset.c; ditPintarCobro(); } });
+async function guardarDeclItin() {
+  const d = impDe(ditDeclId); if (!d) { cerrarDeclItin(); return; }
+  const filas = [...$('ditFilas').querySelectorAll('.dit-fila')].map(f => ({ rel: f.querySelector('.dit-rel').value, nombre: f.querySelector('.dit-nom').value.trim().replace(/\s+/g, ' '), nac: f.querySelector('.dit-nac').value || null, el: f }));
+  const vacia = filas.find(f => !f.nombre);
+  if (vacia) { toast('Escribe el nombre de cada persona (o quita el renglón).', true); vacia.el.querySelector('.dit-nom').focus(); return; }
+  const nombres = filas.map(f => normTexto(f.nombre));
+  if (new Set(nombres).size !== nombres.length) { toast('Hay una persona repetida en la lista.', true); return; }
+  const ya = filas.filter(f => (itins || []).some(i => String(i.cliente_id) === String(d.cliente_id) && normTexto(i.titular_nombre) === normTexto(f.nombre) && !i.numero_ultimos4 && !i.negado));
+  if (ya.length && !confirm('⚠️ Ya hay un ITIN en proceso para: ' + ya.map(f => f.nombre).join(', ') + '.\n\n¿Crear otro de todos modos?')) return;
+  let precio = 0;
+  if (ditCobro === 'aparte') { precio = r2($('ditPrecio').value); if (isNaN(precio) || precio < 0) { toast('El precio no es válido.', true); $('ditPrecio').focus(); return; } }
+  $('btnDit').disabled = true;
+  let hechos = 0, sinLiga = false;
+  try {
+    for (const f of filas) {
+      const { data, error } = await supabaseClient.rpc('crear_itin', { p_cliente_id: Number(d.cliente_id), p_titular_nombre: f.nombre, p_titular_nacimiento: f.nac, p_relacion: f.rel, p_tipo: 'nuevo', p_precio: precio, p_notas: 'Va con la declaración ' + d.anio, p_por: nombrePerfil });
+      if (error) throw error;
+      const nuevo = Array.isArray(data) ? data[0] : data;
+      hechos++;
+      if (nuevo && nuevo.id != null) {
+        const r = await supabaseClient.from('itins').update({ declaracion_id: d.id }).eq('id', nuevo.id).select('id');
+        if (r.error) sinLiga = true;
+        if (ditCobro === 'incluido' && nuevo.tramite_id != null) await supabaseClient.from('tramites').update({ monto: 0, notas: '🪪 ITIN incluido en la declaración ' + d.anio + ' · sin costo aparte' }).eq('id', nuevo.tramite_id);
+      }
+    }
+    const id = d.id;
+    cerrarDeclItin();
+    await Promise.all([cargarTramites(), cargarItins()]);
+    refrescarTodo();
+    toast(hechos + (hechos === 1 ? ' ITIN agregado' : ' ITIN agregados') + ' al registro.' + (sinLiga ? ' Para ligarlos a la declaración corre el paso 26 en Supabase.' : ''), sinLiga);
+    if (impDetId != null && String(impDetId) === String(id)) renderImpDetalle();
+  } catch (e) {
+    toast('No pude crear el ITIN' + (hechos ? ' (se alcanzaron a crear ' + hechos + ')' : '') + ': ' + e.message, true);
+    if (hechos) { await Promise.all([cargarTramites(), cargarItins()]); refrescarTodo(); cerrarDeclItin(); }
+  } finally { $('btnDit').disabled = false; }
+}
+async function ligarItinADecl(itinId, declId) {
+  const r = await supabaseClient.from('itins').update({ declaracion_id: declId }).eq('id', itinId).select('id');
+  if (r.error || !r.data || !r.data.length) { toast('No pude ligarlo: ' + (r.error ? r.error.message : 'revisa permisos'), true); return; }
+  await cargarItins(); refrescarTodo(); toast(declId == null ? 'ITIN separado de la declaración.' : 'ITIN ligado a la declaración.');
+}
+
+/* ----- solicitud del cuestionario → cliente + declaración en un toque ----- */
+function solItinNombres(s) { const m = String(s.comentarios || '').match(/Necesitan ITIN:\s*(.+)$/); return m ? m[1].split(';').map(x => x.trim()).filter(Boolean) : []; }
+async function solAsegurarCliente(s) {
+  if (s.cliente_id) return s.cliente_id;
+  const d = solDuplicados(s);
+  if (d.cl.length === 1 && confirm('Ya existe un cliente parecido: ' + d.cl[0].nombre + (d.cl[0].telefono ? ' · ' + fmtTel(d.cl[0].telefono) : '') + '.\n\nAceptar = es el mismo, usar ese\nCancelar = es otra persona, crear uno nuevo')) {
+    await supabaseClient.from('intake_envios').update({ cliente_id: d.cl[0].id }).eq('id', s.id); return d.cl[0].id;
+  }
+  if (d.cl.length > 1 && !confirm('Hay ' + d.cl.length + ' clientes parecidos (' + d.cl.map(c => c.nombre).join(', ') + ').\n\nAceptar = crear uno NUEVO de todos modos\nCancelar = mejor lo ligo yo a mano')) return null;
+  const payload = { nombre: solNombre(s) };
+  if (tieneCol('direccion') && solDirTxt(s)) payload.direccion = solDirTxt(s);
+  if (tieneCol('telefono')) payload.telefono = s.telefono || null;
+  if (tieneCol('correo')) payload.correo = s.correo || null;
+  if (tieneCol('idioma')) payload.idioma = s.idioma || 'es';
+  const r = await supabaseClient.from('clientes').insert([payload]).select();
+  if (r.error) throw r.error;
+  if (!r.data || !r.data.length) throw new Error('No se pudo crear el cliente. Revisa tus permisos.');
+  await cargarClientes(); indexar();
+  await supabaseClient.from('intake_envios').update({ cliente_id: r.data[0].id }).eq('id', s.id);
+  return r.data[0].id;
+}
+async function solPasarImpuestos() {
+  const s = solDe(solId); if (!s) return;
+  if (declaraciones === null) { toast('Falta correr el SQL del paso 12 (tablero de Impuestos).', true); return; }
+  try {
+    const cid = await solAsegurarCliente(s);
+    if (cid == null) return;
+    const anio = new Date().getFullYear() - 1;
+    let decl = (declaraciones || []).find(d => String(d.cliente_id) === String(cid) && Number(d.anio) === anio);
+    if (!decl) {
+      const args = { p_cliente_id: Number(cid), p_anio: anio, p_precio: null, p_preparador: null, p_que_falta: null, p_estado: 'esperando_docs', p_notas: 'Llegó por el cuestionario en línea' + (s.comentarios ? ': ' + s.comentarios : ''), p_por: nombrePerfil };
+      if (impTienePaso13()) args.p_modalidad = 'digital';
+      const { data, error } = await supabaseClient.rpc('crear_declaracion', args);
+      if (error) throw error;
+      decl = Array.isArray(data) ? data[0] : data;
+    }
+    const nombres = solItinNombres(s), llevaItin = s.servicio === 'itin' || nombres.length > 0;
+    await Promise.all([cargarTramites(), cargarDeclaraciones(), cargarSolicitudes()]);
+    cerrarSol();
+    irA('impuestos'); refrescarTodo();
+    toast('Listo: cliente y declaración ' + anio + ' en el tablero.' + (llevaItin ? ' Ahora agrega el ITIN.' : ''));
+    if (decl && decl.id != null) { await abrirImpDetalle(decl.id); if (llevaItin) abrirDeclItin(decl.id, nombres); }
+  } catch (e) { toast('No se pudo pasar a Impuestos: ' + e.message, true); }
+}
+function solPedirSeguro() {
+  const s = solDe(solId); if (!s) return;
+  const en = s.idioma === 'en', nom = solNombre(s);
+  const url = solUrlBase().split('?')[0] + '?seguro=1&n=' + encodeURIComponent(nom) + (en ? '&l=en' : '');
+  const msg = en ? 'Hi ' + (s.nombre || '') + ', this is AmericaMex. To finish your tax return we need your Social Security number (and your bank details if you want direct deposit). Please enter them in this secure link, it is encrypted and deleted after we use it: ' + url
+    : 'Hola ' + (s.nombre || '') + ', le escribimos de AmericaMex. Para terminar su declaración necesitamos su seguro social (y su cuenta de banco si quiere depósito directo). Por favor póngalos en este enlace seguro; viaja cifrado y se borra en cuanto lo usamos: ' + url;
+  const num = waNumero(s.telefono);
+  try { const pr = navigator.clipboard.writeText(msg); if (pr && pr.catch) pr.catch(() => {}); } catch (e) { /* sin portapapeles */ }
+  window.open('https://wa.me/' + (num || '') + '?text=' + encodeURIComponent(msg), '_blank', 'noopener');
+  toast(num ? 'Abrí su WhatsApp con el enlace seguro (también lo copié).' : 'Copié el mensaje: esta solicitud no tiene teléfono, elige el contacto en WhatsApp.');
 }
 
 VIVO_CARGA.cortes_caja = () => cargarCortes();

@@ -2,289 +2,427 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<title>AmericaMex Tax · Datos del cliente</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0D2137">
+<title>AmericaMex · Empieza aquí</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
 <style>
-:root{--navy:#0D2847;--red:#E53935;--bg:#eef2f8;--ink:#1b2535;--muted:#5a6b84;--line:#cfd8e6}
+:root{--navy:#1A3A5C;--navy-d:#0D2137;--red:#E53935;--bg:#EEF2F7;--ink:#14202F;--muted:#5B6878;--line:#D3DCE6;--ok:#17914A;--wa:#1E8E4E}
 *{box-sizing:border-box}
-body{margin:0;font-family:Montserrat,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.45}
-header{background:var(--navy);color:#fff;padding:18px 16px;text-align:center}
-header b{font-size:20px;letter-spacing:.02em}
-header small{display:block;opacity:.8;font-weight:600;margin-top:2px}
-.wrap{max-width:560px;margin:0 auto;padding:16px 16px 60px}
-.lang{display:flex;justify-content:flex-end;gap:6px;margin-bottom:8px}
-.lang button{border:2px solid var(--line);background:#fff;border-radius:20px;padding:6px 14px;font:700 13px Montserrat,system-ui,sans-serif;color:var(--navy)}
-.lang button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
-.card{background:#fff;border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 2px 10px rgba(13,40,71,.08)}
-.card h2{margin:0 0 4px;font-size:17px;color:var(--navy)}
-.card p.s{margin:0 0 12px;color:var(--muted);font-size:13px;font-weight:600}
-label{display:block;font-size:13px;font-weight:700;color:var(--muted);margin:12px 0 5px}
-input,select,textarea{width:100%;padding:14px;border:2px solid var(--line);border-radius:12px;font:600 16px Montserrat,system-ui,sans-serif;color:var(--ink);background:#fff}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--navy)}
+body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
+header{color:#fff;padding:16px 16px 44px;text-align:center;background-color:var(--navy-d);background-image:radial-gradient(520px 240px at 0 -30%,rgba(36,80,126,.95),transparent 65%),radial-gradient(rgba(255,255,255,.07) 1px,transparent 1.3px);background-size:auto,20px 20px}
+header b{font:800 21px/1.2 Montserrat,system-ui,sans-serif;letter-spacing:-.01em}
+header small{display:block;opacity:.75;font-weight:600;margin-top:3px;font-size:13.5px}
+.wrap{max-width:540px;margin:-30px auto 0;padding:0 14px calc(40px + env(safe-area-inset-bottom))}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.bar{flex:1;height:8px;border-radius:8px;background:rgba(255,255,255,.28);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:#fff;border-radius:8px;transition:width .3s}
+.lang{display:flex;gap:4px}
+.lang button{border:1.5px solid rgba(255,255,255,.4);background:transparent;border-radius:20px;padding:5px 11px;font:700 12px Inter,system-ui,sans-serif;color:#fff;cursor:pointer}
+.lang button.on{background:#fff;color:var(--navy-d);border-color:#fff}
+.card{background:#fff;border-radius:20px;padding:22px 18px 18px;box-shadow:0 14px 34px -18px rgba(13,33,55,.45)}
+.paso{display:none}.paso.on{display:block;animation:entra .25s ease-out}
+@keyframes entra{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h2{margin:0 0 4px;font:800 22px/1.2 Montserrat,system-ui,sans-serif;color:var(--navy-d);letter-spacing:-.01em}
+p.s{margin:0 0 14px;color:var(--muted);font-size:14.5px;font-weight:500}
+label{display:block;font-size:13.5px;font-weight:700;color:#3F4D62;margin:14px 0 6px}
+label .op{font-weight:500;color:#8A97AA}
+input,select,textarea{width:100%;padding:14px;border:1.5px solid var(--line);border-radius:13px;font:600 16px Inter,system-ui,sans-serif;color:var(--ink);background:#fff;-webkit-appearance:none;appearance:none}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(26,58,92,.14)}
+input.mal{border-color:var(--red);box-shadow:0 0 0 3px rgba(229,57,53,.14)}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .g3{display:grid;grid-template-columns:2fr 1fr;gap:10px}
-.dep{background:#f4f7fb;border-radius:12px;padding:12px;margin-top:10px;position:relative}
-.dep .x{position:absolute;top:6px;right:8px;border:none;background:none;font-size:20px;color:var(--muted)}
-.btn{display:block;width:100%;border:none;border-radius:12px;padding:16px;font:800 16px Montserrat,system-ui,sans-serif;background:var(--red);color:#fff;margin-top:6px}
-.btn.sec{background:#fff;color:var(--navy);border:2px solid var(--navy);margin-top:12px;padding:12px}
+.opc{display:grid;gap:10px;margin-top:6px}
+.opc button{display:flex;align-items:center;gap:14px;text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:16px;padding:15px 16px;font:700 16.5px Inter,system-ui,sans-serif;color:var(--ink);cursor:pointer;transition:border-color .15s,background .15s,transform .1s}
+.opc button:active{transform:scale(.99)}
+.opc button i{font-style:normal;font-size:26px;flex:none;width:46px;height:46px;border-radius:13px;background:#EEF2F7;display:grid;place-items:center}
+.opc button small{display:block;font-weight:500;color:var(--muted);font-size:13.5px;margin-top:2px}
+.opc button.on{border-color:var(--navy);background:#EAF1FA}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.seg button{border:1.5px solid var(--line);background:#fff;border-radius:13px;padding:13px 8px;font:700 15px Inter,system-ui,sans-serif;color:var(--ink);cursor:pointer}
+.seg button.on{border-color:var(--navy);background:var(--navy);color:#fff}
+.per{background:#F4F7FB;border-radius:15px;padding:12px 12px 14px;margin-top:10px;position:relative}
+.per .x{position:absolute;top:4px;right:6px;border:none;background:none;font-size:20px;color:var(--muted);padding:6px;cursor:pointer}
+.per b.t{display:block;font:800 12px Montserrat,system-ui,sans-serif;text-transform:uppercase;letter-spacing:.06em;color:var(--navy);margin-bottom:2px}
+.chk{display:flex;gap:10px;align-items:center;margin:12px 0 0;font-weight:600;font-size:14.5px;color:var(--ink);cursor:pointer}
+.chk input{width:22px;height:22px;flex:none;-webkit-appearance:auto;appearance:auto;padding:0;accent-color:var(--navy)}
+.nav{display:flex;gap:10px;margin-top:20px}
+.btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:14px;padding:16px;font:800 16.5px Inter,system-ui,sans-serif;background:var(--red);color:#fff;cursor:pointer;box-shadow:0 10px 22px -12px rgba(229,57,53,.9);text-decoration:none}
+.btn.atras{flex:0 0 auto;background:#fff;color:var(--navy);border:1.5px solid var(--line);box-shadow:none;padding:16px 18px}
+.btn.sec{background:#fff;color:var(--navy);border:1.5px dashed #9FB1C7;box-shadow:none;margin-top:12px;width:100%;padding:13px}
+.btn.navy{background:var(--navy);box-shadow:0 10px 22px -12px rgba(13,33,55,.9)}
+.btn.wa{background:var(--wa);box-shadow:0 10px 22px -12px rgba(30,142,78,.9)}
 .btn:disabled{opacity:.6}
-.seg{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.seg label{margin:0;border:2px solid var(--line);border-radius:12px;padding:12px;text-align:center;cursor:pointer;color:var(--navy)}
-.seg input{display:none}
-.seg input:checked+span{font-weight:800}
-.seg label:has(input:checked){border-color:var(--navy);background:#dbe8fb}
-.note{background:#fff6dc;color:#6b5200;border-radius:12px;padding:12px;font-size:13px;font-weight:600}
-.err{background:#fde0e0;color:#a31515;border-radius:12px;padding:12px;font-weight:700;margin-bottom:12px;display:none}
-.ok{text-align:center;padding:40px 10px}
-.ok .t{font-size:56px}
+.err{background:#FDECEA;color:#A31515;border-radius:13px;padding:12px 14px;font-weight:700;font-size:14.5px;margin-bottom:12px;display:none}
+.note{background:#EEF3FA;color:#3D5573;border-radius:13px;padding:12px 14px;font-size:13.5px;font-weight:600;margin-top:14px;line-height:1.5}
+.note.am{background:#FFF6DC;color:#6B5200}
+.docs{list-style:none;margin:10px 0 0;padding:0}
+.docs li{display:flex;gap:10px;padding:10px 12px;background:#F4F7FB;border-radius:12px;margin-bottom:6px;font-weight:600;font-size:14.5px}
+.docs li::before{content:"📄"}
+.fin{text-align:center}
+.fin .big{font-size:54px;line-height:1}
+.quien{background:#EAF1FA;border:1.5px dashed #9FB1C7;border-radius:13px;padding:12px;margin:10px 0 14px;font-weight:800;color:var(--navy-d);text-align:center;font-size:18px}
+.pasos2{counter-reset:p;list-style:none;padding:0;margin:14px 0 0;text-align:left}
+.pasos2>li{counter-increment:p;position:relative;padding:0 0 18px 44px}
+.pasos2>li::before{content:counter(p);position:absolute;left:0;top:0;width:32px;height:32px;border-radius:50%;background:var(--navy);color:#fff;font:800 15px Montserrat,system-ui,sans-serif;display:grid;place-items:center}
+.pasos2>li b{display:block;font-size:16px;margin-bottom:6px}
+.pasos2 .btn{width:100%}
 .hp{position:absolute;left:-9999px;height:0;overflow:hidden}
-.opt{font-weight:600;color:#8a97ab}
-.docs{list-style:none;margin:0 0 12px;padding:0}
-.docs li{padding:9px 12px;background:#f4f7fb;border-radius:10px;margin-bottom:6px;font-weight:600;font-size:14px}
-.btn.doc{background:var(--navy)}
-.btn.doc.off{background:#9aa8bd}
-.steps{display:flex;gap:8px;margin:0 0 14px}
-.steps div{flex:1;background:#fff;border:2px solid var(--line);border-radius:12px;padding:8px 10px;font-size:12.5px;font-weight:700;color:var(--muted);text-align:center}
-.steps div.on{border-color:var(--navy);color:var(--navy);background:#dbe8fb}
-.steps div.ok{border-color:#1b7a3a;color:#1b7a3a;background:#e3f3e7}
-.paso2{border:3px solid var(--navy)}
-.paso2 h2{font-size:19px}
-.big{font-size:18px;padding:18px}
-.quien{background:#f4f7fb;border-radius:12px;padding:12px;margin:12px 0;font-weight:700;color:var(--navy);text-align:center;font-size:17px}
-.aviso{background:#e3f3e7;color:#1b5e2c;border-radius:12px;padding:14px;font-weight:700;margin-bottom:14px}
-.aviso button{margin-top:10px}
-.sub{font-size:12px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.04em;margin:14px 0 0}
-.preview{display:inline-block;background:#fff6dc;color:#6b5200;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:800;margin-left:6px;vertical-align:middle}
+.pie{text-align:center;color:var(--muted);font-size:12.5px;font-weight:600;margin-top:16px}
+.aviso{background:#E3F3E7;color:#1B5E2C;border-radius:14px;padding:14px;font-weight:700;margin-bottom:12px;display:none}
+.aviso .btn{margin-top:10px;width:100%}
+@media (prefers-reduced-motion:reduce){.paso.on{animation:none}.bar i{transition:none}}
 </style>
 </head>
 <body>
-<header><b>AmericaMex Tax</b><small id="hSub"></small></header>
-<div class="wrap" id="form">
-  <div class="lang"><button type="button" data-l="es" class="on">Español</button><button type="button" data-l="en">English</button></div>
-  <div class="steps"><div class="on" data-t="paso1"></div><div data-t="paso2"></div></div>
-  <div class="aviso" id="yaEnviado" style="display:none"><span id="yaTxt"></span><button type="button" class="btn doc" id="yaDocs" data-t="subir"></button><button type="button" class="btn sec" id="yaOtro" data-t="otroForm"></button></div>
-  <div class="err" id="err"></div>
+<header>
+  <div class="top" style="max-width:512px;margin:0 auto 12px"><div class="bar" aria-hidden="true"><i id="barra"></i></div><div class="lang"><button type="button" data-l="es">ES</button><button type="button" data-l="en">EN</button></div></div>
+  <b>AmericaMex</b><small id="hSub"></small>
+</header>
+<div class="wrap">
+  <div class="aviso" id="yaEnviado"><span data-t="ya"></span><button type="button" class="btn navy" id="yaDocs" data-t="subir"></button><button type="button" class="btn sec" id="yaOtro" data-t="otroForm"></button></div>
+  <div class="card" id="form">
+    <div class="err" id="err" role="alert"></div>
 
-  <div class="card">
-    <h2 data-t="s1"></h2>
-    <div class="g2"><div><label data-t="nombre"></label><input id="nombre" autocomplete="given-name" required></div>
-    <div><label data-t="nombre2"></label><input id="nombre2" autocomplete="additional-name"></div></div>
-    <div class="g3"><div><label data-t="apellidos"></label><input id="apellidos" autocomplete="family-name"></div>
-    <div><label data-t="sufijo"></label><select id="sufijo"><option value="">—</option><option>Sr.</option><option>Jr.</option><option>II</option><option>III</option></select></div></div>
-    <label data-t="nac"></label><input id="nacimiento" type="date" autocomplete="bday">
-    <label data-t="tel"></label><input id="telefono" type="tel" autocomplete="tel">
-    <label data-t="correo"></label><input id="correo" type="email" autocomplete="email">
-    <label data-t="ocup"></label><input id="ocupacion" autocomplete="organization-title">
-    <label data-t="dir"></label><input id="dirCalle" autocomplete="address-line1">
-    <div class="g2"><div><label data-t="apto"></label><input id="dirApto" autocomplete="address-line2"></div>
-    <div><label data-t="ciudad"></label><input id="dirCiudad" autocomplete="address-level2"></div></div>
-    <div class="g2"><div><label data-t="estado"></label><input id="dirEstado" autocomplete="address-level1" maxlength="30"></div>
-    <div><label data-t="zip"></label><input id="dirZip" inputmode="numeric" autocomplete="postal-code" maxlength="10"></div></div>
-  </div>
-
-  <div class="card">
-    <h2 data-t="s2"></h2>
-    <div class="seg" id="servicio">
-      <label><input type="radio" name="serv" value="impuestos" checked><span data-t="impuestos"></span></label>
-      <label><input type="radio" name="serv" value="itin"><span>ITIN</span></label>
-      <label><input type="radio" name="serv" value="migracion"><span data-t="migracion"></span></label>
-      <label><input type="radio" name="serv" value="otro"><span data-t="otro"></span></label>
+    <!-- 0 · ¿qué necesitas? -->
+    <div class="paso" data-p="serv">
+      <h2 data-t="q0"></h2><p class="s" data-t="q0s"></p>
+      <div class="opc" id="servicio">
+        <button type="button" data-v="impuestos"><i>🧾</i><span><span data-t="o_imp"></span><small data-t="o_imp_s"></small></span></button>
+        <button type="button" data-v="itin"><i>🪪</i><span><span data-t="o_itin"></span><small data-t="o_itin_s"></small></span></button>
+        <button type="button" data-v="migracion"><i>🗽</i><span><span data-t="o_mig"></span><small data-t="o_mig_s"></small></span></button>
+        <button type="button" data-v="otro"><i>📂</i><span><span data-t="o_otro"></span><small data-t="o_otro_s"></small></span></button>
+      </div>
     </div>
-  </div>
 
-  <div class="card">
-    <h2 data-t="s3"></h2><p class="s" data-t="s3s"></p>
-    <label data-t="ssn"></label><input id="ssn" inputmode="numeric" autocomplete="off" maxlength="11" placeholder="XXX-XX-XXXX">
-    <label data-t="civil"></label>
-    <select id="civil"><option value=""></option><option value="soltero" data-t="o_sol"></option><option value="casado" data-t="o_cas"></option><option value="viudo" data-t="o_viu"></option><option value="jefe" data-t="o_jef"></option></select>
-    <div id="espWrap" style="display:none">
-      <p class="sub" data-t="esp"></p>
-      <div class="g2"><div><label data-t="pnom"></label><input id="espNombre" autocomplete="off"></div><div><label data-t="nombre2"></label><input id="espNombre2" autocomplete="off"></div></div>
-      <label data-t="apellidos"></label><input id="espApellidos" autocomplete="off">
-      <div class="g2"><div><label data-t="nac"></label><input id="espNac" type="date"></div><div><label>SSN / ITIN</label><input id="espSsn" inputmode="numeric" autocomplete="off" maxlength="11"></div></div>
-      <label data-t="ocup"></label><input id="espOcup" autocomplete="off">
+    <!-- 1 · tus datos -->
+    <div class="paso" data-p="tu">
+      <h2 data-t="q1"></h2><p class="s" data-t="q1s"></p>
+      <div class="g2"><div><label data-t="nombre"></label><input id="nombre" autocomplete="given-name"></div>
+      <div><label><span data-t="nombre2"></span> <span class="op" data-t="opc"></span></label><input id="nombre2" autocomplete="additional-name"></div></div>
+      <div class="g3"><div><label data-t="apellidos"></label><input id="apellidos" autocomplete="family-name"></div>
+      <div><label>Sr./Jr.</label><select id="sufijo"><option value="">—</option><option>Sr.</option><option>Jr.</option><option>II</option><option>III</option></select></div></div>
+      <label data-t="tel"></label><input id="telefono" type="tel" inputmode="tel" autocomplete="tel" placeholder="(619) 555-0000">
+      <div class="soloTax">
+        <label data-t="nac"></label><input id="nacimiento" type="date" autocomplete="bday">
+        <label><span data-t="correo"></span> <span class="op" data-t="opc"></span></label><input id="correo" type="email" inputmode="email" autocomplete="email">
+        <label data-t="ocup"></label><input id="ocupacion" autocomplete="organization-title">
+        <div class="soloC"><label data-t="ssnTu"></label><input id="ssnT" inputmode="numeric" autocomplete="off" maxlength="11" placeholder="XXX-XX-XXXX"></div>
+      </div>
+      <div class="noTax">
+        <label data-t="coment2"></label><textarea id="coment2" rows="3"></textarea>
+      </div>
     </div>
-  </div>
 
-  <div class="card">
-    <h2 data-t="s4"></h2><p class="s" data-t="s4s"></p>
-    <div id="deps"></div>
-    <button type="button" class="btn sec" id="addDep" data-t="addDep"></button>
-  </div>
+    <!-- 2 · dirección -->
+    <div class="paso" data-p="dir">
+      <h2 data-t="q2"></h2><p class="s" data-t="q2s"></p>
+      <label data-t="dir"></label><input id="dirCalle" autocomplete="address-line1">
+      <div class="g2"><div><label><span data-t="apto"></span> <span class="op" data-t="opc"></span></label><input id="dirApto" autocomplete="address-line2"></div>
+      <div><label data-t="ciudad"></label><input id="dirCiudad" autocomplete="address-level2"></div></div>
+      <div class="g2"><div><label data-t="estado"></label><input id="dirEstado" autocomplete="address-level1" maxlength="30" placeholder="CA"></div>
+      <div><label data-t="zip"></label><input id="dirZip" inputmode="numeric" autocomplete="postal-code" maxlength="10"></div></div>
+    </div>
 
-  <div class="card">
-    <h2 data-t="s5"></h2><p class="s" data-t="s5s"></p>
-    <label data-t="banco"></label><input id="banco" autocomplete="off">
-    <div class="g2"><div><label data-t="ruta"></label><input id="ruta" inputmode="numeric" maxlength="9" autocomplete="off"></div>
-    <div><label data-t="cuenta"></label><input id="cuenta" inputmode="numeric" maxlength="17" autocomplete="off"></div></div>
-    <label data-t="tipo"></label><select id="tipoCta"><option value="checking">Checking</option><option value="savings">Savings</option></select>
-  </div>
+    <!-- 3 · familia -->
+    <div class="paso" data-p="fam">
+      <h2 data-t="q3"></h2><p class="s" data-t="q3s"></p>
+      <label data-t="civil"></label>
+      <div class="seg" id="civil"><button type="button" data-v="soltero" data-t="o_sol"></button><button type="button" data-v="casado" data-t="o_cas"></button><button type="button" data-v="jefe" data-t="o_jef"></button><button type="button" data-v="viudo" data-t="o_viu"></button></div>
+      <label class="chk"><input type="checkbox" id="itinYo"><span data-t="itinYo"></span></label>
+      <div class="per" id="espWrap" style="display:none">
+        <b class="t" data-t="esp"></b>
+        <div class="g2"><div><label data-t="pnom"></label><input id="espNombre" autocomplete="off"></div><div><label data-t="apellidos"></label><input id="espApellidos" autocomplete="off"></div></div>
+        <div class="g2"><div><label data-t="nac"></label><input id="espNac" type="date"></div><div><label data-t="ocup2"></label><input id="espOcup" autocomplete="off"></div></div>
+        <div class="soloC"><label data-t="segS"></label><input id="espSsn" inputmode="numeric" autocomplete="off" maxlength="11" placeholder="XXX-XX-XXXX"></div>
+        <label class="chk"><input type="checkbox" id="espItin"><span data-t="itinEl"></span></label>
+      </div>
+      <label style="margin-top:20px" data-t="deps"></label>
+      <div id="deps"></div>
+      <button type="button" class="btn sec" id="addDep" data-t="addDep"></button>
+      <label style="margin-top:18px"><span data-t="coment"></span> <span class="op" data-t="opc"></span></label><textarea id="coment" rows="2"></textarea>
+    </div>
 
-  <div class="card" id="docsCard">
-    <h2><span data-t="s6"></span></h2><p class="s" data-t="s6s"></p>
-    <ul class="docs">
-      <li data-t="d1"></li><li data-t="d2"></li><li data-t="d3"></li><li data-t="d4"></li><li data-t="d5"></li><li data-t="d6"></li>
-    </ul>
-    <div class="note" data-t="s6n"></div>
-  </div>
+    <!-- 4 · depósito directo (solo en el enlace que manda la oficina) -->
+    <div class="paso" data-p="banco">
+      <h2 data-t="s5"></h2><p class="s" data-t="s5s"></p>
+      <label><span data-t="banco"></span> <span class="op" data-t="opc"></span></label><input id="bancoC" autocomplete="off">
+      <div class="g2"><div><label data-t="ruta"></label><input id="rutaC" inputmode="numeric" maxlength="9" autocomplete="off"></div>
+      <div><label data-t="cuenta"></label><input id="cuentaC" inputmode="numeric" maxlength="17" autocomplete="off"></div></div>
+      <label data-t="tipo"></label><select id="tipoC"><option value="checking">Checking</option><option value="savings">Savings</option></select>
+    </div>
 
-  <div class="card">
-    <label style="margin-top:0" data-t="coment"></label><textarea id="coment" rows="2"></textarea>
+    <!-- modo seguro: solo lo delicado, cuando la oficina lo pide -->
+    <div class="paso" data-p="seguro">
+      <h2 data-t="qs"></h2><p class="s" data-t="qss"></p>
+      <label data-t="nombreC"></label><input id="segNombre" autocomplete="name">
+      <label data-t="ssnTu"></label><input id="ssn" inputmode="numeric" autocomplete="off" maxlength="11" placeholder="XXX-XX-XXXX">
+      <div id="segPers"></div>
+      <button type="button" class="btn sec" id="addSeg" data-t="addSeg"></button>
+      <label style="margin-top:20px"><span data-t="s5"></span> <span class="op" data-t="opc"></span></label>
+      <input id="banco" autocomplete="off" data-ph="banco">
+      <div class="g2" style="margin-top:10px"><input id="ruta" inputmode="numeric" maxlength="9" autocomplete="off" data-ph="ruta"><input id="cuenta" inputmode="numeric" maxlength="17" autocomplete="off" data-ph="cuenta"></div>
+      <select id="tipoCta" style="margin-top:10px"><option value="checking">Checking</option><option value="savings">Savings</option></select>
+      <div class="note" data-t="priv"></div>
+    </div>
+
     <input class="hp" id="web" tabindex="-1" autocomplete="off" aria-hidden="true">
-    <div class="note" style="margin-top:14px" data-t="priv"></div>
-    <button type="button" class="btn" id="enviar" data-t="enviar"></button>
+    <div class="nav" id="nav"><button type="button" class="btn atras" id="atras" aria-label="Atrás">←</button><button type="button" class="btn" id="sig"></button></div>
+    <div class="note am" id="notaSsn" data-t="noSsn"></div>
   </div>
-</div>
-<div class="wrap" id="gracias" style="display:none">
-  <div class="steps"><div class="ok" data-t="paso1ok"></div><div class="on" data-t="paso2"></div></div>
-  <div class="card ok" style="padding:22px 10px 10px"><div class="t">✅</div><h2 data-t="gracias"></h2><p data-t="gracias2" style="margin:6px 0 0"></p></div>
-  <div class="card paso2">
-    <h2 data-t="p2t"></h2><p class="s" data-t="p2s"></p>
-    <ul class="docs">
-      <li data-t="d1"></li><li data-t="d2"></li><li data-t="d3"></li><li data-t="d4"></li><li data-t="d5"></li><li data-t="d6"></li>
-    </ul>
-    <div class="s" style="font-weight:700;color:var(--muted);font-size:13px" data-t="p2nom"></div>
-    <div class="quien" id="quien"></div>
-    <button type="button" class="btn doc big" id="btnDocs" data-t="subir"></button>
-    <p class="s" style="margin:12px 0 0;text-align:center" data-t="p2fin"></p>
-  </div>
-</div>
 
+  <!-- final · documentos -->
+  <div class="card fin" id="gracias" style="display:none">
+    <div class="big">✅</div>
+    <h2 data-t="gracias"></h2><p class="s" data-t="gracias2" id="gr2"></p>
+    <ol class="pasos2" id="pasos2">
+      <li><b data-t="p2a"></b><ul class="docs" id="docsLista"></ul></li>
+      <li><b data-t="p2b"></b><div class="quien" id="quien"></div><button type="button" class="btn navy" id="btnDocs" data-t="subir"></button></li>
+      <li><b data-t="p2c"></b><a class="btn wa" id="btnWa" target="_blank" rel="noopener" data-t="avisar"></a></li>
+    </ol>
+    <p class="s" style="margin:6px 0 0" data-t="p2fin"></p>
+  </div>
+  <div class="pie">🔒 <span data-t="pie"></span></div>
+</div>
 <script>
 const FN_URL = 'https://kwebidsoeyfgwtyhoeni.supabase.co/functions/v1/intake';
-// Enlace público de Encyro para que el cliente suba sus documentos (paso 2, después de enviar los datos).
+// Enlace público de Encyro para que el cliente suba sus documentos.
 const ENCYRO_URL = 'https://www.encyro.com/americamexmultiservices';
+const WA_OFICINA = '16194964759';
 const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3ZWJpZHNvZXlmZ3d0eWhvZW5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyMTM3NTgsImV4cCI6MjEwNjc4OTc1OH0.vD1Mt8VosqFStyrxTCaprQ3Ekzvpi-ZwlFa5aTGLSUw';
 const T = {
- es:{hSub:'Formulario de datos del cliente',s1:'Tus datos',nombre:'Primer nombre *',nombre2:'Segundo nombre',dir:'Dirección postal (calle y número)',apto:'Apto / Suite',ciudad:'Ciudad',estado:'Estado',zip:'Código postal',apellidos:'Apellidos',sufijo:'Sr./Jr.',nac:'Fecha de nacimiento',tel:'Teléfono / WhatsApp',correo:'Correo electrónico',
-  s2:'¿Qué necesitas?',impuestos:'Impuestos',migracion:'Migración',otro:'Otro',
-  s3:'Seguro social (SSN) y estado civil',s3s:'Si solo tienes ITIN, escribe tu ITIN.',ssn:'SSN o ITIN',civil:'Estado civil',o_sol:'Soltero(a)',o_cas:'Casado(a)',o_viu:'Viudo(a)',o_jef:'Soltero(a) con dependientes',esp:'Datos del esposo(a)',
-  s4:'Dependientes (hijos u otros)',s4s:'Agrega a cada uno.',addDep:'+ Agregar dependiente',depN:'Nombre(s)',depA:'Apellido(s)',parent:'Parentesco (hijo, hija…)',
-  s5:'Depósito directo (opcional)',s5s:'Para depositarte tu reembolso. Puedes dejarlo vacío.',banco:'Banco',ruta:'Número de ruta (9 dígitos)',cuenta:'Número de cuenta',tipo:'Tipo de cuenta',
-  coment:'Comentarios (opcional)',priv:'🔒 Tu información viaja cifrada. Tu SSN y datos de banco se borran automáticamente en 48 horas, después de que los capturemos. Solo guardamos los últimos 4 dígitos de tu SSN para identificarte.',
-  s6:'Documentos que vas a necesitar',s6s:'Tenlos a la mano: los subes en el siguiente paso, con fotos desde tu celular.',d1:'W-2 y/o 1099 (todos los que tengas)',d2:'Identificación (ID de California o pasaporte)',d3:'Acta de nacimiento de los niños',d4:'Documentos de la escuela de los niños',d5:'Gastos de guardería o cuidado de niños (si aplica)',d6:'Declaración del año pasado (si la tienes)',subir:'📎 Subir mis documentos',s6n:'👉 Primero dale «Enviar mis datos». Luego te sale el botón para subir tus documentos.',enviar:'Enviar mis datos',gracias:'¡Paso 1 listo! Ya recibimos tus datos.',gracias2:'Ahora sube tus documentos (paso 2).',
-  paso1:'1. Tus datos',paso2:'2. Documentos',paso1ok:'✓ Datos enviados',ocup:'Ocupación (en qué trabajas)',pnom:'Primer nombre',otroForm:'Llenar otro formulario',
-  p2t:'Paso 2: sube tus documentos',p2s:'Seguro y cifrado. Puedes tomar foto con tu celular.',p2nom:'Cuando te lo pida, escribe este nombre para que sepamos que son tuyos:',
-  p2fin:'¿No los tienes ahorita? Puedes subirlos después con el mismo enlace o traerlos a la oficina.',ya:'Ya enviaste tus datos. ¿Te falta subir tus documentos?',
-  meses:'Meses que vivió contigo este año',falta:'Escribe tu nombre.',errSsn:'El SSN/ITIN debe tener 9 dígitos.',errRuta:'El número de ruta debe tener 9 dígitos.',errNet:'No se pudo enviar. Revisa tu internet e intenta de nuevo.'},
- en:{hSub:'Client information form',s1:'Your information',nombre:'First name *',nombre2:'Middle name',dir:'Mailing address (street and number)',apto:'Apt / Suite',ciudad:'City',estado:'State',zip:'ZIP code',apellidos:'Last name(s)',sufijo:'Sr./Jr.',nac:'Date of birth',tel:'Phone / WhatsApp',correo:'Email',
-  s2:'What do you need?',impuestos:'Taxes',migracion:'Immigration',otro:'Other',
-  s3:'Social Security (SSN) and filing status',s3s:'If you only have an ITIN, enter your ITIN.',ssn:'SSN or ITIN',civil:'Marital status',o_sol:'Single',o_cas:'Married',o_viu:'Widowed',o_jef:'Single with dependents',esp:'Spouse information',
-  s4:'Dependents (children or others)',s4s:'Add each one.',addDep:'+ Add dependent',depN:'First name',depA:'Last name(s)',parent:'Relationship (son, daughter…)',
-  s5:'Direct deposit (optional)',s5s:'To deposit your refund. You can leave it empty.',banco:'Bank',ruta:'Routing number (9 digits)',cuenta:'Account number',tipo:'Account type',
-  coment:'Comments (optional)',priv:'🔒 Your information is sent encrypted. Your SSN and bank details are automatically deleted within 48 hours after we enter them. We only keep the last 4 digits of your SSN to identify you.',
-  s6:'Documents you will need',s6s:'Have them ready: you upload them in the next step, with photos from your phone.',d1:'W-2 and/or 1099 (all that you have)',d2:'ID (California ID or passport)',d3:'Birth certificates of your children',d4:'School records of your children',d5:'Childcare expenses (if any)',d6:'Last year tax return (if you have it)',subir:'📎 Upload my documents',s6n:'👉 First tap «Send my information». Then you will see the button to upload your documents.',enviar:'Send my information',gracias:'Step 1 done! We received your information.',gracias2:'Now upload your documents (step 2).',
-  paso1:'1. Your information',paso2:'2. Documents',paso1ok:'✓ Information sent',ocup:'Occupation (your job)',pnom:'First name',otroForm:'Fill out another form',
-  p2t:'Step 2: upload your documents',p2s:'Secure and encrypted. You can take a photo with your phone.',p2nom:'When asked, type this name so we know they are yours:',
-  p2fin:'Don\'t have them right now? Upload them later with the same link or bring them to the office.',ya:'You already sent your information. Do you still need to upload your documents?',
-  meses:'Months lived with you this year',falta:'Enter your name.',errSsn:'SSN/ITIN must have 9 digits.',errRuta:'Routing number must have 9 digits.',errNet:'Could not send. Check your internet and try again.'}
+ es:{hSub:'Empieza tu trámite en 2 minutos',opc:'(opcional)',
+  q0:'¿En qué te ayudamos?',q0s:'Toca una opción.',o_imp:'Impuestos',o_imp_s:'Mi declaración de este año',o_itin:'ITIN',o_itin_s:'Necesito un ITIN (con o sin declaración)',o_mig:'Trámite migratorio',o_mig_s:'Mica, ciudadanía, SENTRI…',o_otro:'Otro trámite',o_otro_s:'Apostilla, traducción, notary, P.O. Box…',
+  q1:'Tus datos',q1s:'Como aparecen en tu identificación.',nombre:'Primer nombre *',nombre2:'Segundo nombre',apellidos:'Apellidos *',tel:'Teléfono o WhatsApp *',nac:'Fecha de nacimiento',correo:'Correo electrónico',ocup:'¿En qué trabajas?',coment2:'Cuéntanos qué necesitas',
+  q2:'¿Dónde recibes tu correo?',q2s:'La dirección que va en tu declaración.',dir:'Calle y número',apto:'Apto',ciudad:'Ciudad',estado:'Estado',zip:'Código postal',
+  q3:'Tu familia',q3s:'Para buscarte todos los créditos que te tocan.',civil:'Estado civil',o_sol:'Soltero(a)',o_cas:'Casado(a)',o_jef:'Soltero(a) con hijos',o_viu:'Viudo(a)',
+  itinYo:'Yo no tengo seguro social (necesito ITIN)',itinEl:'No tiene seguro social (necesita ITIN)',esp:'Tu esposo(a)',pnom:'Primer nombre',ocup2:'¿En qué trabaja?',
+  deps:'Hijos u otros dependientes',addDep:'+ Agregar un hijo o dependiente',depN:'Nombre(s)',depA:'Apellido(s)',parent:'Parentesco',meses:'Meses que vivió contigo',dep:'Dependiente',
+  parOps:['Hijo','Hija','Padre','Madre','Otro'],coment:'¿Algo más que debamos saber?',
+  sig:'Siguiente',enviar:'Enviar mis datos',enviando:'Enviando…',
+  noSsn:'🔒 Aquí no te pedimos tu seguro social ni datos de banco. Si hacen falta, te los pedimos después por un medio seguro.',
+  gracias:'¡Listo! Ya recibimos tus datos.',gracias2:'Solo falta mandarnos tus documentos:',p2a:'Ten a la mano estos documentos',p2b:'Súbelos con este nombre',p2c:'Avísanos que ya terminaste',subir:'📎 Subir mis documentos',avisar:'Avisar por WhatsApp',
+  p2fin:'¿No los tienes ahorita? Súbelos después con el mismo enlace o tráelos a la oficina.',ya:'Ya nos mandaste tus datos. ¿Te falta subir tus documentos?',otroForm:'Llenar otro formulario',
+  d_w2:'W-2 y/o 1099 (todos los que tengas)',d_id:'Identificación con foto (ID o pasaporte)',d_acta:'Acta de nacimiento de los niños',d_esc:'Constancia de la escuela o del doctor de los niños',d_guard:'Recibos de guardería (si pagaste)',d_ant:'Declaración del año pasado (si la tienes)',d_pas:'Pasaporte vigente de quien necesita ITIN',d_mig:'Tu mica, pasaporte o documento del trámite',d_otro:'El documento que quieres tramitar',
+  waMsg:'Hola, soy {n}. Ya llené mi cuestionario y subí mis documentos.',
+  falta:'Escribe tu nombre.',faltaAp:'Escribe tus apellidos.',faltaTel:'Escribe un teléfono de 10 dígitos.',faltaServ:'Toca una opción para continuar.',errSsn:'El seguro social o ITIN debe tener 9 dígitos.',errRuta:'El número de ruta debe tener 9 dígitos.',errNet:'No se pudo enviar. Revisa tu internet e intenta de nuevo.',errNada:'Escribe al menos un número.',
+  qs:'Datos protegidos',qss:'Los pidió tu preparador para terminar tu declaración.',nombreC:'Tu nombre completo *',ssnTu:'Tu seguro social o ITIN',addSeg:'+ Agregar esposo(a) o dependiente',segN:'Nombre completo',segS:'Seguro social o ITIN',s5:'Depósito directo de tu reembolso',s5s:'Para que tu reembolso llegue directo a tu cuenta. Si prefieres cheque, déjalo vacío.',tipo:'Tipo de cuenta',banco:'Banco',ruta:'Ruta (9 dígitos)',cuenta:'Número de cuenta',
+  priv:'🔒 Viaja cifrado y se borra solo a las 48 horas, en cuanto lo capturamos.',pie:'Tu información viaja cifrada y solo la ve la oficina de AmericaMex.',segOk:'¡Listo! Recibimos tus datos de forma segura.',segOk2:'Ya puedes cerrar esta página.'},
+ en:{hSub:'Get started in 2 minutes',opc:'(optional)',
+  q0:'How can we help you?',q0s:'Tap one option.',o_imp:'Taxes',o_imp_s:'My tax return for this year',o_itin:'ITIN',o_itin_s:'I need an ITIN (with or without a return)',o_mig:'Immigration paperwork',o_mig_s:'Green card, citizenship, SENTRI…',o_otro:'Something else',o_otro_s:'Apostille, translation, notary, P.O. Box…',
+  q1:'Your information',q1s:'As shown on your ID.',nombre:'First name *',nombre2:'Middle name',apellidos:'Last name(s) *',tel:'Phone or WhatsApp *',nac:'Date of birth',correo:'Email',ocup:'What is your job?',coment2:'Tell us what you need',
+  q2:'Where do you get your mail?',q2s:'The address that goes on your tax return.',dir:'Street address',apto:'Apt',ciudad:'City',estado:'State',zip:'ZIP code',
+  q3:'Your family',q3s:'So we can find every credit you qualify for.',civil:'Marital status',o_sol:'Single',o_cas:'Married',o_jef:'Single with children',o_viu:'Widowed',
+  itinYo:'I do not have a Social Security number (I need an ITIN)',itinEl:'No Social Security number (needs an ITIN)',esp:'Your spouse',pnom:'First name',ocup2:'Their job',
+  deps:'Children or other dependents',addDep:'+ Add a child or dependent',depN:'First name',depA:'Last name(s)',parent:'Relationship',meses:'Months lived with you',dep:'Dependent',
+  parOps:['Son','Daughter','Father','Mother','Other'],coment:'Anything else we should know?',
+  sig:'Next',enviar:'Send my information',enviando:'Sending…',
+  noSsn:'🔒 We do not ask for your Social Security or bank details here. If needed, we will ask later through a secure channel.',
+  gracias:'Done! We received your information.',gracias2:'Now just send us your documents:',p2a:'Have these documents ready',p2b:'Upload them under this name',p2c:'Let us know you are done',subir:'📎 Upload my documents',avisar:'Message us on WhatsApp',
+  p2fin:'Don\'t have them right now? Upload them later with the same link or bring them to the office.',ya:'You already sent your information. Do you still need to upload your documents?',otroForm:'Fill out another form',
+  d_w2:'W-2 and/or 1099 (all that you have)',d_id:'Photo ID (ID card or passport)',d_acta:'Birth certificates of the children',d_esc:'School or doctor records of the children',d_guard:'Childcare receipts (if you paid)',d_ant:'Last year\'s tax return (if you have it)',d_pas:'Valid passport of whoever needs the ITIN',d_mig:'Your green card, passport or the document for your case',d_otro:'The document you need processed',
+  waMsg:'Hi, I am {n}. I filled out my questionnaire and uploaded my documents.',
+  falta:'Enter your first name.',faltaAp:'Enter your last name.',faltaTel:'Enter a 10-digit phone number.',faltaServ:'Tap an option to continue.',errSsn:'The SSN or ITIN must have 9 digits.',errRuta:'The routing number must have 9 digits.',errNet:'Could not send. Check your internet and try again.',errNada:'Enter at least one number.',
+  qs:'Protected information',qss:'Your preparer asked for it to finish your return.',nombreC:'Your full name *',ssnTu:'Your SSN or ITIN',addSeg:'+ Add spouse or dependent',segN:'Full name',segS:'SSN or ITIN',s5:'Direct deposit for your refund',s5s:'So your refund goes straight to your account. If you prefer a check, leave it empty.',tipo:'Account type',banco:'Bank',ruta:'Routing (9 digits)',cuenta:'Account number',
+  priv:'🔒 Sent encrypted and deleted automatically within 48 hours, once we enter it.',pie:'Your information is sent encrypted and only the AmericaMex office sees it.',segOk:'Done! We received your information securely.',segOk2:'You can close this page now.'}
 };
-let L = (new URLSearchParams(location.search).get('l') || (navigator.language||'es')).slice(0,2) === 'en' ? 'en' : 'es';
+const Q = new URLSearchParams(location.search);
+let L = (Q.get('l') || (navigator.language || 'es')).slice(0, 2) === 'en' ? 'en' : 'es';
+const SEGURO = Q.get('seguro') === '1';
+const COMPLETO = Q.get('c') === '1';   // enlace o QR que manda la oficina: sí pide seguro social y banco (cifrado)
 const $ = id => document.getElementById(id);
-function pintar(){
+const BORR = 'amx_form_borrador2', ENV = 'amx_form_enviado';
+let serv = '', civil = '', paso = 0, nombreEnviado = '';
+const esTax = () => serv === 'impuestos' || serv === 'itin';
+const pasos = () => SEGURO ? ['seguro'] : (esTax() ? ['serv', 'tu', 'dir', 'fam'].concat(COMPLETO ? ['banco'] : []) : ['serv', 'tu']);
+const tx = k => T[L][k];
+
+function pintar() {
   document.documentElement.lang = L;
   document.querySelectorAll('[data-t]').forEach(e => { if (T[L][e.dataset.t] !== undefined) e.textContent = T[L][e.dataset.t]; });
-  $('hSub').textContent = T[L].hSub;
+  document.querySelectorAll('[data-ph]').forEach(e => { e.placeholder = tx(e.dataset.ph); });
   document.querySelectorAll('.lang button').forEach(b => b.classList.toggle('on', b.dataset.l === L));
-  document.querySelectorAll('.dep').forEach(d => {
-    d.querySelector('.dn').placeholder = T[L].depN; d.querySelector('.da').placeholder = T[L].depA; d.querySelector('.dp').placeholder = T[L].parent;
-    d.querySelectorAll('[data-dl]').forEach(x => { x.textContent = T[L][x.dataset.dl]; });
+  document.querySelectorAll('.dep').forEach((d, i) => {
+    d.querySelector('.t').textContent = tx('dep') + ' ' + (i + 1);
+    d.querySelector('.dn').placeholder = tx('depN'); d.querySelector('.da').placeholder = tx('depA');
+    d.querySelectorAll('[data-dl]').forEach(x => { x.textContent = tx(x.dataset.dl); });
+    const sel = d.querySelector('.dp'), v = sel.selectedIndex; sel.innerHTML = tx('parOps').map(o => '<option>' + o + '</option>').join(''); sel.selectedIndex = Math.max(0, v);
   });
+  document.querySelectorAll('.sp').forEach(d => { d.querySelector('.sn').placeholder = tx('segN'); d.querySelector('.ss').placeholder = tx('segS'); });
+  const ps = pasos(), id = ps[Math.min(paso, ps.length - 1)];
+  document.querySelectorAll('.paso').forEach(p => p.classList.toggle('on', p.dataset.p === id));
+  document.querySelectorAll('.soloTax').forEach(e => { e.style.display = esTax() ? '' : 'none'; });
+  document.querySelectorAll('.noTax').forEach(e => { e.style.display = esTax() ? 'none' : ''; });
+  document.querySelectorAll('.soloC').forEach(e => { e.style.display = COMPLETO ? '' : 'none'; });
+  $('notaSsn').textContent = tx(COMPLETO ? 'priv' : 'noSsn'); $('notaSsn').className = COMPLETO ? 'note' : 'note am';
+  document.querySelectorAll('#servicio button').forEach(b => b.classList.toggle('on', b.dataset.v === serv));
+  document.querySelectorAll('#civil button').forEach(b => b.classList.toggle('on', b.dataset.v === civil));
+  $('espWrap').style.display = civil === 'casado' ? 'block' : 'none';
+  $('atras').style.display = paso > 0 ? '' : 'none';
+  $('nav').style.display = id === 'serv' ? 'none' : 'flex';
+  $('sig').textContent = paso >= ps.length - 1 ? tx('enviar') : tx('sig');
+  $('notaSsn').style.display = SEGURO || id === 'serv' ? 'none' : 'block';
+  $('barra').style.width = Math.round((paso + 1) / (ps.length + 1) * 100) + '%';
+  $('hSub').textContent = tx(SEGURO ? 'qs' : 'hSub');
   if ($('quien')) $('quien').textContent = nombreCompleto();
 }
-document.querySelector('.lang').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { L = b.dataset.l; pintar(); if ($('yaEnviado').style.display === 'block') $('yaTxt').textContent = T[L].ya; } });
-function fmtSsn(el){ const d = el.value.replace(/\D/g,'').slice(0,9); el.value = d.length>5 ? d.slice(0,3)+'-'+d.slice(3,5)+'-'+d.slice(5) : (d.length>3 ? d.slice(0,3)+'-'+d.slice(3) : d); }
-['ssn','espSsn'].forEach(i => $(i).addEventListener('input', e => fmtSsn(e.target)));
-$('civil').addEventListener('change', () => { $('espWrap').style.display = $('civil').value === 'casado' ? 'block' : 'none'; });
-function addDep(){
-  const d = document.createElement('div'); d.className = 'dep';
+function irPaso(n) { paso = n; $('err').style.display = 'none'; pintar(); window.scrollTo({ top: 0, behavior: 'smooth' }); guardarBorrador(); }
+document.querySelector('.lang').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { L = b.dataset.l; pintar(); if ($('gracias').style.display !== 'none') pintarDocs(); } });
+$('servicio').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; serv = b.dataset.v; if (serv === 'itin') $('itinYo').checked = true; irPaso(1); });
+$('civil').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; civil = b.dataset.v; pintar(); guardarBorrador(); });
+function fmtSsn(el) { const d = el.value.replace(/\D/g, '').slice(0, 9); el.value = d.length > 5 ? d.slice(0, 3) + '-' + d.slice(3, 5) + '-' + d.slice(5) : (d.length > 3 ? d.slice(0, 3) + '-' + d.slice(3) : d); }
+function fmtTel(el) { const d = el.value.replace(/\D/g, ''); if (el.value.trim().startsWith('+') || d.length > 10) return; el.value = d.length > 6 ? '(' + d.slice(0, 3) + ') ' + d.slice(3, 6) + '-' + d.slice(6) : (d.length > 3 ? '(' + d.slice(0, 3) + ') ' + d.slice(3) : d); }
+['ssn', 'ssnT', 'espSsn'].forEach(i => $(i).addEventListener('input', e => fmtSsn(e.target)));
+$('telefono').addEventListener('input', e => fmtTel(e.target));
+
+function addDep(x) {
+  x = x || {};
+  const d = document.createElement('div'); d.className = 'per dep';
   let ms = ''; for (let m = 12; m >= 0; m--) ms += '<option>' + m + '</option>';
-  d.innerHTML = '<button type="button" class="x" aria-label="x">✕</button><div class="g2"><input class="dn" autocomplete="off"><input class="da" autocomplete="off"></div>' +
-    '<div class="g2"><div><label data-dl="nac"></label><input class="dd" type="date"></div><div><label>SSN / ITIN</label><input class="ds" inputmode="numeric" autocomplete="off" maxlength="11"></div></div>' +
-    '<div class="g2"><div><label data-dl="parent"></label><input class="dp" autocomplete="off"></div><div><label data-dl="meses"></label><select class="dm">' + ms + '</select></div></div>';
-  d.querySelector('.x').onclick = () => d.remove();
+  d.innerHTML = '<button type="button" class="x" aria-label="Quitar">✕</button><b class="t"></b><div class="g2"><input class="dn" autocomplete="off"><input class="da" autocomplete="off"></div>' +
+    '<div class="g2"><div><label data-dl="nac"></label><input class="dd" type="date"></div><div><label data-dl="parent"></label><select class="dp"></select></div></div>' +
+    '<label data-dl="meses"></label><select class="dm">' + ms + '</select><div class="soloC"><label data-dl="segS"></label><input class="ds" inputmode="numeric" autocomplete="off" maxlength="11" placeholder="XXX-XX-XXXX"></div><label class="chk"><input type="checkbox" class="di"><span data-dl="itinEl"></span></label>';
+  d.querySelector('.x').onclick = () => { d.remove(); pintar(); guardarBorrador(); };
   d.querySelector('.ds').addEventListener('input', e => fmtSsn(e.target));
   $('deps').appendChild(d); pintar();
+  d.querySelector('.dn').value = x.n || ''; d.querySelector('.da').value = x.a || ($('apellidos').value || ''); d.querySelector('.dd').value = x.f || '';
+  if (x.p != null) d.querySelector('.dp').selectedIndex = x.p; d.querySelector('.dm').value = x.m || '12'; d.querySelector('.di').checked = !!x.i;
+  return d;
 }
-$('addDep').onclick = addDep;
-function error(m){ const e = $('err'); e.textContent = m; e.style.display = 'block'; e.scrollIntoView({behavior:'smooth',block:'center'}); }
-$('enviar').onclick = async () => {
+$('addDep').onclick = () => { addDep().querySelector('.dn').focus(); guardarBorrador(); };
+function addSeg() {
+  const d = document.createElement('div'); d.className = 'per sp';
+  d.innerHTML = '<button type="button" class="x" aria-label="Quitar">✕</button><input class="sn" autocomplete="off" style="margin-top:4px"><input class="ss" inputmode="numeric" autocomplete="off" maxlength="11" style="margin-top:10px">';
+  d.querySelector('.x').onclick = () => d.remove();
+  d.querySelector('.ss').addEventListener('input', e => fmtSsn(e.target));
+  $('segPers').appendChild(d); pintar(); return d;
+}
+$('addSeg').onclick = () => addSeg().querySelector('.sn').focus();
+
+function error(m, el) { const e = $('err'); e.textContent = m; e.style.display = 'block'; e.scrollIntoView({ behavior: 'smooth', block: 'center' }); if (el) { el.classList.add('mal'); el.focus(); el.addEventListener('input', () => el.classList.remove('mal'), { once: true }); } return false; }
+const ssnOk = el => { const d = el.value.replace(/\D/g, ''); return !d || d.length === 9; };
+function valida(id) {
+  if (id === 'serv' && !serv) return error(tx('faltaServ'));
+  if (id === 'tu') {
+    if (!$('nombre').value.trim()) return error(tx('falta'), $('nombre'));
+    if (!$('apellidos').value.trim()) return error(tx('faltaAp'), $('apellidos'));
+    if ($('telefono').value.replace(/\D/g, '').length < 10) return error(tx('faltaTel'), $('telefono'));
+    if (COMPLETO && esTax() && !ssnOk($('ssnT'))) return error(tx('errSsn'), $('ssnT'));
+  }
+  if (id === 'fam' && COMPLETO) {
+    if (civil === 'casado' && !ssnOk($('espSsn'))) return error(tx('errSsn'), $('espSsn'));
+    const malo = [...document.querySelectorAll('.dep .ds')].find(x => !ssnOk(x));
+    if (malo) return error(tx('errSsn'), malo);
+  }
+  if (id === 'banco') { const r = $('rutaC').value.replace(/\D/g, ''); if (r && r.length !== 9) return error(tx('errRuta'), $('rutaC')); }
+  return true;
+}
+function nombreCompleto() {
+  if (nombreEnviado) return nombreEnviado;
+  if (SEGURO) return $('segNombre').value.trim();
+  return [$('nombre').value, $('nombre2').value, $('apellidos').value, $('sufijo').value].map(x => String(x || '').trim()).filter(Boolean).join(' ');
+}
+$('atras').onclick = () => irPaso(Math.max(0, paso - 1));
+$('sig').onclick = () => { const ps = pasos(); if (!valida(ps[paso])) return; if (paso < ps.length - 1) irPaso(paso + 1); else enviar(); };
+$('form').addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT') { e.preventDefault(); $('sig').click(); } });
+
+function depsDatos() {
+  return [...document.querySelectorAll('.dep')].map(d => ({ nombre: d.querySelector('.dn').value, apellidos: d.querySelector('.da').value, nacimiento: d.querySelector('.dd').value, ssn: COMPLETO ? d.querySelector('.ds').value : '', parentesco: d.querySelector('.dp').value, meses: d.querySelector('.dm').value, itin: d.querySelector('.di').checked })).filter(d => (d.nombre + d.apellidos).trim());
+}
+async function enviar() {
   $('err').style.display = 'none';
-  const nombre = $('nombre').value.trim();
-  if (!nombre) { error(T[L].falta); $('nombre').focus(); return; }
-  const ssn = $('ssn').value.replace(/\D/g,'');
-  if (ssn && ssn.length !== 9) { error(T[L].errSsn); $('ssn').focus(); return; }
-  const ruta = $('ruta').value.replace(/\D/g,'');
-  if (ruta && ruta.length !== 9) { error(T[L].errRuta); $('ruta').focus(); return; }
-  const deps = [...document.querySelectorAll('.dep')].map(d => ({ nombre: d.querySelector('.dn').value, apellidos: d.querySelector('.da').value, nacimiento: d.querySelector('.dd').value, ssn: d.querySelector('.ds').value, parentesco: d.querySelector('.dp').value, meses: d.querySelector('.dm').value })).filter(d => (d.nombre + d.apellidos).trim());
-  const body = {
-    accion: 'enviar', idioma: L, web: $('web').value, nombre, nombre2: $('nombre2').value, dirCalle: $('dirCalle').value, dirApto: $('dirApto').value, dirCiudad: $('dirCiudad').value, dirEstado: $('dirEstado').value, dirZip: $('dirZip').value, apellidos: $('apellidos').value, sufijo: $('sufijo').value, nacimiento: $('nacimiento').value,
-    telefono: $('telefono').value, correo: $('correo').value, ocupacion: $('ocupacion').value, servicio: document.querySelector('input[name=serv]:checked').value,
-    ssn, estado_civil: $('civil').value, comentarios: $('coment').value,
-    esposo: $('civil').value === 'casado' && ($('espNombre').value + $('espApellidos').value).trim() ? { nombre: $('espNombre').value, nombre2: $('espNombre2').value, apellidos: $('espApellidos').value, nacimiento: $('espNac').value, ssn: $('espSsn').value, ocupacion: $('espOcup').value } : null,
-    dependientes: deps,
-    banco: ($('banco').value || ruta || $('cuenta').value) ? { banco: $('banco').value, ruta, cuenta: $('cuenta').value, tipo: $('tipoCta').value } : null
-  };
-  $('enviar').disabled = true;
+  let body;
+  if (SEGURO) {
+    const nombre = $('segNombre').value.trim();
+    if (!nombre) return error(tx('falta'), $('segNombre'));
+    const ssn = $('ssn').value.replace(/\D/g, '');
+    if (ssn && ssn.length !== 9) return error(tx('errSsn'), $('ssn'));
+    const ruta = $('ruta').value.replace(/\D/g, '');
+    if (ruta && ruta.length !== 9) return error(tx('errRuta'), $('ruta'));
+    const pers = [...document.querySelectorAll('.sp')].map(d => ({ nombre: d.querySelector('.sn').value, apellidos: '', nacimiento: '', ssn: d.querySelector('.ss').value, parentesco: '', meses: '' })).filter(p => p.nombre.trim() || p.ssn.trim());
+    const malo = pers.find(p => p.ssn.replace(/\D/g, '').length !== 9);
+    if (malo) return error(tx('errSsn'));
+    if (!ssn && !pers.length && !ruta && !$('cuenta').value.trim()) return error(tx('errNada'), $('ssn'));
+    body = { accion: 'enviar', idioma: L, web: $('web').value, nombre, servicio: 'seguro', ssn, comentarios: '🔒 Datos protegidos que pidió la oficina', dependientes: pers,
+      banco: ($('banco').value || ruta || $('cuenta').value) ? { banco: $('banco').value, ruta, cuenta: $('cuenta').value, tipo: $('tipoCta').value } : null };
+  } else {
+    const deps = depsDatos();
+    const itin = [];
+    if (esTax()) { if ($('itinYo').checked) itin.push(nombreCompleto()); if (civil === 'casado' && $('espItin').checked) itin.push(($('espNombre').value + ' ' + $('espApellidos').value).trim() || 'esposo(a)'); deps.filter(d => d.itin).forEach(d => itin.push((d.nombre + ' ' + d.apellidos).trim())); }
+    const com = [esTax() ? $('coment').value.trim() : $('coment2').value.trim(), itin.length ? '🪪 Necesitan ITIN: ' + itin.join('; ') : ''].filter(Boolean).join(' · ');
+    body = { accion: 'enviar', idioma: L, web: $('web').value, nombre: $('nombre').value.trim(), nombre2: $('nombre2').value, apellidos: $('apellidos').value, sufijo: $('sufijo').value,
+      nacimiento: $('nacimiento').value, telefono: $('telefono').value, correo: $('correo').value, ocupacion: $('ocupacion').value, servicio: serv,
+      dirCalle: $('dirCalle').value, dirApto: $('dirApto').value, dirCiudad: $('dirCiudad').value, dirEstado: $('dirEstado').value, dirZip: $('dirZip').value,
+      ssn: COMPLETO && esTax() ? $('ssnT').value.replace(/\D/g, '') : '', estado_civil: esTax() ? civil : '', comentarios: com,
+      esposo: esTax() && civil === 'casado' && ($('espNombre').value + $('espApellidos').value).trim() ? { nombre: $('espNombre').value, nombre2: '', apellidos: $('espApellidos').value, nacimiento: $('espNac').value, ssn: COMPLETO ? $('espSsn').value : '', ocupacion: $('espOcup').value } : null,
+      dependientes: esTax() ? deps.map(d => ({ nombre: d.nombre, apellidos: d.apellidos, nacimiento: d.nacimiento, ssn: d.ssn, parentesco: d.parentesco + (d.itin ? ' (ITIN)' : ''), meses: d.meses })) : [],
+      banco: COMPLETO && esTax() && ($('bancoC').value || $('rutaC').value || $('cuentaC').value) ? { banco: $('bancoC').value, ruta: $('rutaC').value.replace(/\D/g, ''), cuenta: $('cuentaC').value, tipo: $('tipoC').value } : null };
+  }
+  const b = $('sig'); b.disabled = true; b.textContent = tx('enviando');
   try {
     const r = await fetch(FN_URL, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: ANON, Authorization: 'Bearer ' + ANON }, body: JSON.stringify(body) });
     const j = await r.json().catch(() => ({}));
     if (!r.ok || !j.ok) throw new Error(j.error || 'x');
-    try { localStorage.removeItem(BORR); localStorage.setItem(ENV, JSON.stringify({ n: nombreCompleto(), t: Date.now() })); } catch (x) {}
-    mostrarPaso2();
-  } catch (e) { error(e.message && e.message !== 'x' && e.message !== 'Failed to fetch' ? e.message : T[L].errNet); $('enviar').disabled = false; }
-};
-/* ----- paso 2: documentos (después de enviar los datos) ----- */
-const BORR = 'amx_form_borrador', ENV = 'amx_form_enviado';
-let nombreEnviado = '';
-function nombreCompleto() {
-  if (nombreEnviado) return nombreEnviado;
-  return [$('nombre').value, $('nombre2').value, $('apellidos').value, $('sufijo').value].map(x => String(x || '').trim()).filter(Boolean).join(' ');
+    if (!SEGURO) { try { localStorage.removeItem(BORR); localStorage.setItem(ENV, JSON.stringify({ n: nombreCompleto(), t: Date.now(), s: serv, h: document.querySelectorAll('.dep').length, i: /Necesitan ITIN/.test(body.comentarios) })); } catch (x) {} }
+    mostrarFinal();
+  } catch (e) { b.disabled = false; pintar(); error(e.message && e.message !== 'x' && e.message !== 'Failed to fetch' ? e.message : tx('errNet')); }
 }
-function abrirEncyro() {
-  const w = window.open(ENCYRO_URL, '_blank', 'noopener');
-  if (!w) location.href = ENCYRO_URL;
+
+/* ----- final: documentos por Encyro y aviso por WhatsApp ----- */
+let finDatos = null;
+function pintarDocs() {
+  const f = finDatos || {}, l = [];
+  if (f.s === 'impuestos' || f.s === 'itin') { l.push('d_w2', 'd_id'); if (f.i || f.s === 'itin') l.push('d_pas'); if (f.h) l.push('d_acta', 'd_esc', 'd_guard'); l.push('d_ant'); }
+  else if (f.s === 'migracion') l.push('d_id', 'd_mig'); else l.push('d_id', 'd_otro');
+  $('docsLista').innerHTML = l.map(k => '<li>' + tx(k) + '</li>').join('');
+  $('btnWa').href = 'https://wa.me/' + WA_OFICINA + '?text=' + encodeURIComponent(tx('waMsg').replace('{n}', nombreCompleto()));
 }
-function mostrarPaso2(nombreGuardado) {
-  if (nombreGuardado) nombreEnviado = nombreGuardado;
-  else nombreEnviado = nombreCompleto();
-  $('form').style.display = 'none'; $('gracias').style.display = 'block'; pintar(); window.scrollTo(0, 0);
+function abrirEncyro() { const w = window.open(ENCYRO_URL, '_blank', 'noopener'); if (!w) location.href = ENCYRO_URL; }
+function mostrarFinal(guardado) {
+  if (guardado) { nombreEnviado = guardado.n; finDatos = guardado; }
+  else { nombreEnviado = nombreCompleto(); finDatos = { s: serv, h: document.querySelectorAll('.dep').length, i: $('itinYo').checked || $('espItin').checked || !!document.querySelector('.di:checked') }; }
+  $('form').style.display = 'none'; $('yaEnviado').style.display = 'none'; $('gracias').style.display = 'block'; $('barra').style.width = '100%';
+  pintar();
+  if (SEGURO) { $('pasos2').style.display = 'none'; document.querySelector('#gracias h2').textContent = tx('segOk'); $('gr2').textContent = tx('segOk2'); document.querySelector('#gracias [data-t=p2fin]').style.display = 'none'; }
+  else pintarDocs();
+  window.scrollTo(0, 0);
 }
 $('btnDocs').onclick = abrirEncyro;
-$('yaDocs').onclick = abrirEncyro;
+$('yaDocs').onclick = () => { let env = null; try { env = JSON.parse(localStorage.getItem(ENV) || 'null'); } catch (x) {} mostrarFinal(env || { n: '', s: 'impuestos' }); };
 $('yaOtro').onclick = () => { try { localStorage.removeItem(ENV); } catch (x) {} $('yaEnviado').style.display = 'none'; };
 
-/* ----- borrador: si el cliente se sale y regresa, no pierde lo que escribió (nunca se guardan SSN ni banco) ----- */
-const CAMPOS_BORR = ['nombre', 'nombre2', 'apellidos', 'sufijo', 'nacimiento', 'telefono', 'correo', 'ocupacion', 'dirCalle', 'dirApto', 'dirCiudad', 'dirEstado', 'dirZip', 'civil', 'espNombre', 'espNombre2', 'espApellidos', 'espNac', 'espOcup', 'coment'];
+/* ----- borrador: si el cliente se sale y regresa, sigue donde iba (nunca se guarda nada delicado) ----- */
+const CAMPOS = ['nombre', 'nombre2', 'apellidos', 'sufijo', 'nacimiento', 'telefono', 'correo', 'ocupacion', 'dirCalle', 'dirApto', 'dirCiudad', 'dirEstado', 'dirZip', 'espNombre', 'espApellidos', 'espNac', 'espOcup', 'coment', 'coment2'];
 function guardarBorrador() {
-  const o = { serv: (document.querySelector('input[name=serv]:checked') || {}).value };
-  CAMPOS_BORR.forEach(id => { o[id] = $(id).value; });
-  o.deps = [...document.querySelectorAll('.dep')].map(d => ({ n: d.querySelector('.dn').value, a: d.querySelector('.da').value, f: d.querySelector('.dd').value, p: d.querySelector('.dp').value, m: d.querySelector('.dm').value }));
+  if (SEGURO) return;
+  const o = { serv, civil, paso, iy: $('itinYo').checked, ie: $('espItin').checked };
+  CAMPOS.forEach(id => { o[id] = $(id).value; });
+  o.deps = [...document.querySelectorAll('.dep')].map(d => ({ n: d.querySelector('.dn').value, a: d.querySelector('.da').value, f: d.querySelector('.dd').value, p: d.querySelector('.dp').selectedIndex, m: d.querySelector('.dm').value, i: d.querySelector('.di').checked }));
   try { localStorage.setItem(BORR, JSON.stringify(o)); } catch (x) {}
 }
 function cargarBorrador() {
   let o = null;
   try { o = JSON.parse(localStorage.getItem(BORR) || 'null'); } catch (x) {}
   if (!o) return;
-  CAMPOS_BORR.forEach(id => { if (o[id] != null) $(id).value = o[id]; });
-  if (o.serv) { const r = document.querySelector('input[name=serv][value="' + o.serv + '"]'); if (r) r.checked = true; }
-  (o.deps || []).forEach(x => { addDep(); const d = [...document.querySelectorAll('.dep')].pop(); d.querySelector('.dn').value = x.n || ''; d.querySelector('.da').value = x.a || ''; d.querySelector('.dd').value = x.f || ''; d.querySelector('.dp').value = x.p || ''; d.querySelector('.dm').value = x.m || '12'; });
-  $('espWrap').style.display = $('civil').value === 'casado' ? 'block' : 'none';
+  CAMPOS.forEach(id => { if (o[id] != null) $(id).value = o[id]; });
+  serv = o.serv || ''; civil = o.civil || ''; $('itinYo').checked = !!o.iy; $('espItin').checked = !!o.ie;
+  (o.deps || []).forEach(x => addDep(x));
+  paso = serv ? Math.min(o.paso || 0, pasos().length - 1) : 0;
 }
 $('form').addEventListener('input', guardarBorrador);
 $('form').addEventListener('change', guardarBorrador);
-$('form').addEventListener('click', e => { if (e.target.closest('.x')) setTimeout(guardarBorrador, 0); });
 
-cargarBorrador();
-try {
-  const env = JSON.parse(localStorage.getItem(ENV) || 'null');
-  if (env && Date.now() - env.t < 6 * 3600000) { nombreEnviado = ''; $('yaEnviado').style.display = 'block'; $('yaTxt').textContent = ''; }
-  else localStorage.removeItem(ENV);
-} catch (x) {}
+if (SEGURO) { $('segNombre').value = (Q.get('n') || '').slice(0, 80); }
+else {
+  const s0 = Q.get('s'); cargarBorrador();
+  if (!serv && ['impuestos', 'itin', 'migracion', 'otro'].includes(s0)) { serv = s0; paso = 1; }
+  try {
+    const env = JSON.parse(localStorage.getItem(ENV) || 'null');
+    if (env && Date.now() - env.t < 6 * 3600000) $('yaEnviado').style.display = 'block'; else localStorage.removeItem(ENV);
+  } catch (x) {}
+}
 pintar();
-if ($('yaEnviado').style.display === 'block') $('yaTxt').textContent = T[L].ya;
 </script>
 </body>
 </html>
