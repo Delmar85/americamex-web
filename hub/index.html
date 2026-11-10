@@ -375,6 +375,12 @@ a.btn-primary{display:inline-flex;align-items:center;gap:6px}
 .dt-panel.on{display:block}
 .dt-tot{font-size:13px;font-weight:700;color:#5a6b84;margin:6px 0 4px}
 .dia-ok{font-weight:700;color:var(--ok);padding:6px 2px}
+.seg.it-doct{display:flex;flex-wrap:wrap;width:100%}
+.seg.it-doct button{flex:1 1 220px;padding:10px 12px;text-align:center;line-height:1.3}
+.seg.it-doct button.active{background:var(--navy);color:#fff}
+.imp-board.arrastrando{scroll-behavior:auto}
+.imp-board.arrastrando .imp-col{outline:2px dashed transparent;outline-offset:-2px;transition:outline-color .12s,background .12s}
+.imp-board.arrastrando .imp-col.over{outline-color:var(--navy2);background:#E3ECF7}
 .dit-fila{display:grid;grid-template-columns:170px minmax(0,1fr) 150px 34px;gap:8px;align-items:center;margin-bottom:8px}
 .dit-fila input:disabled{background:var(--hover);color:var(--muted)}
 @media (max-width:640px){.dit-fila{grid-template-columns:1fr 34px;background:#F6F8FB;border-radius:12px;padding:10px}.dit-fila .dit-nom,.dit-fila .dit-nac{grid-column:1}.dit-fila .xbtn{grid-column:2;grid-row:1}}
@@ -777,7 +783,7 @@ window.addEventListener('error', function (e) {
       <button data-page="usuarios" id="navUsuarios" class="hidden"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21v-1a6 6 0 0 1 12 0v1"/><path d="M19 8v6M16 11h6"/></svg>Usuarios</button>
     </nav>
     <div class="side-foot">
-      <div class="ver" id="hubVer">AmericaMex Hub · v30</div>
+      <div class="ver" id="hubVer">AmericaMex Hub · v31</div>
       <div class="user-row">
         <div class="avatar" id="userInitial">D</div>
         <div class="who"><b id="userName">Usuario</b><span id="userRol" class="rol-tag">Asociado</span></div>
@@ -7069,6 +7075,30 @@ function impCardHtml(d) {
   });
 })();
 
+/* ----- al arrastrar: el tablero y la página avanzan solos cuando te acercas a la orilla ----- */
+(function () {
+  const board = document.getElementById('impBoard'), cont = document.querySelector('.content');
+  let px = 0, py = 0, raf = null;
+  const vel = (d, zona) => Math.min(18, Math.ceil(d / zona * 18));
+  function paso() {
+    if (impDrag == null) { raf = null; board.classList.remove('arrastrando'); return; }
+    const r = board.getBoundingClientRect(), ZX = 130, ZY = 90;
+    if (px > r.right - ZX) board.scrollLeft += vel(px - (r.right - ZX), ZX);
+    else if (px < r.left + ZX) board.scrollLeft -= vel((r.left + ZX) - px, ZX);
+    if (cont) {
+      const c = cont.getBoundingClientRect();
+      if (py > c.bottom - ZY) cont.scrollTop += vel(py - (c.bottom - ZY), ZY);
+      else if (py < c.top + ZY) cont.scrollTop -= vel((c.top + ZY) - py, ZY);
+    }
+    raf = requestAnimationFrame(paso);
+  }
+  document.addEventListener('dragover', e => {
+    if (impDrag == null) return;
+    px = e.clientX; py = e.clientY;
+    if (!raf) { board.classList.add('arrastrando'); raf = requestAnimationFrame(paso); }
+  });
+})();
+
 /* ----- mover de cuadro ----- */
 async function moverDecl(id, nuevo, extra) {
   const d = impDe(id);
@@ -7634,6 +7664,8 @@ const itCliente = i => clientePorId(i.cliente_id) || {};
 const itTramite = i => (tramites || []).find(x => String(x.id) === String(i.tramite_id));
 const itCartasDe = i => itCartasMap.get(String(i.id)) || [];
 const itCartaAbierta = c => !c.respondida && (c.tipo === 'evidencia' || c.tipo === 'otra');
+const IT_DOCT = { pasaporte: { t: '🛂 Pasaporte (solo ese documento)', c: 'Pasaporte' }, acta_ine: { t: '📄 Acta de nacimiento + credencial de elector', c: 'Acta + credencial' } };
+const itTieneDocT = () => Array.isArray(itins) && itins.length > 0 && 'docs_tipo' in itins[0];
 const itTieneEst = () => Array.isArray(itins) && itins.length > 0 && 'estatal' in itins[0];
 const itFaltaEst = i => itTieneEst() && !!i.numero_ultimos4 && !i.negado && !itEst(i).estatal;
 function itEstado(i) {
@@ -7660,7 +7692,7 @@ function itBadgeDias(i) {
 }
 function itAvance(i) {
   const c = (on, t) => '<span class="' + (on ? 'on' : '') + '">' + (on ? '✔ ' : '') + t + '</span>';
-  return '<div class="it-av">' + c(i.docs_entregados, 'Docs') + c(i.w7_firmada, 'W-7') + c(i.enviado, 'Enviado') + c(!!i.numero_ultimos4, 'Número') +
+  return '<div class="it-av">' + c(i.docs_entregados || !!i.docs_tipo, i.docs_tipo && IT_DOCT[i.docs_tipo] ? IT_DOCT[i.docs_tipo].c : 'Docs') + c(i.w7_firmada, 'W-7') + c(i.enviado, 'Enviado') + c(!!i.numero_ultimos4, 'Número') +
     (itTieneEst() && i.numero_ultimos4 && !i.negado ? (itEst(i).estatal === 'no_aplica' ? '<span>Sin estatal</span>' : c(itEst(i).estatal === 'enviado', 'Estatal')) : '') + '</div>';
 }
 
@@ -7790,6 +7822,9 @@ function renderItinFicha() {
 
   h += '<div class="sec"><h4>Avance</h4>' +
     '<div class="it-line">' + chk('itfDocs', i.docs_entregados, 'Ya trajo los documentos') + dt('itfDocsF', i.docs_fecha) + '</div>' +
+    (itTieneDocT() ? '<div class="f"><label>¿Con qué documentos se manda? <span class="muted" style="font-weight:600">(una opción o la otra)</span></label><div class="seg it-doct" id="itfDocTipo">' +
+        Object.keys(IT_DOCT).map(k => '<button type="button" data-it="doctipo" data-v="' + k + '"' + (i.docs_tipo === k ? ' class="active"' : '') + '>' + IT_DOCT[k].t + '</button>').join('') + '</div></div>'
+      : '<div class="it-nota">Para anotar con qué documentos se mandó (pasaporte, o acta + credencial), corre el <b>paso 27</b> en Supabase.</div>') +
     '<div class="f"><label for="itfFalta">¿Qué falta? (si aplica)</label><input id="itfFalta" type="text" value="' + esc(i.que_falta || '') + '" placeholder="Ej. pasaporte, acta de nacimiento, comprobante de dependiente"></div>' +
     '<div class="it-line">' + chk('itfW7', i.w7_firmada, 'W-7 firmada') + dt('itfW7F', i.w7_fecha) + '</div>' +
     '<div class="it-line">' + chk('itfEnv', i.enviado, 'Ya se mandó por correo al IRS') + dt('itfEnvF', i.enviado_fecha) + '</div>' +
@@ -7862,6 +7897,7 @@ $('itBody').addEventListener('click', async e => {
   if (!i) return;
   const a = b.dataset.it;
   if (a === 'cerrar') cerrarItinFicha();
+  else if (a === 'doctipo') { const on = b.classList.contains('active'); $('itfDocTipo').querySelectorAll('button').forEach(x => x.classList.remove('active')); if (!on) b.classList.add('active'); const ov = $('overlayITF'); ov._sucio = true; ov._ultCampo = b; }
   else if (a === 'guardar') guardarItinFicha();
   else if (a === 'wa') itWhatsApp(i);
   else if (a === 'cliente') { cerrarItinFicha(); irA('clientes'); abrirPerfil(i.cliente_id); }
@@ -7919,6 +7955,11 @@ async function guardarItinFicha() {
     negado: neg, negado_fecha: neg ? (i.negado_fecha || hoy) : null,
     notas: $('itfNotas').value.trim() || null, actualizado_nombre: nombrePerfil
   };
+  if (itTieneDocT() && $('itfDocTipo')) {
+    const act = $('itfDocTipo').querySelector('button.active');
+    payload.docs_tipo = act ? act.dataset.v : null;
+    if (env && !i.enviado && !payload.docs_tipo) { toast('Antes de marcarlo como enviado, elige con qué documentos se mandó: pasaporte, o acta + credencial.', true); $('itfDocTipo').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  }
   const est = itTieneEst() ? estLeer('itf', itEst(i)) : null;
   const declLig = declDeItin(i);
   if (est && !(declLig && impTieneEst())) Object.assign(payload, est);
@@ -8589,7 +8630,7 @@ document.addEventListener('keydown', e => {
 /* =====================================================================
    v28 · PROTECCIONES (a prueba de errores) + CONTROL DEL NEGOCIO
    ===================================================================== */
-const HUB_VERSION = 'v30';
+const HUB_VERSION = 'v31';
 
 /* ---------- 1) Errores inesperados y falta de internet ---------- */
 let _ultAvisoErr = 0;
