@@ -375,6 +375,11 @@ a.btn-primary{display:inline-flex;align-items:center;gap:6px}
 .dt-panel.on{display:block}
 .dt-tot{font-size:13px;font-weight:700;color:#5a6b84;margin:6px 0 4px}
 .dia-ok{font-weight:700;color:var(--ok);padding:6px 2px}
+.imp-col.imp-arch{flex:0 0 170px;min-height:120px;background:#E6EAF0;border-top-color:#5a6b84;text-align:center}
+.imp-arch-t{font-size:12.5px;font-weight:600;color:var(--muted);padding:14px 8px 10px;line-height:1.4}
+.imp-arch .imp-mas{width:100%}
+.caso-card::before{background:#d6336c!important}
+.caso-row{flex-wrap:wrap}.caso-row .ag-right{flex-wrap:wrap}
 .seg.it-doct{display:flex;flex-wrap:wrap;width:100%}
 .seg.it-doct button{flex:1 1 220px;padding:10px 12px;text-align:center;line-height:1.3}
 .seg.it-doct button.active{background:var(--navy);color:#fff}
@@ -783,7 +788,7 @@ window.addEventListener('error', function (e) {
       <button data-page="usuarios" id="navUsuarios" class="hidden"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21v-1a6 6 0 0 1 12 0v1"/><path d="M19 8v6M16 11h6"/></svg>Usuarios</button>
     </nav>
     <div class="side-foot">
-      <div class="ver" id="hubVer">AmericaMex Hub · v31</div>
+      <div class="ver" id="hubVer">AmericaMex Hub · v33</div>
       <div class="user-row">
         <div class="avatar" id="userInitial">D</div>
         <div class="who"><b id="userName">Usuario</b><span id="userRol" class="rol-tag">Asociado</span></div>
@@ -910,10 +915,12 @@ window.addEventListener('error', function (e) {
           <select class="filtro" id="impModo" onchange="renderImpuestos()"><option value="">Presencial y digital</option><option value="presencial">Solo presenciales</option><option value="digital">Solo digitales</option></select>
           <span class="count" id="impContador"></span>
           <span class="spacer"></span>
+          <button class="btn" onclick="abrirArchivo()">🗄️ Archivo</button>
           <button class="btn" onclick="abrirCampana()">📣 Campaña de temporada</button>
           <button class="btn-primary" onclick="abrirImpNueva()">+ Nueva declaración</button>
         </div>
         <div class="imp-sum" id="impResumen"></div>
+        <div id="impCasos"></div>
         <details class="imp-det" id="impDet"><summary>Estadísticas de la temporada (visitas, vueltas, tiempos)</summary><div id="impStats" class="imp-stats"></div></details>
         <div class="imp-board" id="impBoard"></div>
         <div class="empty hidden" id="impVacio"></div>
@@ -971,6 +978,7 @@ window.addEventListener('error', function (e) {
             <option value="negado">Rechazados</option>
             <option value="listo">Número recibido</option>
             <option value="estatal">🏛 Falta mandar el estatal</option>
+            <option value="coa">📎 Solo COA (otras oficinas)</option>
           </select>
           <span class="count" id="itContador"></span>
           <span class="spacer"></span>
@@ -1200,6 +1208,8 @@ window.addEventListener('error', function (e) {
       <div class="f"><label for="itnNac">Fecha de nacimiento</label><input id="itnNac" type="date"></div>
       <div class="f"><label for="itnTipo">Tipo</label><select id="itnTipo"><option value="nuevo">ITIN nuevo</option><option value="renovacion">Renovación</option></select></div>
     </div>
+    <label class="checkline" id="itnCoaWrap" style="margin:2px 0 14px"><input type="checkbox" id="itnCoa" onchange="itnToggleCoa()"> <span>📎 Solo COA <span class="muted" style="font-weight:600">(lo prepara otra oficina; nosotros solo certificamos el documento)</span></span></label>
+    <div class="hint dep hidden" id="itnCoaHint">Arriba, en <b>Cliente</b>, pon la <b>oficina que paga</b> (si no existe, se crea como cliente). Abajo va el nombre del titular. No se crea declaración ni se pide estatal.</div>
     <div class="f"><label for="itnPrecio">Precio del servicio (USD)</label><input id="itnPrecio" type="number" min="0" step="0.01"></div>
     <div class="f"><label for="itnNotas">Notas</label><textarea id="itnNotas" style="min-height:56px"></textarea></div>
     <div class="acts">
@@ -1835,6 +1845,51 @@ window.addEventListener('error', function (e) {
   </div>
 </div>
 
+<!-- IMPUESTOS: ARCHIVO -->
+<div class="overlay hidden" id="overlayARC" style="z-index:44" onclick="if(event.target===this)cerrarArchivo()">
+  <div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="arcTitulo">
+    <h3 id="arcTitulo">🗄️ Archivo de declaraciones</h3>
+    <div class="toolbar" style="margin-bottom:10px" data-nosucio>
+      <input class="search" id="arcBuscar" type="search" placeholder="Buscar nombre, teléfono o archivero" oninput="renderArchivo()">
+      <select class="filtro" id="arcAnio" onchange="renderArchivo()"></select>
+      <span class="count" id="arcContador"></span>
+    </div>
+    <div id="arcLista"></div>
+    <div class="acts"><button class="btn" onclick="cerrarArchivo()">Cerrar</button></div>
+  </div>
+</div>
+
+<!-- IMPUESTOS: CARTA DEL IRS (auditoría, documentos, identidad) -->
+<div class="overlay z45 hidden" id="overlayCS" onclick="if(event.target===this)cerrarCaso()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="csTitulo">
+    <h3 id="csTitulo">📬 Carta del IRS</h3>
+    <div class="dsub" id="csInfo" style="margin-top:-8px"></div>
+    <div class="f"><label>¿Qué llegó?</label><div class="chips" id="csTipo"></div></div>
+    <div class="f"><label for="csPiden">¿Qué piden? <span class="muted" style="font-weight:600">(en corto)</span></label><input id="csPiden" type="text" placeholder="Ej. comprobar que el niño vivió con ella, carta 4883C"></div>
+    <div class="f2">
+      <div class="f"><label for="csFecha">Llegó el</label><input id="csFecha" type="date"></div>
+      <div class="f"><label for="csLimite">Responder antes del</label><input id="csLimite" type="date"></div>
+    </div>
+    <div class="f" id="csCobroWrap"><label for="csCobro">Cobro extra por atenderlo <span class="muted" style="font-weight:600">(déjalo vacío si no se cobra)</span></label><input id="csCobro" type="number" min="0" step="0.01" placeholder="0.00"></div>
+    <label class="checkline" style="margin:4px 0 12px"><input type="checkbox" id="csResp" onchange="csPintar()"> <span>✔ Ya se respondió / se mandó lo que pedían</span></label>
+    <div id="csRespWrap" class="hidden">
+      <div class="f3">
+        <div class="f"><label for="csRespF">Se mandó el</label><input id="csRespF" type="date"></div>
+        <div class="f"><label for="csCosto">Costo del envío</label><input id="csCosto" type="number" min="0" step="0.01" placeholder="0.00"></div>
+        <div class="f"><label for="csMet">Se pagó con</label><select id="csMet"></select></div>
+      </div>
+      <div class="f"><label for="csGuia">Guía / número de rastreo</label><input id="csGuia" type="text"></div>
+      <div class="hint dep" style="margin-bottom:10px">💸 El envío se anota solo como <b>gasto de ese día</b>; no cuenta como ingreso.</div>
+    </div>
+    <div class="f"><label for="csNotas">Notas</label><textarea id="csNotas" style="min-height:54px"></textarea></div>
+    <div class="acts">
+      <button class="btn btn-danger left hidden" id="btnCsBorrar" onclick="borrarCaso()">Eliminar</button>
+      <button class="btn" onclick="cerrarCaso()">Cancelar</button>
+      <button class="btn-primary" id="btnCs" onclick="guardarCaso()">Guardar</button>
+    </div>
+  </div>
+</div>
+
 <div class="sin-red-bar hidden" id="sinRed" role="alert">📡 Sin internet. Lo que captures ahorita NO se guarda. Revisa el wifi.</div>
 
 <!-- CORTE DE CAJA -->
@@ -2209,7 +2264,7 @@ async function cargarTodo() {
       cargarClientes(), cargarTramites(), cargarPagos(), cargarActs(), cargarAccesos(),
       cargarCitas(), cargarDepositos(), cargarTareas(), cargarEquipo(),
       rol === 'dueno' ? cargarGastos() : null, rol === 'dueno' ? cargarGastosFijos() : null,
-      cargarDocumentos(), cargarNegocio(), cargarDeclaraciones(), cargarItins(), cargarPobox(), cargarSolicitudes(), cargarCortes(), cargarWebMsgs()
+      cargarDocumentos(), cargarNegocio(), cargarDeclaraciones(), cargarItins(), cargarPobox(), cargarSolicitudes(), cargarCortes(), cargarCasos(), cargarWebMsgs()
     ]);
     indexar();
     ultimaCarga = Date.now();
@@ -3511,7 +3566,7 @@ async function emitirInvoiceRapido(t0, items) {
 
 /* ---------- 💾 Respaldo completo (Excel + archivo de respaldo) ---------- */
 const RESP_TABLAS = ['clientes', 'tramites', 'pagos', 'actualizaciones', 'accesos', 'citas', 'depositos', 'tareas', 'gastos', 'gastos_fijos', 'documentos', 'negocio',
-  'declaraciones', 'declaraciones_visitas', 'itins', 'itin_cartas', 'intake_envios', 'pobox', 'pobox_periodos', 'perfiles', 'auditoria', 'cortes_caja', 'web_contactos'];
+  'declaraciones', 'declaraciones_visitas', 'itins', 'itin_cartas', 'intake_envios', 'pobox', 'pobox_periodos', 'perfiles', 'auditoria', 'cortes_caja', 'web_contactos', 'decl_casos'];
 const RESP_KEY = 'amx_ultimo_respaldo';
 function respUltimo() { try { const v = localStorage.getItem(RESP_KEY); return v ? Number(v) : null; } catch (e) { return null; } }
 function cargarLibXLSX(cb) {
@@ -4433,6 +4488,8 @@ function renderDashDia() {
   add(impT, '🧾', impT === 1 ? 'declaración atorada' : 'declaraciones atoradas', 'llevan demasiado en su cuadro', 'impuestos', true);
   const estD = (declaraciones || []).filter(impFaltaEst).length, estI = (itins || []).filter(itFaltaEst).length;
   add(estD + estI, '🏛', estD + estI === 1 ? 'estatal por mandar' : 'estatales por mandar', [estD ? estD + ' de impuestos' : '', estI ? estI + ' de ITIN' : ''].filter(Boolean).join(' · '), estD ? 'impuestos' : 'itin-estatal', false);
+  { const ca = casosAbiertos(), urg = ca.filter(c => { const dd = casoDias(c); return dd !== null && dd <= 7; }).length;
+    add(ca.length, '📬', ca.length === 1 ? 'carta del IRS por responder' : 'cartas del IRS por responder', urg ? urg + (urg === 1 ? ' vence' : ' vencen') + ' en 7 días o menos' : '', 'impuestos', urg > 0); }
   if (cortes !== null && ahora.getHours() >= 16 && !corteDe(hoy) && (function () { const c = cajaDelDia(hoy); return c.nPagos > 0 || c.efDep > 0; })())
     add(1, '🔐', 'falta el corte de caja de hoy', 'cuenta el efectivo antes de cerrar', 'corte', false);
   let viejos = 0;
@@ -6803,26 +6860,32 @@ const IMP_COLS = [
   { k: 'en_preparacion',   t: '🛠️ En preparación',       c: '#c2410c', corto: 'En preparación' },
   { k: 'esperando_firmas', t: '✍️ Esperando firmas',     c: '#7c4dff', corto: 'Esperando firmas' },
   { k: 'listo_efile',      t: '🚀 Listo para e-file',    c: '#2f6fdb', corto: 'Listo para e-file' },
-  { k: 'enviado',          t: '📤 Enviado',              c: '#0d8aa6', corto: 'Enviado' },
+  { k: 'enviado',          t: '📤 Enviado (e-file)',     c: '#0d8aa6', corto: 'Enviado' },
+  { k: 'enviado_correo',   t: '📮 Por correo · con ITIN', c: '#8a5a00', corto: 'Enviado por correo (ITIN)' },
+  { k: 'mandar_estatal',   t: '🏛 Llegó el ITIN · mandar estatal', c: '#d6336c', corto: 'Mandar estatal' },
   { k: 'aceptado',         t: '✅ Aceptado',             c: '#1f9d55', corto: 'Aceptado' },
   { k: 'archivado',        t: '🗄️ Archivado',            c: '#5a6b84', corto: 'Archivado' }
 ];
 const IMP_RECH = { k: 'rechazado', t: '⛔ Rechazado', c: '#E53935', corto: 'Rechazado' };
 const IMP_TODAS = IMP_COLS.concat([IMP_RECH]);
-const IMP_SIG_TXT = { en_preparacion: '🛠 A preparación', esperando_firmas: '✍️ A firmas', listo_efile: '🚀 A e-file', enviado: '📤 Enviado', aceptado: '✅ Aceptado', archivado: '🗄️ Archivar' };
+const IMP_SIG_TXT = { en_preparacion: '🛠 A preparación', esperando_firmas: '✍️ A firmas', listo_efile: '🚀 A e-file', enviado: '📤 Enviado', enviado_correo: '📮 Se fue por correo', mandar_estatal: '🪪 Llegó el ITIN', aceptado: '✅ Aceptado', archivado: '🗄️ Archivar' };
 const impTienePaso13 = () => visitas !== null;
 const impCols = () => impTienePaso13() ? IMP_COLS : IMP_COLS.filter(c => c.k !== 'en_preparacion');
 const impColsTodas = () => impCols().concat([IMP_RECH]);
 function impSig(d) {
-  const m = { esperando_docs: impTienePaso13() ? 'en_preparacion' : 'esperando_firmas', en_preparacion: 'esperando_firmas', esperando_firmas: 'listo_efile', listo_efile: 'enviado', enviado: 'aceptado', aceptado: 'archivado', rechazado: 'listo_efile' };
+  const m = { esperando_docs: impTienePaso13() ? 'en_preparacion' : 'esperando_firmas', en_preparacion: 'esperando_firmas', esperando_firmas: 'listo_efile', listo_efile: 'enviado', enviado: 'aceptado', aceptado: 'archivado', rechazado: 'listo_efile', enviado_correo: 'mandar_estatal', mandar_estatal: 'enviado' };
+  // con solicitud de ITIN pendiente la declaración NO va por e-file: se manda por correo junto con la W-7
+  if ((d.estado === 'esperando_firmas' || d.estado === 'listo_efile') && impVaPorCorreo(d)) return 'enviado_correo';
+  
   return m[d.estado] || null;
 }
-const IMP_UMBRAL = { esperando_docs: [5, 10], en_preparacion: [3, 5], esperando_firmas: [5, 10], listo_efile: [2, 4], enviado: [7, 14], rechazado: [2, 5] };
+const IMP_UMBRAL = { esperando_docs: [5, 10], en_preparacion: [3, 5], esperando_firmas: [5, 10], listo_efile: [2, 4], enviado: [7, 14], enviado_correo: [63, 84], mandar_estatal: [3, 7], rechazado: [2, 5] };
+const impVaPorCorreo = d => itinsDeDecl(d).some(i => !i.numero_ultimos4 && !i.negado && !i.solo_coa);
 const impNombreEstado = k => (IMP_TODAS.find(c => c.k === k) || {}).corto || k;
 
 /* ----- declaración ESTATAL: null = pendiente · 'enviado' · 'no_aplica' (paso 23) ----- */
 const impTieneEst = () => Array.isArray(declaraciones) && declaraciones.length > 0 && 'estatal' in declaraciones[0];
-const impFaltaEst = d => impTieneEst() && !d.estatal && (['enviado', 'aceptado'].includes(d.estado) || (d.estado !== 'archivado' && declItinListo(d)));
+const impFaltaEst = d => impTieneEst() && !d.estatal && (['enviado', 'aceptado', 'mandar_estatal'].includes(d.estado) || (d.estado !== 'archivado' && declItinListo(d)));
 function estChip(attr, id, x, pendienteUrgente) {
   if (x.estatal === 'enviado') return '<button class="badge b-ok est-chip" ' + attr + '="' + id + '" title="Estatal enviado' + (x.estatal_fecha ? ' el ' + fechaSolo(x.estatal_fecha) : '') + ' · toca para desmarcar">🏛 ✔ Estatal</button>';
   if (x.estatal === 'no_aplica') return '<button class="badge b-gray est-chip" ' + attr + '="' + id + '" title="No lleva declaración estatal · toca para cambiar">🏛 No lleva estatal</button>';
@@ -6950,7 +7013,8 @@ function renderImpuestos() {
   const vacioTotal = !(declaraciones || []).length;
   $('impVacio').classList.toggle('hidden', !vacioTotal);
   if (vacioTotal) $('impVacio').innerHTML = 'Todavía no hay declaraciones.<br>Toca <b>+ Nueva declaración</b> para meter tu primer cliente de impuestos.';
-  $('impContador').textContent = lista.length + (lista.length === 1 ? ' declaración' : ' declaraciones');
+  const enTablero = lista.filter(d => d.estado !== 'archivado').length;
+  $('impContador').textContent = enTablero + ' en proceso' + (lista.length - enTablero ? ' · ' + (lista.length - enTablero) + ' en archivo' : '');
 
   // resumen del año / filtro
   const mapaT = new Map((tramites || []).map(t => [String(t.id), t]));
@@ -6984,17 +7048,15 @@ function renderImpuestos() {
   });
   board.innerHTML = impColsTodas().map(c => {
     let items = porEstado[c.k];
-    let masBtn = '';
-    if (c.k === 'archivado' && !impVerArchivo && items.length > 12) {
-      masBtn = '<button class="imp-mas" data-imp-mas="1">Ver los ' + items.length + ' archivados</button>';
-      items = items.slice(0, 12);
-    } else if (c.k === 'archivado' && impVerArchivo && items.length > 12) {
-      masBtn = '<button class="imp-mas" data-imp-mas="0">Ver solo los últimos 12</button>';
-    }
+    const masBtn = '';
+    // las archivadas ya no estorban en el tablero: quedan en su Archivo (y aquí se puede soltar una tarjeta para archivarla)
+    if (c.k === 'archivado') return '<div class="imp-col imp-arch" data-col="archivado" style="--cc:' + c.c + '"><h4><span>🗄️ Archivo</span><span class="n">' + items.length + '</span></h4><div class="imp-arch-t">Arrastra aquí para archivar</div><button class="imp-mas" data-imp-arc="1">Ver archivadas</button></div>';
     return '<div class="imp-col' + (c.k === 'rechazado' ? ' rech' : '') + '" data-col="' + c.k + '" style="--cc:' + c.c + '"><h4><span>' + c.t + '</span><span class="n">' + porEstado[c.k].length + '</span></h4>' +
       (items.length ? items.map(impCardHtml).join('') : '<div class="imp-vacia">Vacío</div>') + masBtn + '</div>';
   }).join('');
 
+  renderImpCasos();
+  if (!$('overlayARC').classList.contains('hidden')) renderArchivo();
   if (impDetId != null && !$('overlayIMP').classList.contains('hidden')) renderImpDetalle();
 }
 
@@ -7010,8 +7072,10 @@ function impCardHtml(d) {
   if (d.estado !== 'archivado') tags.push('<span class="badge ' + (nv.n === 2 ? 'b-bad' : nv.n === 1 ? 'b-wait' : 'b-gray') + '">⏱ ' + impTxtDias(nv.dias) + '</span>');
   if (t) tags.push(badgeCobro(finanzas(t)));
   { const bi = declItinBadge(d); if (bi) tags.push(bi); }
+  if (casosAbiertosDe(d).length) tags.push('<span class="badge b-bad">📬 Carta del IRS</span>');
   if (d.estado === 'aceptado' && !d.confirmacion_impresa) tags.push('<span class="badge b-wait">🖨 Falta imprimir confirmación</span>');
-  if (impTieneEst() && ['listo_efile', 'enviado', 'aceptado', 'rechazado'].includes(d.estado)) tags.push(estChip('data-imp-est', d.id, d, impFaltaEst(d)));
+  if (d.estado === 'enviado_correo') tags.push('<span class="badge b-gray" title="El IRS tarda de 7 a 11 semanas en mandar el ITIN">⏳ ' + (impDias(d) < 7 ? impDias(d) + ' d' : Math.floor(impDias(d) / 7) + ' sem') + ' con el IRS</span>');
+  if (impTieneEst() && ['listo_efile', 'enviado', 'mandar_estatal', 'aceptado', 'rechazado'].includes(d.estado)) tags.push(estChip('data-imp-est', d.id, d, impFaltaEst(d)));
   if (d.estado === 'archivado' && d.archivero) tags.push('<span class="badge b-blue">📁 ' + esc(d.archivero) + '</span>');
   let extra = '';
   if ((d.estado === 'esperando_docs' || d.estado === 'esperando_firmas') && d.que_falta) extra = '<div class="falta">Falta: ' + esc(d.que_falta) + '</div>';
@@ -7019,8 +7083,8 @@ function impCardHtml(d) {
   const sig = impSig(d);
   const wa = c.telefono ? '<button class="btn btn-sm" data-imp-wa="' + d.id + '" title="Mandar WhatsApp" aria-label="Mandar WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20l1.2-5.2A8.4 8.4 0 1 1 21 11.5z"/></svg></button>' : '';
   const vis = impTienePaso13() && !impEsDigital(d) ? '<button class="btn btn-sm" data-imp-vis="' + d.id + '" title="Registrar visita">🚶＋</button>' : '';
-  const nxt = (sig ? '<button class="btn btn-sm" data-imp-sig="' + d.id + '">' + (d.estado === 'rechazado' ? '↩ Corregido: a e-file' : IMP_SIG_TXT[sig]) + '</button>' : '') +
-    (['enviado', 'aceptado'].includes(d.estado) ? '<button class="btn btn-sm btn-rech" data-imp-rech="' + d.id + '" title="El IRS o el estado lo rechazó">⛔ Rechazado</button>' : '');
+  const nxt = (sig ? '<button class="btn btn-sm" data-imp-sig="' + d.id + '">' + (d.estado === 'rechazado' ? '↩ Corregido: a e-file' : d.estado === 'mandar_estatal' ? '🏛 Estatal enviado' : IMP_SIG_TXT[sig]) + '</button>' : '') +
+    (['enviado', 'enviado_correo', 'aceptado'].includes(d.estado) ? '<button class="btn btn-sm btn-rech" data-imp-rech="' + d.id + '" title="El IRS o el estado lo rechazó">⛔ Rechazado</button>' : '');
   return '<div class="imp-card' + (nv.n === 2 ? ' late' : nv.n === 1 ? ' warn' : '') + '" draggable="true" data-imp="' + d.id + '">' +
     '<b>' + esc(c.nombre || '—') + '</b><small>' + esc([d.anio, d.preparador ? 'Preparó ' + d.preparador : ''].filter(Boolean).join(' · ')) + '</small>' +
     extra + '<div class="tags">' + tags.join('') + '</div>' +
@@ -7031,12 +7095,11 @@ function impCardHtml(d) {
 (function () {
   const board = document.getElementById('impBoard');
   board.addEventListener('click', e => {
-    const mas = e.target.closest('[data-imp-mas]');
-    if (mas) { impVerArchivo = mas.dataset.impMas === '1'; renderImpuestos(); return; }
+    if (e.target.closest('[data-imp-arc]')) { abrirArchivo(); return; }
     const est = e.target.closest('[data-imp-est]');
     if (est) { impCambiarEstatal(est.dataset.impEst); return; }
     const sig = e.target.closest('[data-imp-sig]');
-    if (sig) { const d = impDe(sig.dataset.impSig); if (d && impSig(d)) moverDecl(d.id, impSig(d)); return; }
+    if (sig) { const d = impDe(sig.dataset.impSig); if (d && impSig(d)) moverDecl(d.id, impSig(d), d.estado === 'mandar_estatal' ? { estatal: 'enviado', estatal_fecha: hoyStr() } : undefined); return; }
     const rb = e.target.closest('[data-imp-rech]');
     if (rb) { moverDecl(Number(rb.dataset.impRech), 'rechazado'); return; }
     const vb = e.target.closest('[data-imp-vis]');
@@ -7105,12 +7168,13 @@ async function moverDecl(id, nuevo, extra) {
   if (!d || d.estado === nuevo || !impColsTodas().some(c => c.k === nuevo)) return false;
   if (!extra && impPideModal(d, nuevo)) { abrirImpMove(id, nuevo); return false; }
   const payload = Object.assign({ estado: nuevo, actualizado_nombre: nombrePerfil }, extra || {});
+  if (nuevo === 'enviado' && impVaPorCorreo(d) && !extra && !confirm('⚠️ ' + (impCliente(d).nombre || '') + ' lleva solicitud de ITIN.\n\nEsas declaraciones no van por e-file: se mandan POR CORREO con la W-7.\n\nAceptar = sí se mandó por e-file, dejarlo en «Enviado»\nCancelar = mejor lo pongo en «Por correo · con ITIN»')) { return moverDecl(id, 'enviado_correo'); }
   if (nuevo === 'enviado' && impTieneEst() && !d.estatal && !(extra && 'estatal' in extra) &&
       confirm('📤 ' + (impCliente(d).nombre || '') + ' · ' + d.anio + '\n\n¿El ESTATAL también se mandó junto con el federal (e-file)?\n\nAceptar = Sí, se mandaron los dos\nCancelar = No, el estatal queda pendiente')) {
     payload.estatal = 'enviado'; payload.estatal_fecha = hoyStr();
   }
   if (impTienePaso13() && nuevo !== 'en_preparacion' && !(extra && 'recoger_fecha' in extra)) payload.recoger_fecha = null;
-  if (['en_preparacion', 'listo_efile', 'enviado', 'aceptado', 'archivado'].includes(nuevo) && !(extra && 'que_falta' in extra)) payload.que_falta = null;
+  if (['en_preparacion', 'listo_efile', 'enviado', 'enviado_correo', 'mandar_estatal', 'aceptado', 'archivado'].includes(nuevo) && !(extra && 'que_falta' in extra)) payload.que_falta = null;
   if (nuevo !== 'rechazado' && !(extra && 'motivo_rechazo' in extra)) payload.motivo_rechazo = null;
   try {
     const { data, error } = await supabaseClient.from('declaraciones').update(payload).eq('id', d.id).select();
@@ -7122,7 +7186,7 @@ async function moverDecl(id, nuevo, extra) {
     refrescarTodo();
     return true;
   } catch (e) {
-    toast('No pude mover: ' + e.message, true);
+    toast(/check constraint|declaraciones_estado/i.test(e.message || '') ? 'Para usar ese cuadro falta correr el SQL del paso 28 en Supabase.' : 'No pude mover: ' + e.message, true);
     return false;
   }
 }
@@ -7485,7 +7549,7 @@ function renderImpDetalle() {
       '<button class="btn btn-sm" data-ip="cliente">👤 Ver cliente</button>' +
       (t ? '<button class="btn btn-sm" data-ip="tramite">📋 Ver trámite</button>' : '') +
       '<button class="btn btn-sm" data-ip="tarea">✅ Nueva tarea</button>' +
-      (['listo_efile', 'enviado', 'aceptado'].includes(d.estado) ? '<button class="btn btn-sm btn-rech" data-ip="rech">⛔ Lo rechazaron</button>' : '') +
+      (['listo_efile', 'enviado', 'enviado_correo', 'aceptado'].includes(d.estado) ? '<button class="btn btn-sm btn-rech" data-ip="rech">⛔ Lo rechazaron</button>' : '') +
     '</div>' +
     '<div class="sec"><h4>Seguimiento</h4>' +
     '<div class="f2"><div class="f"><label for="ipEstado">Cuadro</label><select id="ipEstado">' + opts + '</select></div>' +
@@ -7506,6 +7570,7 @@ function renderImpDetalle() {
       (vs.length ? vs.map(v => '<div class="row"><div><b>' + esc(v.motivo || 'Visita') + '</b><small>' + esc([fechaSolo(v.fecha), v.por].filter(Boolean).join('  ·  ')) + '</small></div><button class="xbtn" data-ip="quitarvis" data-vid="' + esc(v.id) + '" aria-label="Quitar visita">✕</button></div>').join('') : '<div class="empty" style="padding:14px 10px">Todavía no hay visitas registradas.</div>') + '</div>';
   }
   h += declItinSeccion(d);
+  h += casosSeccion(d);
   h += '<div class="sec"><h4>Cobro</h4>';
   if (f) {
     h += '<div class="money"><div class="mbox"><span>Precio</span><b>' + (t.monto != null ? money(t.monto) : '—') + '</b></div>' +
@@ -7553,6 +7618,7 @@ $('impBody').addEventListener('click', async e => {
   else if (a === 'guardar') guardarImpDetalle();
   else if (a === 'borrar') borrarDecl();
   else if (a === 'additin') abrirDeclItin(d.id);
+  else if (a === 'addcaso') abrirCaso(d.id);
   else if (a === 'ligaritin') { e.stopPropagation(); ligarItinADecl(Number(b.dataset.iid), d.id); }
   else if (a === 'veritin') { cerrarImpDetalle(); irA('itin'); abrirItinFicha(Number(b.dataset.iid)); }
 });
@@ -7666,8 +7732,10 @@ const itCartasDe = i => itCartasMap.get(String(i.id)) || [];
 const itCartaAbierta = c => !c.respondida && (c.tipo === 'evidencia' || c.tipo === 'otra');
 const IT_DOCT = { pasaporte: { t: '🛂 Pasaporte (solo ese documento)', c: 'Pasaporte' }, acta_ine: { t: '📄 Acta de nacimiento + credencial de elector', c: 'Acta + credencial' } };
 const itTieneDocT = () => Array.isArray(itins) && itins.length > 0 && 'docs_tipo' in itins[0];
+const itTieneCoa = () => Array.isArray(itins) && itins.length > 0 && 'solo_coa' in itins[0];
+const COA_TXT = '📎 Solo COA';
 const itTieneEst = () => Array.isArray(itins) && itins.length > 0 && 'estatal' in itins[0];
-const itFaltaEst = i => itTieneEst() && !!i.numero_ultimos4 && !i.negado && !itEst(i).estatal;
+const itFaltaEst = i => itTieneEst() && !i.solo_coa && !!i.numero_ultimos4 && !i.negado && !itEst(i).estatal;
 function itEstado(i) {
   if (i.numero_ultimos4) return 'listo';
   if (i.negado) return 'negado';
@@ -7693,7 +7761,7 @@ function itBadgeDias(i) {
 function itAvance(i) {
   const c = (on, t) => '<span class="' + (on ? 'on' : '') + '">' + (on ? '✔ ' : '') + t + '</span>';
   return '<div class="it-av">' + c(i.docs_entregados || !!i.docs_tipo, i.docs_tipo && IT_DOCT[i.docs_tipo] ? IT_DOCT[i.docs_tipo].c : 'Docs') + c(i.w7_firmada, 'W-7') + c(i.enviado, 'Enviado') + c(!!i.numero_ultimos4, 'Número') +
-    (itTieneEst() && i.numero_ultimos4 && !i.negado ? (itEst(i).estatal === 'no_aplica' ? '<span>Sin estatal</span>' : c(itEst(i).estatal === 'enviado', 'Estatal')) : '') + '</div>';
+    (itTieneEst() && !i.solo_coa && i.numero_ultimos4 && !i.negado ? (itEst(i).estatal === 'no_aplica' ? '<span>Sin estatal</span>' : c(itEst(i).estatal === 'enviado', 'Estatal')) : '') + '</div>';
 }
 
 function renderItin() {
@@ -7735,7 +7803,7 @@ function renderItin() {
   const filas = [];
   itins.forEach(i => {
     const e = itEstado(i);
-    if (fl === 'estatal' ? !itFaltaEst(i) : fl === 'activos' ? (e === 'listo' && !itFaltaEst(i)) : (fl !== 'todos' && e !== fl)) return;
+    if (fl === 'coa' ? !i.solo_coa : fl === 'estatal' ? !itFaltaEst(i) : fl === 'activos' ? (e === 'listo' && !itFaltaEst(i)) : (fl !== 'todos' && e !== fl)) return;
     const c = itCliente(i);
     if (q) {
       const bolsa = normTexto([i.titular_nombre, c.nombre, i.numero_ultimos4, i.titular_nacimiento, i.titular_nacimiento ? fechaSolo(i.titular_nacimiento) : ''].join(' '));
@@ -7749,7 +7817,7 @@ function renderItin() {
   $('itContador').textContent = filas.length + (filas.length === 1 ? ' ITIN' : ' ITIN');
   body.innerHTML = filas.map(({ i, e, c, t }) => {
     const f = t ? finanzas(t) : null;
-    return '<tr data-id="' + esc(i.id) + '"><td><b>' + esc(i.titular_nombre) + '</b><br><small class="muted">' + esc(IT_REL[i.relacion] || '') + (i.tipo === 'renovacion' ? ' · renovación' : '') + (i.titular_nacimiento ? ' · nació ' + esc(fechaSolo(i.titular_nacimiento)) : '') + (declDeItin(i) ? ' · 🧾 con declaración ' + esc(declDeItin(i).anio) : '') + '</small></td>' +
+    return '<tr data-id="' + esc(i.id) + '"><td><b>' + esc(i.titular_nombre) + '</b><br><small class="muted">' + esc(IT_REL[i.relacion] || '') + (i.tipo === 'renovacion' ? ' · renovación' : '') + (i.titular_nacimiento ? ' · nació ' + esc(fechaSolo(i.titular_nacimiento)) : '') + (declDeItin(i) ? ' · 🧾 con declaración ' + esc(declDeItin(i).anio) : '') + '</small>' + (i.solo_coa ? '<br><span class="badge b-blue" style="padding:2px 8px;font-size:11px;margin-top:4px" title="Solo certificamos el documento; lo prepara otra oficina">' + COA_TXT + ' · otra oficina</span>' : '') + '</td>' +
       '<td>' + esc(c.nombre || '—') + (i.relacion === 'cliente' ? '' : '') + '</td>' +
       '<td><span class="badge ' + IT_ESTADOS[e].cls + '">' + IT_ESTADOS[e].t + '</span>' + (i.numero_ultimos4 ? '<br><small class="muted">••• •• ' + esc(i.numero_ultimos4) + '</small>' : '') + (itFaltaEst(i) ? '<br><span class="badge b-wait" style="padding:2px 8px;font-size:11px;margin-top:4px">🏛 Falta mandar estatal</span>' : '') + '</td>' +
       '<td>' + itAvance(i) + '</td><td>' + itBadgeDias(i) + '</td>' +
@@ -7804,7 +7872,7 @@ function renderItinFicha() {
   const metOpts = Object.keys(METODOS).map(k => '<option value="' + k + '"' + ((i.envio_metodo || 'efectivo') === k ? ' selected' : '') + '>' + METODOS[k] + '</option>').join('');
   const dias = itDiasEnviado(i);
 
-  let h = '<div class="dhead"><div><h3>' + esc(i.titular_nombre) + '</h3></div><div><span class="badge ' + IT_ESTADOS[e].cls + '">' + IT_ESTADOS[e].t + '</span></div></div>' +
+  let h = '<div class="dhead"><div><h3>' + esc(i.titular_nombre) + '</h3></div><div>' + (i.solo_coa ? '<span class="badge b-blue" style="margin-right:6px">' + COA_TXT + '</span>' : '') + '<span class="badge ' + IT_ESTADOS[e].cls + '">' + IT_ESTADOS[e].t + '</span></div></div>' +
     '<div class="dsub">ITIN ' + (i.tipo === 'renovacion' ? '(renovación)' : 'nuevo') + '  ·  ' + esc(IT_REL[i.relacion]) + (i.relacion !== 'cliente' ? ' de ' + esc(c.nombre || '—') : '') + '  ·  ' + (c.telefono ? esc(fmtTel(c.telefono)) : 'sin teléfono') + '</div>' +
     '<div class="dacts">' +
       (c.telefono ? '<button class="btn btn-sm" data-it="wa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20l1.2-5.2A8.4 8.4 0 1 1 21 11.5z"/></svg>WhatsApp</button>' : '') +
@@ -7818,7 +7886,10 @@ function renderItinFicha() {
     '<div class="f2"><div class="f"><label for="itfNombre">Nombre del titular</label><input id="itfNombre" type="text" value="' + esc(i.titular_nombre) + '"></div>' +
     '<div class="f"><label for="itfNac">Fecha de nacimiento</label><input id="itfNac" type="date" value="' + esc(i.titular_nacimiento ? String(i.titular_nacimiento).slice(0, 10) : '') + '"></div></div>' +
     '<div class="f2"><div class="f"><label for="itfRel">Es…</label><select id="itfRel">' + relOpts + '</select></div>' +
-    '<div class="f"><label for="itfTipo">Tipo</label><select id="itfTipo"><option value="nuevo"' + (i.tipo === 'nuevo' ? ' selected' : '') + '>ITIN nuevo</option><option value="renovacion"' + (i.tipo === 'renovacion' ? ' selected' : '') + '>Renovación</option></select></div></div></div>';
+    '<div class="f"><label for="itfTipo">Tipo</label><select id="itfTipo"><option value="nuevo"' + (i.tipo === 'nuevo' ? ' selected' : '') + '>ITIN nuevo</option><option value="renovacion"' + (i.tipo === 'renovacion' ? ' selected' : '') + '>Renovación</option></select></div></div>' +
+    (itTieneCoa() ? '<label class="it-chk" style="margin-top:4px"><input id="itfCoa" type="checkbox"' + (i.solo_coa ? ' checked' : '') + '> <span>' + COA_TXT + ': lo prepara <b>otra oficina</b>; nosotros solo certificamos el documento</span></label>' +
+        (i.solo_coa ? '<div class="it-nota" style="margin-top:8px">No es cliente nuestro: el que paga (' + esc(c.nombre || '—') + ') es la otra oficina. Aquí solo damos seguimiento a la carta del IRS. No lleva declaración ni estatal.</div>' : '')
+      : '<div class="it-nota">Para marcar los ITIN que son «solo COA» (certificación para otra oficina), corre el <b>paso 28</b> en Supabase.</div>') + '</div>';
 
   h += '<div class="sec"><h4>Avance</h4>' +
     '<div class="it-line">' + chk('itfDocs', i.docs_entregados, 'Ya trajo los documentos') + dt('itfDocsF', i.docs_fecha) + '</div>' +
@@ -7829,7 +7900,7 @@ function renderItinFicha() {
     '<div class="it-line">' + chk('itfW7', i.w7_firmada, 'W-7 firmada') + dt('itfW7F', i.w7_fecha) + '</div>' +
     '<div class="it-line">' + chk('itfEnv', i.enviado, 'Ya se mandó por correo al IRS') + dt('itfEnvF', i.enviado_fecha) + '</div>' +
     (dias !== null && !i.numero_ultimos4 && !i.negado ? '<div class="muted" style="font-size:12.5px;font-weight:700;margin:-2px 0 8px">Van ' + (dias < 7 ? dias + ' días' : Math.floor(dias / 7) + ' semanas') + ' desde que se mandó (el IRS tarda de 7 a 11 semanas).</div>' : '') +
-    (itTieneEst() && i.numero_ultimos4 && !i.negado ? estLinea('itf', itEst(i), '🏛 Declaración estatal (ya con el ITIN se puede mandar por e-file)') : '') +
+    (itTieneEst() && !i.solo_coa && i.numero_ultimos4 && !i.negado ? estLinea('itf', itEst(i), '🏛 Declaración estatal (ya con el ITIN se puede mandar por e-file)') : '') +
     '<div class="f2"><div class="f"><label for="itfGuia">Guía / número de rastreo</label><input id="itfGuia" type="text" value="' + esc(i.envio_guia || '') + '"></div>' +
     '<div class="f"><label for="itfCosto">Costo del envío (USD)</label><input id="itfCosto" type="number" min="0" step="0.01" value="' + (i.envio_costo != null ? esc(i.envio_costo) : '') + '" placeholder="0.00"></div></div>' +
     '<div class="f"><label for="itfMet">Cómo se pagó el envío</label><select id="itfMet">' + metOpts + '</select></div>' +
@@ -7955,6 +8026,7 @@ async function guardarItinFicha() {
     negado: neg, negado_fecha: neg ? (i.negado_fecha || hoy) : null,
     notas: $('itfNotas').value.trim() || null, actualizado_nombre: nombrePerfil
   };
+  if (itTieneCoa() && $('itfCoa')) payload.solo_coa = $('itfCoa').checked;
   if (itTieneDocT() && $('itfDocTipo')) {
     const act = $('itfDocTipo').querySelector('button.active');
     payload.docs_tipo = act ? act.dataset.v : null;
@@ -8012,8 +8084,13 @@ async function guardarItinNumero() {
     if (error) throw error;
     $('itfNum').value = '';
     itNumEdit = false; itNumVisto = null;
-    toast('ITIN guardado (cifrado). 🎉' + (itTieneEst() ? ' Ahora falta mandar el estatal.' : ''));
+    toast('ITIN guardado (cifrado). 🎉' + (itTieneEst() && !i.solo_coa ? ' Ahora falta mandar el estatal.' : ''));
     await itRecargarTodo();
+    const dLig = declDeItin(itDe(i.id) || i);
+    if (dLig && dLig.estado === 'enviado_correo' && declItinListo(dLig)) {
+      if (await moverDecl(dLig.id, 'mandar_estatal')) toast('🏛 Su declaración ' + dLig.anio + ' pasó sola al cuadro «Mandar estatal».');
+      if (itFichaId != null) renderItinFicha();
+    }
     itCargarLog(i.id);
   } catch (e) { toast('No pude guardar el número: ' + e.message, true); }
 }
@@ -8068,6 +8145,7 @@ function abrirItinNuevo(clienteId) {
   $('itnRel').value = clienteId != null ? 'hijo' : 'cliente';
   $('itnTitular').value = ''; $('itnNac').value = ''; $('itnTipo').value = 'nuevo';
   $('itnPrecio').value = IT_PRECIO; $('itnNotas').value = '';
+  $('itnCoa').checked = false; $('itnCoaWrap').classList.toggle('hidden', !itTieneCoa() && (itins || []).length > 0); $('itnCoaHint').classList.add('hidden'); $('itnPrecio').placeholder = '';
   itnToggleTitular();
   $('overlayITN').classList.remove('hidden');
   if (clienteId != null) {
@@ -8077,6 +8155,12 @@ function abrirItinNuevo(clienteId) {
   $('itnBuscar').focus();
 }
 function cerrarItinNuevo() { $('overlayITN').classList.add('hidden'); }
+function itnToggleCoa() {
+  const on = $('itnCoa').checked;
+  $('itnCoaHint').classList.toggle('hidden', !on);
+  if (on) { if ($('itnRel').value === 'cliente') { $('itnRel').value = 'otro'; itnToggleTitular(); } let p = ''; try { p = localStorage.getItem('amx_precio_coa') || ''; } catch (e) {} $('itnPrecio').value = p; $('itnPrecio').placeholder = 'Lo que cobras por certificar'; }
+  else { $('itnPrecio').value = IT_PRECIO; $('itnPrecio').placeholder = ''; }
+}
 function itnToggleTitular() { $('itnTitWrap').classList.toggle('hidden', $('itnRel').value === 'cliente'); }
 function itnBuscarCliente() {
   const txt = $('itnBuscar').value.trim(), q = normTexto(txt), box = $('itnResultados');
@@ -8109,6 +8193,8 @@ function itnMostrarElegido(txt) {
 }
 async function guardarItinNuevo() {
   if (!itNSel) { toast('Elige el cliente o crea uno nuevo.', true); $('itnBuscar').focus(); return; }
+  const esCoa = $('itnCoa').checked;
+  if (esCoa && $('itnRel').value === 'cliente') { toast('En «solo COA» el cliente es la otra oficina: elige para quién es el ITIN y escribe el nombre del titular.', true); $('itnRel').focus(); return; }
   const rel = $('itnRel').value;
   let titular = rel === 'cliente' ? '' : $('itnTitular').value.trim().replace(/\s+/g, ' ');
   if (rel !== 'cliente' && !titular) { toast('Escribe el nombre del titular.', true); $('itnTitular').focus(); return; }
@@ -8141,6 +8227,12 @@ async function guardarItinNuevo() {
     });
     if (error) throw error;
     const nuevo = Array.isArray(data) ? data[0] : data;
+    if (esCoa && nuevo && nuevo.id != null) {
+      const rc = await supabaseClient.from('itins').update({ solo_coa: true }).eq('id', nuevo.id).select('id');
+      if (rc.error) toast('Se creó, pero no pude marcarlo como «solo COA»: falta correr el paso 28 en Supabase.', true);
+      if (nuevo.tramite_id != null) await supabaseClient.from('tramites').update({ notas: '📎 Solo COA: certificación del documento para otra oficina · titular: ' + titular }).eq('id', nuevo.tramite_id);
+      try { if (precio != null) localStorage.setItem('amx_precio_coa', String(precio)); } catch (e) {}
+    }
     cerrarItinNuevo();
     await cargarTramites(); await cargarItins();
     refrescarTodo();
@@ -8630,7 +8722,7 @@ document.addEventListener('keydown', e => {
 /* =====================================================================
    v28 · PROTECCIONES (a prueba de errores) + CONTROL DEL NEGOCIO
    ===================================================================== */
-const HUB_VERSION = 'v31';
+const HUB_VERSION = 'v33';
 
 /* ---------- 1) Errores inesperados y falta de internet ---------- */
 let _ultAvisoErr = 0;
@@ -9211,6 +9303,178 @@ function solPedirSeguro() {
   window.open('https://wa.me/' + (num || '') + '?text=' + encodeURIComponent(msg), '_blank', 'noopener');
   toast(num ? 'Abrí su WhatsApp con el enlace seguro (también lo copié).' : 'Copié el mensaje: esta solicitud no tiene teléfono, elige el contacto en WhatsApp.');
 }
+
+/* =====================================================================
+   v33 · ARCHIVO fuera del tablero + CARTAS DEL IRS después de enviada
+   ===================================================================== */
+/* ----- Archivo: las archivadas no estorban en el tablero, pero aquí están todas ----- */
+function abrirArchivo() {
+  const anios = [...new Set((declaraciones || []).filter(d => d.estado === 'archivado').map(d => Number(d.anio)))].sort((a, b) => b - a);
+  const act = $('impAnio').value;
+  $('arcAnio').innerHTML = '<option value="">Todos los años</option>' + anios.map(a => '<option value="' + a + '">Año fiscal ' + a + '</option>').join('');
+  $('arcAnio').value = anios.map(String).includes(act) ? act : '';
+  $('arcBuscar').value = '';
+  $('overlayARC').classList.remove('hidden');
+  renderArchivo();
+  setTimeout(() => $('arcBuscar').focus(), 60);
+}
+function cerrarArchivo() { $('overlayARC').classList.add('hidden'); }
+function renderArchivo() {
+  const q = $('arcBuscar').value.trim(), an = $('arcAnio').value;
+  const l = (declaraciones || []).filter(d => d.estado === 'archivado' && (!an || String(d.anio) === an) && (!q || coincide(q, [impCliente(d).nombre, impCliente(d).telefono, d.archivero, d.preparador])))
+    .sort((a, b) => String(b.archivado_fecha || b.estado_desde).localeCompare(String(a.archivado_fecha || a.estado_desde)));
+  $('arcContador').textContent = l.length + (l.length === 1 ? ' declaración' : ' declaraciones');
+  $('arcLista').innerHTML = l.length ? l.slice(0, 300).map(d => {
+    const c = impCliente(d), t = impTramite(d), ab = casosAbiertosDe(d).length;
+    return '<div class="row click" data-arc="' + esc(d.id) + '"><div style="min-width:0"><b>' + esc(c.nombre || '—') + '</b><small>' + esc(['Impuestos ' + d.anio, d.archivado_fecha ? 'archivada el ' + fechaSolo(d.archivado_fecha) : '', d.archivero ? '📁 ' + d.archivero : ''].filter(Boolean).join('  ·  ')) + '</small></div>' +
+      '<div class="ag-right">' + (ab ? '<span class="badge b-bad">📬 Carta del IRS</span>' : '') + (t ? badgeCobro(finanzas(t)) : '') + (casos !== null ? '<button class="btn btn-sm" data-arc-carta="' + esc(d.id) + '" title="Registrar una carta del IRS de este cliente">＋ 📬 Carta</button>' : '') + '</div></div>';
+  }).join('') + (l.length > 300 ? '<div class="more">Hay ' + (l.length - 300) + ' más: usa el buscador.</div>' : '')
+    : '<div class="empty">' + (q || an ? 'Nada coincide con tu búsqueda.' : 'Todavía no hay declaraciones archivadas.') + '</div>';
+}
+$('arcLista').addEventListener('click', async e => {
+  const cb = e.target.closest('[data-arc-carta]');
+  if (cb) { const id = Number(cb.dataset.arcCarta); await abrirImpDetalle(id); abrirCaso(id); return; }
+  const r = e.target.closest('[data-arc]'); if (r) abrirImpDetalle(Number(r.dataset.arc));
+});
+
+/* ----- Cartas del IRS: auditoría, piden documentos, verificar identidad ----- */
+let casos = [], casosMap = new Map(), casoId = null, casoDeclId = null, casoTipo = 'documentos';
+const CASO_TIPO = { auditoria: '🔎 Auditoría', documentos: '📄 Piden documentos', identidad: '🪪 Verificar identidad', otra: '✉️ Otra carta' };
+async function cargarCasos() {
+  try { casos = await leerTodo('decl_casos', [['id', false]]); } catch (e) { casos = null; }
+  casosMap = new Map();
+  (casos || []).forEach(c => { const k = String(c.declaracion_id); if (!casosMap.has(k)) casosMap.set(k, []); casosMap.get(k).push(c); });
+}
+const casosDe = d => casosMap.get(String(d.id)) || [];
+const casosAbiertosDe = d => casosDe(d).filter(c => !c.respondida);
+const casosAbiertos = () => (casos || []).filter(c => !c.respondida && impDe(c.declaracion_id));
+function casoDias(c) { return c.fecha_limite ? Math.round((parseDia(c.fecha_limite) - inicioDia(new Date())) / 86400000) : null; }
+function casoBadge(c) {
+  if (c.respondida) return '<span class="badge b-ok">✔ Respondida' + (c.fecha_respuesta ? ' ' + esc(fechaDM(c.fecha_respuesta)) : '') + '</span>';
+  const d = casoDias(c);
+  if (d === null) return '<span class="badge b-wait">Por responder</span>';
+  if (d < 0) return '<span class="badge b-bad">Venció hace ' + (-d) + ' d</span>';
+  return '<span class="badge ' + (d <= 7 ? 'b-bad' : 'b-wait') + '">' + (d === 0 ? 'Vence HOY' : 'Quedan ' + d + ' d') + '</span>';
+}
+const casoTramite = c => c.tramite_id != null ? (tramites || []).find(t => String(t.id) === String(c.tramite_id)) : null;
+function casoFila(c, conCliente) {
+  const d = impDe(c.declaracion_id), t = casoTramite(c);
+  return '<div class="row caso-row"><div style="min-width:0"><b>' + (conCliente && d ? esc(impCliente(d).nombre || '—') + ' · ' : '') + esc(CASO_TIPO[c.tipo] || 'Carta') + '</b>' +
+    '<small>' + esc([conCliente && d ? 'Impuestos ' + d.anio : '', c.que_piden, 'llegó ' + fechaSolo(c.fecha_recibida), c.fecha_limite && !c.respondida ? 'responder antes del ' + fechaSolo(c.fecha_limite) : '', c.envio_guia ? 'guía ' + c.envio_guia : ''].filter(Boolean).join('  ·  ')) + '</small></div>' +
+    '<div class="ag-right">' + casoBadge(c) + (t ? badgeCobro(finanzas(t)) : '') +
+    (!c.respondida ? '<button class="btn btn-sm btn-primary" data-caso="resp" data-id="' + esc(c.id) + '">✔ Ya respondí</button>' : '') +
+    (t && ['sin_pago', 'parcial'].includes(finanzas(t).k) ? '<button class="btn btn-sm" data-caso="pago" data-id="' + esc(c.id) + '">💵 Cobrar</button>' : '') +
+    '<button class="btn btn-sm" data-caso="editar" data-id="' + esc(c.id) + '">Abrir</button></div></div>';
+}
+function casosSeccion(d) {
+  if (casos === null) return '<div class="sec"><h4>📬 Cartas del IRS (auditorías, documentos extra)</h4><div class="it-nota">Para llevar aquí las cartas que llegan después (y cobrarlas), corre el <b>paso 29</b> en Supabase.</div></div>';
+  const l = casosDe(d).slice().sort((a, b) => Number(a.respondida) - Number(b.respondida) || String(b.fecha_recibida).localeCompare(String(a.fecha_recibida)));
+  return '<div class="sec"><h4>📬 Cartas del IRS después de enviada (' + l.length + ')</h4><div class="dacts"><button class="btn-primary btn-sm" data-ip="addcaso">＋ Llegó una carta del IRS</button></div>' +
+    (l.length ? l.map(c => casoFila(c, false)).join('') : '<div class="empty" style="padding:12px 10px">Sin cartas. Si después lo auditan, le piden documentos o verificar su identidad, regístralo aquí y cóbralo aparte.</div>') + '</div>';
+}
+function casosClick(e) {
+  const b = e.target.closest('[data-caso]'); if (!b) return false;
+  const c = (casos || []).find(x => String(x.id) === String(b.dataset.id)); if (!c) return true;
+  if (b.dataset.caso === 'pago') { const t = casoTramite(c); if (t) { detalleId = t.id; abrirModalP(); } }
+  else abrirCaso(c.declaracion_id, c.id, b.dataset.caso === 'resp');
+  return true;
+}
+function renderImpCasos() {
+  const box = $('impCasos'); if (!box) return;
+  const l = casosAbiertos().sort((a, b) => String(a.fecha_limite || '9999').localeCompare(String(b.fecha_limite || '9999')));
+  if (!l.length) { box.innerHTML = ''; return; }
+  const venc = l.filter(c => { const d = casoDias(c); return d !== null && d < 0; }).length;
+  box.innerHTML = '<div class="card pb-card caso-card"><div class="seg-head"><h2>📬 Cartas del IRS por responder</h2><span class="muted">' + l.length + (l.length === 1 ? ' abierta' : ' abiertas') + (venc ? ' · ' + venc + ' vencida' + (venc === 1 ? '' : 's') : '') + '</span></div>' +
+    l.slice(0, 8).map(c => casoFila(c, true)).join('') + (l.length > 8 ? '<div class="seg-prox">+' + (l.length - 8) + ' más</div>' : '') + '</div>';
+}
+$('impCasos').addEventListener('click', casosClick);
+$('impBody').addEventListener('click', e => { if (casosClick(e)) e.stopPropagation(); }, true);
+
+function csPintar() {
+  $('csTipo').innerHTML = Object.keys(CASO_TIPO).map(k => '<button type="button" class="chip' + (k === casoTipo ? ' on' : '') + '" style="--cc:var(--navy)" data-ct="' + k + '">' + CASO_TIPO[k] + '</button>').join('');
+  $('csRespWrap').classList.toggle('hidden', !$('csResp').checked);
+  if ($('csResp').checked && !$('csRespF').value) $('csRespF').value = hoyStr();
+}
+$('csTipo').addEventListener('click', e => { const b = e.target.closest('[data-ct]'); if (!b) return; casoTipo = b.dataset.ct; csPintar(); const ov = $('overlayCS'); ov._sucio = true; ov._ultCampo = $('csPiden'); });
+function abrirCaso(declId, id, responder) {
+  const d = impDe(declId); if (!d) return;
+  if (casos === null) { toast('Falta correr el SQL del paso 29 en Supabase.', true); return; }
+  const c = id != null ? (casos || []).find(x => String(x.id) === String(id)) : null;
+  casoDeclId = d.id; casoId = c ? c.id : null; casoTipo = c ? c.tipo : 'documentos';
+  $('csTitulo').textContent = c ? '📬 Carta del IRS' : '📬 Llegó una carta del IRS';
+  $('csInfo').textContent = (impCliente(d).nombre || '') + ' · Impuestos ' + d.anio;
+  $('csPiden').value = c ? (c.que_piden || '') : '';
+  $('csFecha').value = c ? String(c.fecha_recibida).slice(0, 10) : hoyStr();
+  $('csLimite').value = c && c.fecha_limite ? String(c.fecha_limite).slice(0, 10) : '';
+  const t = c ? casoTramite(c) : null;
+  let ult = ''; try { ult = localStorage.getItem('amx_precio_caso') || ''; } catch (e) {}
+  $('csCobro').value = t && t.monto != null ? t.monto : (c ? '' : ult);
+  $('csResp').checked = !!(c && c.respondida) || !!responder;
+  $('csRespF').value = c && c.fecha_respuesta ? String(c.fecha_respuesta).slice(0, 10) : '';
+  $('csCosto').value = c && c.envio_costo != null ? c.envio_costo : '';
+  $('csGuia').value = c ? (c.envio_guia || '') : '';
+  $('csMet').innerHTML = Object.keys(METODOS).map(k => '<option value="' + k + '">' + METODOS[k] + '</option>').join('');
+  $('csMet').value = c ? (c.envio_metodo || 'efectivo') : 'efectivo';
+  $('csNotas').value = c ? (c.notas || '') : '';
+  $('btnCsBorrar').classList.toggle('hidden', !(c && rol === 'dueno'));
+  csPintar();
+  $('overlayCS').classList.remove('hidden');
+  setTimeout(() => (responder ? $('csCosto') : $('csPiden')).focus(), 60);
+}
+function cerrarCaso() { casoId = null; casoDeclId = null; $('overlayCS').classList.add('hidden'); }
+async function guardarCaso() {
+  const d = impDe(casoDeclId); if (!d) { cerrarCaso(); return; }
+  const prev = casoId != null ? (casos || []).find(x => String(x.id) === String(casoId)) : null;
+  if (!$('csFecha').value) { toast('Pon la fecha en que llegó la carta.', true); $('csFecha').focus(); return; }
+  if (!fechaSegura($('csFecha').value, 'en que llegó')) return;
+  const resp = $('csResp').checked;
+  const cTxt = $('csCosto').value.trim(), costo = !resp || cTxt === '' ? null : r2(cTxt);
+  if (costo !== null && (isNaN(costo) || costo < 0)) { toast('El costo del envío no es válido.', true); $('csCosto').focus(); return; }
+  if (costo !== null && !montoSeguro(costo, 150, 'de envío')) return;
+  const pTxt = $('csCobro').value.trim(), precio = pTxt === '' ? null : r2(pTxt);
+  if (precio !== null && (isNaN(precio) || precio < 0)) { toast('El cobro extra no es válido.', true); $('csCobro').focus(); return; }
+  if (precio !== null && !montoSeguro(precio, 1500, 'de cobro extra')) return;
+  $('btnCs').disabled = true;
+  try {
+    // el cobro extra es un trámite normal: así tiene pagos, recibo y sale en Reportes
+    let tid = prev ? prev.tramite_id : null;
+    const tNotas = '📬 ' + (CASO_TIPO[casoTipo] || 'Carta del IRS').replace(/^\S+\s/, '') + ' · declaración ' + d.anio + ($('csPiden').value.trim() ? ' · ' + $('csPiden').value.trim() : '');
+    if (precio !== null && precio > 0) {
+      if (tid != null && casoTramite(prev)) await supabaseClient.from('tramites').update({ monto: precio, notas: tNotas }).eq('id', tid);
+      else {
+        const tp = { cliente_id: Number(d.cliente_id), tipo: 'Carta del IRS', estado: resp ? 'completado' : 'en_progreso', monto: precio, notas: tNotas };
+        if (tieneColT('fecha_limite') && $('csLimite').value) tp.fecha_limite = $('csLimite').value;
+        const rt = await supabaseClient.from('tramites').insert([tp]).select();
+        if (rt.error || !rt.data || !rt.data.length) throw new Error('No pude registrar el cobro extra: ' + (rt.error ? rt.error.message : 'revisa permisos'));
+        tid = rt.data[0].id;
+      }
+      try { localStorage.setItem('amx_precio_caso', String(precio)); } catch (e) {}
+    } else if (tid != null && casoTramite(prev) && !pagosDe(tid).length) { await supabaseClient.from('tramites').update({ monto: 0, notas: tNotas + ' · sin costo' }).eq('id', tid); }
+    const payload = { declaracion_id: d.id, cliente_id: d.cliente_id, tramite_id: tid, tipo: casoTipo, que_piden: $('csPiden').value.trim() || null, fecha_recibida: $('csFecha').value, fecha_limite: $('csLimite').value || null,
+      respondida: resp, fecha_respuesta: resp ? ($('csRespF').value || hoyStr()) : null, envio_guia: resp ? ($('csGuia').value.trim() || null) : null, envio_costo: costo, envio_metodo: $('csMet').value,
+      notas: $('csNotas').value.trim() || null, actualizado_nombre: nombrePerfil };
+    if (!prev) payload.por = nombrePerfil;
+    const r = prev ? await supabaseClient.from('decl_casos').update(payload).eq('id', prev.id).select() : await supabaseClient.from('decl_casos').insert([payload]).select();
+    if (r.error) throw r.error;
+    if (!r.data || !r.data.length) throw new Error('No se guardó. Revisa tus permisos.');
+    cerrarCaso();
+    await Promise.all([cargarCasos(), cargarTramites(), rol === 'dueno' ? cargarGastos() : null]);
+    refrescarTodo();
+    toast(prev ? (resp && !prev.respondida ? 'Carta respondida ✔' + (costo > 0 ? ' El envío quedó en Gastos.' : '') : 'Cambios guardados.') : 'Carta registrada.' + (precio > 0 ? ' El cobro extra de ' + money(precio) + ' quedó por cobrar.' : ''));
+  } catch (e) { toast('No se pudo guardar: ' + e.message, true); }
+  finally { $('btnCs').disabled = false; }
+}
+async function borrarCaso() {
+  const c = (casos || []).find(x => String(x.id) === String(casoId)); if (!c) return;
+  const t = casoTramite(c);
+  if (t && pagosDe(t.id).length) { toast('Esta carta ya tiene pagos registrados. Si de verdad hay que borrarla, primero haz el reembolso.', true); return; }
+  if (!confirm('¿Eliminar esta carta del IRS' + (t ? ' y su cobro extra de ' + money(t.monto) : '') + '? No se puede deshacer.')) return;
+  const r = await supabaseClient.from('decl_casos').delete().eq('id', c.id).select('id');
+  if (r.error || !r.data || !r.data.length) { toast('No pude eliminar: ' + (r.error ? r.error.message : 'solo administradores'), true); return; }
+  if (t) await supabaseClient.from('tramites').delete().eq('id', t.id);
+  cerrarCaso(); await Promise.all([cargarCasos(), cargarTramites()]); refrescarTodo(); toast('Carta eliminada.');
+}
+VIVO_CARGA.decl_casos = () => cargarCasos();
 
 VIVO_CARGA.cortes_caja = () => cargarCortes();
 
