@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Taxes, ITIN & Document Services in San Ysidro, CA | AmericaMex</title>
+  <title>Taxes, ITIN &amp; Document Services in San Ysidro, CA | AmericaMex</title>
   <meta name="description" content="Tax preparation and ITIN with an IRS Certifying Acceptance Agent, Green Card renewal forms, citizenship, SENTRI, apostilles and Notary Public in San Ysidro, CA. Bilingual, in office or by WhatsApp.">
   <link rel="canonical" href="https://delmar85.github.io/americamex-web/en/">
   <link rel="alternate" hreflang="es" href="https://delmar85.github.io/americamex-web/">
@@ -216,6 +216,18 @@
       "@type": "Offer",
       "itemOffered": {
        "@type": "Service",
+       "name": "P.O. Box rental"
+      },
+      "priceSpecification": {
+       "@type": "PriceSpecification",
+       "minPrice": 65,
+       "priceCurrency": "USD"
+      }
+     },
+     {
+      "@type": "Offer",
+      "itemOffered": {
+       "@type": "Service",
        "name": "Other forms and paperwork"
       }
      },
@@ -301,6 +313,30 @@
    "@id": "https://delmar85.github.io/americamex-web/en/#preguntas",
    "inLanguage": "en",
    "mainEntity": [
+    {
+     "@type": "Question",
+     "name": "How much will my tax refund be?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Nobody can honestly tell you before preparing your return: it depends on what you earned, what was withheld and your dependents. That is why we do not give a number by message. What you do know up front is what it costs to prepare it: prices are on this page."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "Can you give me a quote?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Base prices are already published here, in the services section. We confirm the exact total for your case once we see your documents, and always before we start."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "Do I have to pay before you start?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "To get started we ask for a deposit that is applied to your total. That reserves your spot and lets us give your case proper attention. The balance is due when we deliver."
+     }
+    },
     {
      "@type": "Question",
      "name": "Can I file my taxes without a Social Security number?",
@@ -907,6 +943,106 @@ body{font-size:17px}
   .hero-motto{font-size:13px;padding:6px 12px;flex-wrap:wrap;justify-content:center}
 }
 
+/* ===== v7 · Más pulido, más corto en el celular, P.O. Box, formulario que nunca pierde un mensaje ===== */
+.prog{position:fixed;left:0;top:0;height:3px;width:100%;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,#FF6A5F,#FF2D2D);z-index:70;pointer-events:none}
+.hero-inner{padding:68px 24px 64px}
+.hero::after{content:"";position:absolute;left:50%;top:-420px;width:900px;height:900px;margin-left:-450px;border-radius:50%;background:radial-gradient(circle,rgba(255,60,50,.20),transparent 62%);pointer-events:none;animation:respira 9s ease-in-out infinite;z-index:0}
+@keyframes respira{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.14);opacity:1}}
+.hero-stats{gap:14px;border-top:0;padding-top:0;margin-top:34px}
+.hero-stats>div{min-width:196px;padding:17px 22px 15px;border-radius:18px;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.15);box-shadow:inset 0 1px 0 rgba(255,255,255,.08);transition:transform .2s var(--ease),background .2s}
+.hero-stats>div:hover{transform:translateY(-3px);background:rgba(255,255,255,.11)}
+.ask-chip{backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.trust li{transition:transform .2s var(--ease)}.trust li:hover{transform:translateY(-1px)}
+
+/* servicios: color por tipo y flecha */
+.scard{position:relative;border-radius:18px;overflow:hidden}
+.scard::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:var(--cc,var(--navy));transform:scaleX(0);transform-origin:0 50%;transition:transform .28s var(--ease)}
+.scard:hover::before,.scard:focus-visible::before{transform:scaleX(1)}
+.scard[data-c="impuestos"]{--cc:#FF2D2D}.scard[data-c="migracion"]{--cc:#1A3A5C}.scard[data-c="documentos"]{--cc:#17B04F}
+.scard.feat::before{transform:scaleX(1)}
+.scard .sask::after{content:"→";margin-left:auto;transition:transform .2s var(--ease)}
+.scard:hover .sask::after{transform:translateX(4px)}
+.scard:hover .sico{transform:scale(1.06) rotate(-3deg)}
+.sico{transition:transform .25s var(--ease)}
+
+/* P.O. Box: renglón completo para que no quede una tarjeta sola */
+@media (min-width:641px){
+  .scard.wide{grid-column:1 / -1;display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;grid-template-areas:"ico tit pr ask" "ico des pr ask";column-gap:22px;align-items:center;padding:20px 26px;background:linear-gradient(90deg,#fff 55%,#EEF7F1)}
+  .scard.wide .stop{display:contents}.scard.wide .tag{display:none}
+  .scard.wide .sico{grid-area:ico;width:54px;height:54px;font-size:26px}
+  .scard.wide h3{grid-area:tit;margin:0;align-self:end}
+  .scard.wide p{grid-area:des;margin:4px 0 0;align-self:start}
+  .scard.wide .sprice{grid-area:pr;margin:0}
+  .scard.wide .sask{grid-area:ask;margin:0;padding:13px 18px;border:1.5px solid var(--wa);border-radius:12px}
+  .scard.wide::before{top:0;bottom:0;right:auto;width:4px;height:auto;transform:none}
+}
+.step{transition:transform .22s var(--ease),box-shadow .22s}
+.step:hover{transform:translateY(-4px);box-shadow:0 26px 44px -22px rgba(13,33,55,.75)}
+.cta-note{max-width:620px;margin:16px auto 0;text-align:center;color:var(--muted);font-size:15.5px}
+.rev,.pcard{transition:transform .22s var(--ease),box-shadow .22s}
+.rev:hover,.pcard:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.rev-swipe{display:none}
+.faq-list summary:hover{color:var(--navy2)}
+.form-msg .btn{margin-top:10px;width:100%}
+.form-msg a.lnk{display:inline-block;margin-top:6px;font-weight:700;color:var(--wa-d)}
+.totop{position:fixed;right:24px;bottom:94px;width:46px;height:46px;border-radius:50%;border:1.5px solid var(--line);background:#fff;color:var(--navy);font:800 18px/1 var(--fd);box-shadow:var(--shadow);cursor:pointer;opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .2s,transform .2s;z-index:39}
+.totop.on{opacity:1;pointer-events:auto;transform:none}
+.totop:hover{border-color:var(--red);color:var(--red)}
+
+@media (max-width:640px){
+  section{padding:56px 0}
+  .hero-inner{padding:38px 16px 44px}
+  .hero::after{width:520px;height:520px;margin-left:-260px;top:-260px}
+  .hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%}
+  .hero-stats>div{min-width:0;padding:12px 6px 10px;border-radius:14px}
+  .hero-stats b{font-size:22px}
+  .hero-stats b small{display:block;margin:0 0 2px;font-size:11px}
+  .hero-stats span{font-size:11.5px;line-height:1.25}
+  /* servicios en renglones compactos: caben los 13 sin bajar y bajar */
+  .sgrid{grid-template-columns:1fr;gap:10px}
+  .scard{display:grid;grid-template-columns:44px minmax(0,1fr) auto;grid-template-areas:"ico tit pr" "ico des pr";column-gap:12px;row-gap:2px;align-items:center;padding:13px 14px;border-radius:16px}
+  .scard .stop{display:contents}
+  .scard .sico{grid-area:ico;width:44px;height:44px;font-size:21px}
+  .scard .tag{display:none}
+  .scard h3{grid-area:tit;margin:0;font-size:16px;line-height:1.25}
+  .scard p{grid-area:des;margin:0;font-size:13px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .scard .sprice{grid-area:pr;margin:0;text-align:right;font-size:21px;line-height:1.05}
+  .scard .sprice small{display:block;margin:0 0 2px;font-size:11px}
+  .scard .sprice.ask{font-size:12.5px;max-width:84px;color:var(--wa-d)}
+  .scard .sprice.ask small{display:none}
+  .scard .sask{display:none}
+  .scard::before{top:0;bottom:0;right:auto;width:4px;height:auto;transform:none}
+  /* pasos: número a la izquierda */
+  .steps{gap:10px;margin-top:28px}
+  .step{display:grid;grid-template-columns:34px 1fr;column-gap:14px;padding:16px 18px;align-items:start}
+  .step::before{grid-row:1 / span 2}
+  .step h3{margin:0;font-size:17px;align-self:center}
+  .step p{grid-column:2;margin-top:4px;font-size:14.5px}
+  .grid3{gap:12px;margin-top:28px}.pcard{padding:20px}.pcard h3{font-size:19px;margin-top:12px}
+  /* reseñas: se deslizan de lado */
+  .reviews{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;margin:28px -16px 0;padding:4px 16px 12px;scrollbar-width:none}
+  .reviews::-webkit-scrollbar{display:none}
+  .rev{flex:0 0 86%;scroll-snap-align:center}
+  .rev-swipe{display:block;text-align:center;font-size:13px;font-weight:700;color:var(--muted);margin-top:2px}
+  .faq-list{margin-top:26px}.faq-list summary{padding:16px 16px;font-size:16.5px}.faq-list details p{padding:0 16px 16px}
+  .center-cta .btn{flex:1 1 100%}
+  .totop{display:none}
+}
+@media (prefers-reduced-motion:reduce){.hero::after{animation:none}}
+
+/* ===== v9 · Así trabajamos (con anticipo) y pulido de tipografía ===== */
+h1,h2,h3{text-wrap:balance}
+p{text-wrap:pretty}
+#como-funciona .steps{position:relative}
+@media (min-width:981px){
+  #como-funciona .steps::before{content:"";position:absolute;left:8%;right:8%;top:37px;height:2px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.28) 0 8px,transparent 8px 16px);z-index:0}
+  #como-funciona .step{position:relative;z-index:1}
+}
+#como-funciona .step.key{outline:2px solid var(--red);outline-offset:-2px;box-shadow:0 22px 44px -22px rgba(255,45,45,.55)}
+#como-funciona .step.key::after{content:attr(data-tag);position:absolute;top:14px;right:14px;font:800 10.5px/1 var(--fu);letter-spacing:.08em;text-transform:uppercase;background:var(--red);color:#fff;padding:5px 8px;border-radius:999px}
+#como-funciona .cta-note a{color:inherit;font-weight:700}
+@media (max-width:640px){#como-funciona .step.key::after{position:static;display:inline-block;grid-column:2;margin-top:8px;justify-self:start}}
+
   </style>
 </head>
 <body>
@@ -917,6 +1053,8 @@ body{font-size:17px}
     <symbol id="i-cal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></g></symbol>
     <symbol id="i-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></g></symbol>
   </svg>
+
+  <div class="prog" id="prog" aria-hidden="true"></div>
 
   <a class="skip-link" href="#main">Skip to content</a>
 
@@ -933,7 +1071,7 @@ body{font-size:17px}
       <a href="#top" class="logo-wrap" aria-label="AmericaMex Multi-Services, go to top"><span class="logo-plate">
         <picture>
           <source srcset="../logo.webp" type="image/webp">
-          <img src="../logo.png" alt="AmericaMex Multi-Services" class="logo-img" width="600" height="157" fetchpriority="high">
+          <picture><source srcset="../logo.webp" type="image/webp"><img src="../logo.png" alt="AmericaMex Multi-Services" class="logo-img" width="600" height="157" fetchpriority="high"></picture>
         </picture></span>
       </a>
       <nav class="main-nav" id="mainNav" aria-label="Main menu">
@@ -945,7 +1083,7 @@ body{font-size:17px}
           <li><a class="lk" href="#ubicacion">Location</a></li>
           <li class="acts">
             <a href="https://cal.com/americamex-vv9s4r" target="_blank" rel="noopener" class="btn btn-ghost btn-sm"><svg class="ico" aria-hidden="true"><use href="#i-cal"/></svg>Book appointment</a>
-            <a href="https://wa.me/16194964759?text=Hi%2C%20I%20found%20you%20on%20your%20website%20and%20would%20like%20information." target="_blank" rel="noopener" class="btn btn-wa btn-sm"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>WhatsApp</a>
+            <a href="https://wa.me/16194964759?text=Hi%2C%20I%20am%20coming%20from%20your%20website.%20My%20name%20is%3A%20___%20%C2%B7%20I%20need%20help%20with%3A%20___" target="_blank" rel="noopener" class="btn btn-wa btn-sm"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>WhatsApp</a>
           </li>
         </ul>
       </nav>
@@ -974,7 +1112,7 @@ body{font-size:17px}
           <p class="hero-motto"><span>You earned it with hard work.</span> <b>Keep more of it.</b></p>
           <p class="hero-sub">Taxes, ITIN, Green Card renewal, citizenship, SENTRI, apostilles, translations and Notary Public. Visit our office or do it all from your phone, wherever you are.</p>
           <div class="hero-btns">
-            <a href="https://wa.me/16194964759?text=Hi%2C%20I%20found%20you%20on%20your%20website%20and%20would%20like%20information." target="_blank" rel="noopener" class="btn btn-wa btn-lg"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>Message us on WhatsApp</a>
+            <a href="https://wa.me/16194964759?text=Hi%2C%20I%20am%20coming%20from%20your%20website.%20My%20name%20is%3A%20___%20%C2%B7%20I%20need%20help%20with%3A%20___" target="_blank" rel="noopener" class="btn btn-wa btn-lg"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>Message us on WhatsApp</a>
             <a href="tel:+16198006128" class="btn btn-ghost btn-lg"><svg class="ico" aria-hidden="true"><use href="#i-tel"/></svg>(619) 800-6128</a>
             <a href="https://cal.com/americamex-vv9s4r" target="_blank" rel="noopener" class="btn btn-ghost btn-lg hb-cita"><svg class="ico" aria-hidden="true"><use href="#i-cal"/></svg>Book appointment</a>
           </div>
@@ -1058,10 +1196,11 @@ body{font-size:17px}
           <a class="card scard" data-c="documentos" data-k="doble nacionalidad mexicana registro acta mexico dual citizenship" target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20am%20interested%20in%3A%20Mexican%20dual%20nationality"><div class="stop"><span class="sico" aria-hidden="true">🇲🇽</span><span class="tag dig">By mail ✓</span></div><h3>Mexican dual nationality</h3><p>Includes translations and apostille</p><div class="sprice"><small>from</small>$450</div><span class="sask"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>Ask on WhatsApp</span></a>
           <a class="card scard" data-c="documentos" data-k="notario notary public notarizacion firma carta poder" target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20need%20a%20document%20notarized"><div class="stop"><span class="sico" aria-hidden="true">🖊️</span><span class="tag">In office</span></div><h3>Notary Public</h3><p>Per signature · letters and documents</p><div class="sprice"><small>from</small>$15</div><span class="sask"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>Ask on WhatsApp</span></a>
           <a class="card scard" data-c="documentos" data-k="traduccion certificada ingles espanol translation certified" target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20am%20interested%20in%3A%20certified%20translation"><div class="stop"><span class="sico" aria-hidden="true">📝</span><span class="tag dig">Online ✓</span></div><h3>Certified translations</h3><p>Spanish ↔ English</p><div class="sprice"><small>from</small>$45</div><span class="sask"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>Ask on WhatsApp</span></a>
+          <a class="card scard wide" data-c="documentos" data-k="po box pobox p.o. box apartado postal buzon correo mail mailbox direccion address paquetes renta rental" target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20am%20interested%20in%3A%20P.O.%20Box%20rental"><div class="stop"><span class="sico" aria-hidden="true">📬</span><span class="tag">In office</span></div><h3>P.O. Box rental</h3><p>6 months $65 · 1 year $130. Up to 2 more authorized people.</p><div class="sprice"><small>from</small>$65</div><span class="sask"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>Ask on WhatsApp</span></a>
         </div>
         <div class="empty" id="sVacio" role="status">
           <b>We could not find that service on the list.</b><br>We can probably still help: just ask.
-          <div><a class="btn btn-wa" id="sVacioWa" target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20found%20you%20on%20your%20website%20and%20would%20like%20information."><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>Ask on WhatsApp</a></div>
+          <div><a class="btn btn-wa" id="sVacioWa" target="_blank" rel="noopener" href="https://wa.me/16194964759?text=Hi%2C%20I%20am%20coming%20from%20your%20website.%20My%20name%20is%3A%20___%20%C2%B7%20I%20need%20help%20with%3A%20___"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>Ask on WhatsApp</a></div>
         </div>
       </div>
     </section>
@@ -1069,19 +1208,20 @@ body{font-size:17px}
     <section id="como-funciona">
       <div class="container">
         <div class="sec-h center rv">
-          <div class="eyebrow">100% online</div>
-          <h2>Do it from <span class="mark">wherever you are.</span></h2>
-          <p>Live in Houston, Chicago, Los Angeles, Tijuana or Guadalajara? No problem. We serve clients all over the U.S. and Mexico, completely remotely.</p>
+          <div class="eyebrow">How we work</div>
+          <h2>How we work: <span class="mark">clear from the start.</span></h2>
+          <p>At our San Ysidro office or from your phone, wherever you are in the U.S. or Mexico. The process is the same.</p>
         </div>
         <ol class="steps">
-          <li class="card step rv"><h3>Message us on WhatsApp</h3><p>Tell us what you need; we reply fast during office hours.</p></li>
-          <li class="card step rv"><h3>Send your documents</h3><p>Photos from your phone through a secure link, no office visit.</p></li>
-          <li class="card step rv"><h3>Sign and pay online</h3><p>E-signature and payment by Zelle or card.</p></li>
-          <li class="card step rv"><h3>Get your result</h3><p>Your tax return, your ITIN or your paperwork, done.</p></li>
+          <li class="card step rv"><h3>Tell us what you need</h3><p>On WhatsApp, with your name and the service. We reply during office hours, in the order messages arrive.</p></li>
+          <li class="card step rv"><h3>We confirm price and documents</h3><p>Base prices are on this page. We tell you the total for your case and the exact list of what to send.</p></li>
+          <li class="card step rv key" data-tag="Applied to total"><h3>Reserve your spot with a deposit</h3><p>It is applied to your total. That puts your case in line and we start working on it.</p></li>
+          <li class="card step rv"><h3>We do it and deliver</h3><p>Sign online or at the office, pay the balance and get your result.</p></li>
         </ol>
         <div class="center-cta">
-          <a href="https://wa.me/16194964759?text=Hi%2C%20I%20want%20to%20do%20my%20paperwork%20100%25%20online." target="_blank" rel="noopener" class="btn btn-wa btn-lg"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>Get started</a>
+          <a href="https://wa.me/16194964759?text=Hi%2C%20I%20want%20to%20start%20a%20service.%20My%20name%20is%3A%20___%20%C2%B7%20I%20need%3A%20___" target="_blank" rel="noopener" class="btn btn-wa btn-lg"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>I want to get started</a>
         </div>
+        <p class="cta-note">Just have a question? Check the <a href="#preguntas">FAQ</a> first: the most common answers are there.</p>
       </div>
     </section>
 
@@ -1121,6 +1261,7 @@ body{font-size:17px}
           <figure class="card rev rv"><div class="rev-h"><span class="av" style="background:#1A3A5C" aria-hidden="true">E</span><figcaption><b>ECORREA Consulting</b><small>Tax preparation</small></figcaption><span class="gmini" aria-hidden="true">G</span></div><div class="s" role="img" aria-label="5 stars">★★★★★</div><blockquote>“Martin and his team are very reliable, efficient and has provided an excellent service in the past 7 years. Hablan español también, excelente atención al cliente y servicios!”</blockquote></figure>
           <figure class="card rev rv"><div class="rev-h"><span class="av" style="background:#1E7B45" aria-hidden="true">A</span><figcaption><b>Angela Galvan</b><small>Taxes</small></figcaption><span class="gmini" aria-hidden="true">G</span></div><div class="s" role="img" aria-label="5 stars">★★★★★</div><blockquote>“Esta es mi tercera ocasión haciendo taxes con ellos. Muy buen servicio al cliente, te explican detalladamente y tienen paciencia. Están 100% recomendados.”</blockquote></figure>
         </div>
+        <p class="rev-swipe" aria-hidden="true">Swipe to see more →</p>
         <div class="center-cta">
           <a href="https://www.google.com/maps/search/?api=1&amp;query=AmericaMex+Tax+516+E+San+Ysidro+Blvd" target="_blank" rel="noopener" class="btn btn-line">See all reviews on Google →</a>
         </div>
@@ -1134,6 +1275,9 @@ body{font-size:17px}
           <h2>What people <span class="mark">ask us most.</span></h2>
         </div>
         <div class="faq-list">
+          <details><summary>How much will my tax refund be?</summary><p>Nobody can honestly tell you before preparing your return: it depends on what you earned, what was withheld and your dependents. That is why we do not give a number by message. What you do know up front is what it costs to prepare it: prices are on this page.</p></details>
+          <details><summary>Can you give me a quote?</summary><p>Base prices are already published here, in the services section. We confirm the exact total for your case once we see your documents, and always before we start.</p></details>
+          <details><summary>Do I have to pay before you start?</summary><p>To get started we ask for a deposit that is applied to your total. That reserves your spot and lets us give your case proper attention. The balance is due when we deliver.</p></details>
           <details><summary>Can I file my taxes without a Social Security number?</summary><p>Yes. If you do not qualify for an SSN, you file with an ITIN. We process it together with your tax return.</p></details>
           <details><summary>Do I have to mail my original passport to the IRS for an ITIN?</summary><p>In most cases, no. As a Certifying Acceptance Agent we review your documents here and return them the same day.</p></details>
           <details><summary>How long does the ITIN take?</summary><p>Usually 7 to 11 weeks after it is sent, depending on the season. We follow up with you the whole way.</p></details>
@@ -1141,6 +1285,7 @@ body{font-size:17px}
           <details><summary>Can you help me if I do not live in San Diego?</summary><p>Yes. We work 100% online anywhere in the U.S. and Mexico: by WhatsApp, with e-signature and payment by Zelle or card.</p></details>
           <details><summary>What documents do I need for my taxes?</summary><p>Your ID, your W-2s or 1099s, the SSN or ITIN of each person on the return, your dependents' information and your bank account for direct deposit. Bring last year's return if you have it. Message us and we will send you the list for your case.</p></details>
           <details><summary>How much will it cost?</summary><p>Prices on this page are starting points. We tell you the total for your case before we start, no surprises. For services with a government fee (USCIS or CBP) we give you the current total.</p></details>
+          <details><summary>Do you rent P.O. Boxes?</summary><p>Yes. Rental is $65 for 6 months or $130 for one year, and you can authorize up to 2 more people to pick up your mail. Message us to check availability.</p></details>
         </div>
       </div>
     </section>
@@ -1188,9 +1333,9 @@ body{font-size:17px}
       <div class="container contact-inner">
         <div class="cta-box rv">
           <h2>Ready to keep what is yours?</h2>
-          <p>Message us today. We reply fast during office hours.</p>
+          <p>Message us today. We reply Monday to Thursday during office hours, in the order messages arrive.</p>
           <div class="btns">
-            <a href="https://wa.me/16194964759?text=Hi%2C%20I%20found%20you%20on%20your%20website%20and%20would%20like%20information." target="_blank" rel="noopener" class="btn btn-wa btn-lg"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>WhatsApp (619) 496-4759</a>
+            <a href="https://wa.me/16194964759?text=Hi%2C%20I%20am%20coming%20from%20your%20website.%20My%20name%20is%3A%20___%20%C2%B7%20I%20need%20help%20with%3A%20___" target="_blank" rel="noopener" class="btn btn-wa btn-lg"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>WhatsApp (619) 496-4759</a>
             <a href="tel:+16198006128" class="btn btn-ghost btn-lg"><svg class="ico" aria-hidden="true"><use href="#i-tel"/></svg>Call (619) 800-6128</a>
             <a href="https://cal.com/americamex-vv9s4r" target="_blank" rel="noopener" class="btn btn-ghost btn-lg"><svg class="ico" aria-hidden="true"><use href="#i-cal"/></svg>Book an appointment online</a>
           </div>
@@ -1223,6 +1368,7 @@ body{font-size:17px}
                   <option value="Apostilla + Traducción">Apostille + Translation</option>
                   <option value="Doble Nacionalidad">Mexican dual nationality</option>
                   <option value="Notarización">Notary Public</option>
+                  <option value="P.O. Box">P.O. Box rental</option>
                   <option value="Otro">Other</option>
                 </select>
               </div>
@@ -1267,6 +1413,7 @@ body{font-size:17px}
             <li><a href="#servicios" data-go="sentri">SENTRI / Global Entry</a></li>
             <li><a href="#servicios" data-go="doble">Mexican dual nationality</a></li>
             <li><a href="#servicios" data-go="notary">Notary Public</a></li>
+            <li><a href="#servicios" data-go="p.o. box">P.O. Box rental</a></li>
           </ul>
         </div>
         <div>
@@ -1288,13 +1435,15 @@ body{font-size:17px}
     </div>
   </footer>
 
-  <a href="https://wa.me/16194964759?text=Hi%2C%20I%20found%20you%20on%20your%20website%20and%20would%20like%20information." target="_blank" rel="noopener" class="wa-float" aria-label="Message us on WhatsApp">
+  <a href="https://wa.me/16194964759?text=Hi%2C%20I%20am%20coming%20from%20your%20website.%20My%20name%20is%3A%20___%20%C2%B7%20I%20need%20help%20with%3A%20___" target="_blank" rel="noopener" class="wa-float" aria-label="Message us on WhatsApp">
     <svg width="30" height="30" aria-hidden="true"><use href="#i-wa"/></svg>
   </a>
 
+  <button type="button" class="totop" id="totop" aria-label="Back to top">↑</button>
+
   <nav class="mbar" aria-label="Quick actions">
     <a href="tel:+16198006128" class="btn btn-line"><svg class="ico" aria-hidden="true"><use href="#i-tel"/></svg>Call</a>
-    <a href="https://wa.me/16194964759?text=Hi%2C%20I%20found%20you%20on%20your%20website%20and%20would%20like%20information." target="_blank" rel="noopener" class="btn btn-wa"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>WhatsApp</a>
+    <a href="https://wa.me/16194964759?text=Hi%2C%20I%20am%20coming%20from%20your%20website.%20My%20name%20is%3A%20___%20%C2%B7%20I%20need%20help%20with%3A%20___" target="_blank" rel="noopener" class="btn btn-wa"><svg class="ico" aria-hidden="true"><use href="#i-wa"/></svg>WhatsApp</a>
     <a href="https://cal.com/americamex-vv9s4r" target="_blank" rel="noopener" class="btn btn-line"><svg class="ico" aria-hidden="true"><use href="#i-cal"/></svg>Book</a>
   </nav>
 
@@ -1313,7 +1462,7 @@ body{font-size:17px}
 })();
 
 (function () {
-  var TX = {"open": "Open now · we close at 5pm", "today": "Closed · we open today at 10am", "tomorrow": "Closed · we open tomorrow at 10am", "monday": "Closed · we open Monday at 10am", "leave": " · leave us a WhatsApp and we will reply", "sending": "Sending…", "send": "Send message", "ok": "✅ Done! We got your details and will contact you soon.", "err": "❌ Could not send. Message us on WhatsApp at (619) 496-4759.", "noname": "Please enter your name.", "notel": "Please enter a phone number with at least 10 digits.", "emptymsg": "Hi, I need help with: "};
+  var TX = {"open": "Open now · we close at 5pm", "today": "Closed · we open today at 10am", "tomorrow": "Closed · we open tomorrow at 10am", "monday": "Closed · we open Monday at 10am", "leave": " · leave us a WhatsApp and we will reply", "sending": "Sending…", "send": "Send message", "ok": "✅ Done! We got your details and will contact you soon.", "noname": "Please enter your name.", "notel": "Please enter a phone number with at least 10 digits.", "okwa": "In a hurry? Message us on WhatsApp", "errwa": "Send my message on WhatsApp", "err": "It could not be sent from here. Tap the green button and it reaches us on WhatsApp with what you already wrote.", "wamsg": "Hi, I am {n}. I am coming from your website.", "wasrv": " I am interested in: {s}.", "top": "Back to top", "emptymsg": "Hi, I need help with: "};
   var $ = function (id) { return document.getElementById(id); };
 
   // Encabezado: línea al bajar
@@ -1355,7 +1504,7 @@ body{font-size:17px}
     else if (dia >= 0 && dia <= 3) txt = TX.tomorrow;
     else txt = TX.monday;
     $('heroStatus').textContent = abierto ? txt : txt + TX.leave;
-    $('heroDot').classList.toggle('on', abierto); $('topDot').classList.toggle('on', abierto); $('topStatus').textContent = txt; $('chatDot').classList.toggle('on', abierto);
+    $('heroDot').classList.toggle('on', abierto); $('topDot').classList.toggle('on', abierto); $('topStatus').textContent = txt; var cd = $('chatDot'); if (cd) cd.classList.toggle('on', abierto);
     var ls = $('locStatus'); ls.classList.toggle('on', abierto); ls.querySelector('.dot').classList.toggle('on', abierto); ls.lastElementChild.textContent = txt;
     var fila = document.querySelector('#horas tr[data-d="' + (laboral ? dia : 5) + '"]'); if (fila) fila.className = 'today';
   } catch (e) { /* navegador viejo: se queda el horario fijo */ }
@@ -1379,11 +1528,21 @@ body{font-size:17px}
   $('sBuscar').addEventListener('input', filtra);
   document.querySelectorAll('[data-go]').forEach(function (a) { a.addEventListener('click', function () { $('sBuscar').value = a.dataset.go; marca('todos'); filtra(); }); });
 
-  // Formulario (directo a Supabase de la página)
+  // Formulario: primero llega al Hub de la oficina; si no se puede, a la base de la página; y si tampoco, se manda por WhatsApp. Nunca se pierde.
   var SB_URL = 'https://ubrpkuzbrhhdcvdfoqos.supabase.co';
   var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVicnBrdXpicmhoZGN2ZGZvcW9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4NDc5MTQsImV4cCI6MjEwNTQyMzkxNH0.G8hY11CPI5lC5c7FrclM62gPg4NW8JivRy3t_Y5erJU';
+  var HUB_URL = 'https://kwebidsoeyfgwtyhoeni.supabase.co';
+  var HUB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3ZWJpZHNvZXlmZ3d0eWhvZW5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyMTM3NTgsImV4cCI6MjEwNjc4OTc1OH0.vD1Mt8VosqFStyrxTCaprQ3Ekzvpi-ZwlFa5aTGLSUw';
   var form = $('contactForm'), btn = $('submitBtn'), msg = $('formMsg');
-  function aviso(texto, ok) { msg.textContent = texto; msg.className = 'form-msg ' + (ok ? 'ok' : 'err'); msg.hidden = false; }
+  function aviso(texto, ok, waTexto, waHref) {
+    msg.textContent = texto; msg.className = 'form-msg ' + (ok ? 'ok' : 'err'); msg.hidden = false;
+    if (waHref) { var a = document.createElement('a'); a.href = waHref; a.target = '_blank'; a.rel = 'noopener'; a.textContent = waTexto; a.className = ok ? 'lnk' : 'btn btn-wa'; msg.appendChild(document.createElement('br')); msg.appendChild(a); }
+  }
+  function manda(url, key, tabla, datos) {
+    return fetch(url + '/rest/v1/' + tabla, { method: 'POST',
+      headers: { 'apikey': key, 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify(datos) }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); });
+  }
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     msg.hidden = true;
@@ -1392,21 +1551,27 @@ body{font-size:17px}
     if (!nombre) { aviso(TX.noname, false); form.nombre.focus(); return; }
     if (telefono.replace(/\D/g, '').length < 10) { aviso(TX.notel, false); form.telefono.focus(); return; }
     btn.disabled = true; btn.textContent = TX.sending;
-    var com = form.comentario.value.trim();
-    if (document.documentElement.lang === 'en') com = '[EN] ' + com;
-    fetch(SB_URL + '/rest/v1/contactos', {
-      method: 'POST',
-      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-      body: JSON.stringify({ nombre: nombre, telefono: telefono, servicio: form.servicio.value, comentario: com })
-    }).then(function (r) {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      form.reset();
-      aviso(TX.ok, true);
-    }).catch(function (err) {
-      console.error(err);
-      aviso(TX.err, false);
-    }).then(function () { btn.disabled = false; btn.textContent = TX.send; });
+    var en = document.documentElement.lang === 'en', com = form.comentario.value.trim(), srv = form.servicio.value;
+    var waMsg = TX.wamsg.replace('{n}', nombre) + (srv ? TX.wasrv.replace('{s}', srv) : '') + (com ? ' ' + com : '');
+    var waHref = 'https://wa.me/16194964759?text=' + encodeURIComponent(waMsg);
+    manda(HUB_URL, HUB_KEY, 'web_contactos', { nombre: nombre, telefono: telefono, servicio: srv || null, comentario: com || null, idioma: en ? 'en' : 'es' })
+      .catch(function () { return manda(SB_URL, SB_KEY, 'contactos', { nombre: nombre, telefono: telefono, servicio: srv, comentario: en ? '[EN] ' + com : com }); })
+      .then(function () { form.reset(); aviso(TX.ok, true, TX.okwa, waHref); })
+      .catch(function (err) { console.error(err); aviso(TX.err, false, TX.errwa, waHref); })
+      .then(function () { btn.disabled = false; btn.textContent = TX.send; });
   });
+
+  // Barra de avance y botón para subir
+  var prog = $('prog'), totop = $('totop'), t2 = false;
+  function avance() {
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    prog.style.transform = 'scaleX(' + (h > 0 ? Math.min(1, window.scrollY / h) : 0) + ')';
+    totop.classList.toggle('on', window.scrollY > 900);
+    t2 = false;
+  }
+  window.addEventListener('scroll', function () { if (!t2) { t2 = true; requestAnimationFrame(avance); } }, { passive: true });
+  totop.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  avance();
 })();
 </script>
 </body>
